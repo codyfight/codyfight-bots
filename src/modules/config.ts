@@ -10,7 +10,7 @@ export interface ServerConfig extends Express {
 
 export default async function config(app: Express): Promise<ServerConfig> {
   const {
-    CODYFIGHT_GAME_URL: api,
+    GAME_URL: api,
     PORT: port,
     NODE_ENV: env
   } = process.env as Record<string, string>
