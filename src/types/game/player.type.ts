@@ -3,17 +3,17 @@ import type { IPosition } from './map.type.js'
 import type { IAgentStats } from './special-agent.type.js'
 
 export interface IPlayer {
-  id: number
-  turn: number
-  name: string
-  owner: string
+  id: number | null
+  turn: number | null
+  name: string | null
+  owner: string | null
   is_player_turn: boolean
   score: IScore
-  skills: ISkill[]
-  stats: IPlayerStats
-  position: IPosition
-  codyfighter: ICodyfighter
-  possible_moves: IPossibleMove[]
+  skills: ISkill[] | []
+  stats: IPlayerStats | []
+  position: IPosition | null
+  codyfighter: ICodyfighter | null
+  possible_moves: IPossibleMove[] | []
 }
 
 interface IPlayerStats extends IAgentStats {

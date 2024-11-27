@@ -1,6 +1,6 @@
 export interface IVerdict {
   context: GameContext
-  statement: VerdictStatement
+  statement: VerdictStatement | null
   winner: string | null
 }
 

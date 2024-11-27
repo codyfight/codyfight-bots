@@ -5,12 +5,12 @@ import type { IVerdict } from './verdict.type.js'
 import type { ISpecialAgent } from './special-agent.type.js'
 
 export interface IGameState {
-  map: Map
+  map: Map | []
   state: IState
   verdict: IVerdict
   players: {
     bearer: IPlayer
     opponent: IPlayer
   }
-  special_agents: ISpecialAgent[]
+  special_agents: ISpecialAgent[] | []
 }
