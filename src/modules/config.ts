@@ -2,17 +2,17 @@ import type { Express } from 'express'
 
 export interface ServerConfig extends Express {
   config: {
-    env: string
     port: string
+    env: string
     api: string
   }
 }
 
 export default async function config(app: Express): Promise<ServerConfig> {
   const {
-    GAME_URL: api,
-    PORT: port,
-    NODE_ENV: env
+    PORT: port = '3010',
+    NODE_ENV: env = 'production',
+    GAME_URL: api
   } = process.env as Record<string, string>
 
   const _app: ServerConfig = Object.assign(app, {

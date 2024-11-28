@@ -1,3 +1,5 @@
+import play from '../mock/play.js'
+
 import type { ServerConfig } from './config.js'
 
 export default function server(app: ServerConfig) {
@@ -6,6 +8,8 @@ export default function server(app: ServerConfig) {
     console.info(
       `codyfight-bots: ${app?.config?.env} server: http://localhost:${app?.config?.port}`
     )
+
+    play()
   })
 
   process.on('SIGINT', () => {
