@@ -3,9 +3,9 @@ export type Map = IMapTile[][]
 export interface IMapTile {
   id: number
   name: string
-  type: MapTileType
+  type: TileType
   position: IPosition
-  config: IMapTileConfig | []
+  config: TileConfig | []
   owner: number | null
 }
 
@@ -14,13 +14,13 @@ export interface IPosition {
   y: number
 }
 
-export interface IMapTileConfig {
+export interface TileConfig {
   is_armed?: boolean
   is_charged?: boolean
   despawns_after?: number
 }
 
-export enum MapTileType {
+export enum TileType {
   Blank = 0,
   Obstacle = 1,
   ExitGate = 2,

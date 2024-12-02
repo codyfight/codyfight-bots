@@ -1,6 +1,6 @@
 export interface IState {
   id: number | null
-  status: GameState
+  status: GameStatus
   mode: GameMode
   stake: any[]
   rewards: any
@@ -24,9 +24,9 @@ export enum GameMode {
   Testing = 127
 }
 
-export enum GameState {
-  Empty = -1,
-  Registering = 0,
-  Playing = 1,
-  Ended = 2
+export enum GameStatus {
+  Empty = "EMPTY",
+  Registering = "REGISTERING",
+  Playing = "PLAYING",
+  Ended = "ENDED"
 }
