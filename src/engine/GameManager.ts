@@ -1,90 +1,90 @@
-import GameEngine from './GameEngine.ts';
-import { GameStatus } from '../types/game/state.type.ts';
-import { gameAPI } from '../services/index.ts';
-import Map from '../entities/Map.ts';
-import Agent from '../entities/Agent.ts';
-import  sleep  from '../utils/sleep.ts';
+import GameEngine from './GameEngine.js'
+import { GameStatus } from '../types/game/state.type.js'
+import { gameAPI } from '../services/index.js'
+import Map from '../entities/Map.js'
+import Agent from '../entities/Agents/Agent.js'
+import sleep from '../utils/sleep.js'
+import PlayerAgent from '../entities/Agents/PlayerAgent.js'
 
 class GameManager {
-  private engine!: GameEngine;
-  private status: GameStatus;
+  private engine!: GameEngine
+  private status: GameStatus
+  private gameState: any
 
-  constructor(private ckey: string, private mode: number) {
-    this.status = GameStatus.Empty;
-  }
-
-
-  async initialize(): Promise<void> {
-    console.debug('Initializing game...');
-
-    const gameState = await gameAPI().init(this.ckey, this.mode);
-    this.status = gameState.state.status as GameStatus;
-
-    const map = new Map(gameState.map);
-    const bearer = new Agent(gameState.players.bearer);
-    const opponent = new Agent(gameState.players.opponent);
-
-    this.engine = new GameEngine(map, bearer, opponent);
-
-    console.debug('Game initialized with status:', this.status);
+  constructor(
+    private ckey: string,
+    private mode: number
+  ) {
+    this.status = GameStatus.Empty
+    this.gameState = null
   }
 
   async start(): Promise<void> {
-    while (this.status !== GameStatus.Ended) {
-      await this.processState();
-    }
+    do {
+      await this.processState()
+      await sleep(1000)
+      await this.updateGameState()
+    } while (this.status !== GameStatus.Ended)
   }
 
   private async processState(): Promise<void> {
     switch (this.status) {
+      case GameStatus.Empty:
+        await this.startMatchmaking()
+        break
+
       case GameStatus.Registering:
-        await this.matchMake();
-        break;
+        console.debug('Matchmaking in progress...')
+        break
 
       case GameStatus.Playing:
-        await this.update();
-        break;
+        await this.playGame()
+        break
 
       case GameStatus.Ended:
-        this.end();
-        break;
+        this.endGame()
+        break
 
       default:
-        console.error(`Unknown game status: ${this.status}`);
-        this.end();
-        break;
+        console.error(`Unknown game status: ${this.status}`)
+        this.endGame()
+        break
     }
   }
 
-  private end(): void {
-    console.debug('Ending game...');
-    this.status = GameStatus.Ended;
+  private async startMatchmaking(): Promise<void> {
+    console.debug('Starting matchmaking...')
+    this.gameState = await gameAPI().init(this.ckey, this.mode)
+    this.status = this.gameState.state.status as GameStatus
   }
 
-  private async update(): Promise<void> {
-    await this.engine.run();
-    await this.setStatus();
-  }
-
-  private async matchMake(): Promise<void> {
-    console.debug('Waiting for matchmaking...');
-    do {
-      await this.setStatus();
-      await sleep(1000);
-    } while (this.status === GameStatus.Registering);
-
-    if (this.status === GameStatus.Playing) {
-      console.debug('Matchmaking complete, game is now playing.');
-    } else {
-      console.error('Matchmaking failed or unexpected state.');
-      this.end();
+  private async playGame(): Promise<void> {
+    if (!this.engine) {
+      await this.initializeGameEngine()
     }
+    await this.engine.run()
   }
 
-  private async setStatus(): Promise<void> {
-    const gameState = await gameAPI().check(this.ckey);
-    this.status = gameState.state.status as GameStatus;
+  private async initializeGameEngine(): Promise<void> {
+    console.debug('Initializing game engine...')
+
+    const map = new Map(this.gameState.map)
+    const bearer = new PlayerAgent(this.gameState.players.bearer)
+    const opponent = new Agent(this.gameState.players.opponent)
+
+    this.engine = new GameEngine(this.ckey, map, bearer, opponent)
+    console.debug('Game engine initialized.')
+  }
+
+  private async updateGameState(): Promise<void> {
+    this.gameState = await gameAPI().check(this.ckey)
+    this.status = this.gameState.state.status as GameStatus
+  }
+
+  private endGame(): void {
+    console.debug('Ending game...')
+    this.status = GameStatus.Ended
   }
 }
 
-export default GameManager;
+export default GameManager

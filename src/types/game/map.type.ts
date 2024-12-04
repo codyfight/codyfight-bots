@@ -44,3 +44,17 @@ export enum TileType {
   WallMarkOne = 20,
   BombTile = 21
 }
+
+export interface ITileData {
+  id: number
+  type: TileType
+  name: string
+  position: {
+    x: number
+    y: number
+  }
+  config?: {
+    is_charged?: boolean
+    is_armed?: boolean
+  }
+}

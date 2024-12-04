@@ -1,9 +1,9 @@
 import { IGameState } from '../types/game/index.js'
-import { GameState } from '../types/game/state.type.js'
+import { GameStatus } from '../types/game/state.type.js'
 import { formatName } from './index.js'
 
 function logGameInfo(gameState: IGameState, message: string) {
-  const isPlaying = gameState?.state?.status === GameState.Playing
+  const isPlaying = gameState?.state?.status === GameStatus.Playing
 
   const playerName = formatName(gameState?.players?.bearer?.name)
 

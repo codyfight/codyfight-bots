@@ -1,29 +1,34 @@
-import Position from './Position.ts'
-import { TileType } from '../types/game/map.type.ts'
+import { ITileData, TileType } from '../types/game/map.type.js'
+import Position from './Position.js'
 
 class Tile {
-  id: number
-  name: string
-  type: TileType
-  position: Position
-  isCharged: boolean
-  isArmed: boolean
+  readonly id: number
+  readonly name: string
+  readonly type: TileType
+  readonly position: Position
+  private isCharged: boolean
+  private isArmed: boolean
 
-  constructor(data: any) {
+  constructor(data: ITileData) {
     this.id = data.id
     this.name = data.name
     this.type = data.type
     this.position = new Position(data.position.x, data.position.y)
-    this.isCharged = data.is_charged || false
-    this.isArmed = data.is_armed || false
+    this.isCharged = data.config?.is_charged || false
+    this.isArmed = data.config?.is_armed || false
   }
 
-  isWalkable(): boolean {
-    return (
-      this.type !== TileType.Obstacle &&
-      this.type !== TileType.Wall &&
-      this.type !== TileType.DeathPit
-    )
+  update(data: ITileData): void {
+    this.isCharged = data.config?.is_charged || false
+    this.isArmed = data.config?.is_armed || false
+  }
+
+  get charged(): boolean {
+    return this.isCharged
+  }
+
+  get armed(): boolean {
+    return this.isArmed
   }
 }
 

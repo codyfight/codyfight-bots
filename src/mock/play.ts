@@ -1,7 +1,7 @@
 import { formatName, log, sleep } from '../utils/index.js'
 import { gameAPI } from '../services/index.js'
 import { IGameState } from '../types/game/index.js'
-import { GameMode, GameState } from '../types/game/state.type.js'
+import { GameMode, GameStatus } from '../types/game/state.type.js'
 
 const CKEY = process.env.CKEY as string
 const MODE: GameMode = GameMode.Sandbox
@@ -21,7 +21,7 @@ export default async function play() {
       gameState = await gamePlay(gameState, CKEY)
       gameState = await gameEnded(gameState)
 
-      if (gameState?.state?.status === GameState.Ended) {
+      if (gameState?.state?.status === GameStatus.Ended) {
         break
       }
     } catch (error: any) {
@@ -44,7 +44,7 @@ async function gameInit(
 ): Promise<IGameState> {
   let gameState: IGameState = _gameState
 
-  if (gameState?.state?.status === GameState.Playing) {
+  if (gameState?.state?.status === GameStatus.Playing) {
     return gameState
   }
 
@@ -62,7 +62,7 @@ async function gameMatchmaking(
 
   log.gameInfo(gameState, 'Matchmaking, please wait')
 
-  while (gameState?.state?.status === GameState.Registering) {
+  while (gameState?.state?.status === GameStatus.Registering) {
     await sleep(1000)
     gameState = await gameAPI().check(ckey)
   }
@@ -82,12 +82,12 @@ async function gamePlay(
 
   const opponent = gameState?.players?.opponent
 
-  if (gameState?.state?.status === GameState.Playing && opponent) {
+  if (gameState?.state?.status === GameStatus.Playing && opponent) {
     const initialMsg = `Playing against ${formatName(opponent.name)} (${opponent?.codyfighter?.rarity} ${opponent?.codyfighter?.class})`
     log.gameInfo(gameState, initialMsg)
   }
 
-  while (gameState?.state?.status === GameState.Playing) {
+  while (gameState?.state?.status === GameStatus.Playing) {
     if (gameState?.players?.bearer?.is_player_turn) {
       gameState = await moveRandom(gameState, ckey)
     } else {
@@ -99,7 +99,7 @@ async function gamePlay(
 }
 
 async function gameEnded(_gameState: IGameState): Promise<IGameState> {
-  if (_gameState?.state?.status === GameState.Ended) {
+  if (_gameState?.state?.status === GameStatus.Ended) {
     const winner = _gameState?.verdict?.winner
     const isWinner = _gameState?.players?.bearer?.name === winner
 
