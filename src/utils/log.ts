@@ -24,9 +24,25 @@ function logGameError(gameState: IGameState, error: any) {
   console.error(`${playerName} - Error: [${status}] ${msg}`)
 }
 
+function logApiError(action: string, error: any): void {
+  const response = error.response || {}
+  const request = error.request || ''
+  const message = error.message || ''
+
+  const logMessage = `
+    Something went wrong during ${action}:
+    Response: ${response.status ? `Status ${response.status}, Data: ${JSON.stringify(response.data)}` : ''}
+    Request: ${request}
+    Message: ${message}
+  `
+
+  console.error(logMessage.trim())
+}
+
 const log = {
   gameInfo: logGameInfo,
-  gameError: logGameError
+  gameError: logGameError,
+  apiError: logApiError
 }
 
 export default log

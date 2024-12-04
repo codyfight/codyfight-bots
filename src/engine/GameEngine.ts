@@ -2,38 +2,59 @@ import GameMap from '../entities/Map.js'
 import Agent from '../entities/Agents/Agent.js'
 import PlayerAgent from '../entities/Agents/PlayerAgent.js'
 import { GameStatus } from '../types/game/state.type.js'
-import sleep from '../utils/sleep.js'
-import { gameAPI } from '../services/index.js'
+import { GameService } from '../services/GameService.js'
+
+enum Phase {
+  Cast,
+  Move
+}
 
 class GameEngine {
-  private status: GameStatus
-  private gameState: any
+  private phase: Phase = Phase.Cast
 
   constructor(
-    private ckey: string,
+    private gameService: GameService,
     private map: GameMap,
     private bearer: PlayerAgent,
     private opponent: Agent
-  ) {
-    this.status = GameStatus.Playing
-  }
+  ) {}
 
   async run(): Promise<void> {
-    do {
-      await this.updateGameState()
-
-      this.map.update(this.gameState.map)
-      this.bearer.update(this.gameState.players.bearer)
-      this.opponent.update(this.gameState.players.opponent)
-
-      await this.bearer.takeTurn(this.ckey)
-      await sleep(1000)
-    } while (this.status === GameStatus.Playing)
+    while (this.gameInProgress()) {
+      this.update()
+      await this.processCurrentPhase()
+      await this.gameService.updateGameState()
+    }
   }
 
-  private async updateGameState(): Promise<void> {
-    this.gameState = await gameAPI().check(this.ckey)
-    this.status = this.gameState.state.status as GameStatus
+  private async processCurrentPhase(): Promise<void> {
+    switch (this.phase) {
+      case Phase.Cast:
+        await this.bearer.castSkill()
+        this.phase = Phase.Move
+        break
+
+      case Phase.Move:
+        await this.bearer.makeMove()
+        this.phase = Phase.Cast
+        break
+
+      default:
+        throw new Error(`Unhandled game phase: ${this.phase}`)
+    }
+  }
+
+  private update(): void {
+    const gameState = this.gameService.getGameState()
+    if (!gameState) return
+
+    this.map.update(gameState.map)
+    this.opponent.update(gameState.players.opponent)
+    this.bearer.update(gameState.players.bearer)
+  }
+
+  private gameInProgress(): boolean {
+    return this.gameService.getStatus() === GameStatus.Playing
   }
 }
 

@@ -22,7 +22,7 @@ enum SkillType {
   Active = 1
 }
 
-enum SkillStatus {
+export enum SkillStatus {
   Empty = -4,
   Disabled = -3,
   NoTargets = -2,

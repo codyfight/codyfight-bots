@@ -1,4 +1,4 @@
-export type Map = IMapTile[][]
+export type Map = ITileData[][]
 
 export interface IMapTile {
   id: number

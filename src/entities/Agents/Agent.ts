@@ -1,18 +1,7 @@
 import Position from '../Position.js'
 import Skill from '../Skill.js'
 import Updatable from '../../interfaces/Updatable.js'
-
-interface AgentData {
-  name: string
-  is_player_turn: boolean
-  stats: {
-    hitpoints: number
-    energy: number
-  }
-  position: Position
-  possible_moves: Position[]
-  skills: Skill[]
-}
+import { IAgentData } from '../../types/game/player.type.js'
 
 class Agent implements Updatable {
   readonly name: string
@@ -23,13 +12,13 @@ class Agent implements Updatable {
   protected possibleMoves: Position[] = []
   protected skills: Skill[] = []
 
-  constructor(agentData: AgentData) {
+  constructor(agentData: IAgentData) {
     this.name = agentData.name
     this.update(agentData)
   }
 
   //TODO - Only the playing agent needs to know about possible moves etc..
-  update(agentData: AgentData): void {
+  update(agentData: IAgentData): void {
     this.isPlayerTurn = agentData.is_player_turn
     this.hitpoints = agentData.stats.hitpoints
     this.energy = agentData.stats.energy

@@ -1,31 +1,32 @@
 import Agent from './Agent.js'
-import { gameAPI } from '../../services/index.js'
 import Skill from '../Skill.js'
 import Position from '../Position.js'
+import { GameService } from '../../services/GameService.js'
+import { IAgentData } from '../../types/game/player.type.js'
 
 class PlayerAgent extends Agent {
-  public async takeTurn(ckey: string): Promise<void> {
-    if (!this.isPlayerTurn) return
-
-    //await this.castSkill(ckey)
-    await this.makeMove(ckey)
+  constructor(
+    protected gameService: GameService,
+    agentData: IAgentData
+  ) {
+    super(agentData)
   }
 
-  private async castSkill(ckey: string): Promise<void> {
+  public async castSkill(): Promise<void> {
     if (!this.canCastSkill()) return
 
     const skill = this.getRandomCastableSkill()
     const target = skill.getTarget()
-    await gameAPI().cast(ckey, skill.id, target.x, target.y)
+    await this.gameService.castSkill(skill.id, target)
   }
 
-  private async makeMove(ckey: string): Promise<void> {
+  public async makeMove(): Promise<void> {
     const position = this.getRandomPosition()
-    await gameAPI().move(ckey, position.x, position.y)
+    await this.gameService.move(position)
   }
 
   private getRandomCastableSkill(): Skill {
-    const castableSkills = this.skills.filter((skill) => skill.hasTargets())
+    const castableSkills = this.skills.filter((skill) => skill.isReady())
     const index = Math.floor(Math.random() * castableSkills.length)
     return castableSkills[index]
   }
@@ -36,7 +37,7 @@ class PlayerAgent extends Agent {
   }
 
   private canCastSkill(): boolean {
-    return this.skills.some((skill) => skill.hasTargets())
+    return this.skills.some((skill) => skill.isReady())
   }
 }
 
