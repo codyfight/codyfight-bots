@@ -9,7 +9,3 @@ startApplication().catch((error) => {
   console.error('Error starting application:', error)
   process.exit(1)
 })
-
-// TODO
-// Only cast skills when ready and have targets
-// Make sure agent only moves to safe locations

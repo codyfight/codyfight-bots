@@ -10,11 +10,13 @@ export class GameService {
   private gameAPI: IGameAPI
   private gameState!: IGameState
   private status: GameStatus
+  private round: number
 
   constructor(
     private readonly ckey: string,
     private readonly mode: GameMode
   ) {
+    this.round = 0
     this.status = GameStatus.Empty
     this.gameAPI = new GameAPI(GAME_API_URL) as IGameAPI
   }
@@ -24,7 +26,7 @@ export class GameService {
 
     try {
       this.gameState = await this.gameAPI.init(this.ckey, this.mode)
-      this.updateStatus()
+      this.updateState()
     } catch (error) {
       log.apiError('Initializing Game', error)
     }
@@ -34,7 +36,7 @@ export class GameService {
     console.debug('Checking game state...')
     try {
       this.gameState = await this.gameAPI.check(this.ckey)
-      this.updateStatus()
+      this.updateState()
     } catch (error) {
       log.apiError('Updating Game State', error)
     }
@@ -75,10 +77,17 @@ export class GameService {
     return this.status
   }
 
-  private updateStatus(): void {
+  public getRound(): number {
+    return this.round
+  }
+
+  private updateState(): void {
     if (this.gameState) {
       this.status = this.gameState.state.status as GameStatus
+      this.round = this.gameState.state.round as number
+
       console.debug('Game Status:', this.status)
+      console.debug('Round :', this.round)
     }
   }
 }

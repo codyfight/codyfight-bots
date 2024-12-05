@@ -1,18 +1,20 @@
 import { IGameState } from '../types/game/index.js'
-import { GameStatus } from '../types/game/state.type.js'
 import { formatName } from './index.js'
 
-function logGameInfo(gameState: IGameState, message: string) {
-  const isPlaying = gameState?.state?.status === GameStatus.Playing
-
-  const playerName = formatName(gameState?.players?.bearer?.name)
-
+function logGameInfo(gameState: IGameState) {
   const currentRound = gameState?.state?.round
   const totalRounds = gameState?.state?.total_rounds
+  const possibleMoves = gameState?.players?.bearer?.possible_moves || []
 
-  const roundInfo = isPlaying ? `Round ${currentRound}/${totalRounds} - ` : ''
-
-  console.info(`${playerName} - ${roundInfo}${message}`)
+  console.info('--- Game Info ---')
+  console.info(`Round: ${currentRound}`)
+  console.info(`Total Rounds: ${totalRounds}`)
+  console.info(
+    `Possible Moves: ${possibleMoves
+      .map((move) => `[x: ${move.x}, y: ${move.y}]`)
+      .join(', ')}`
+  )
+  console.info('------------------')
 }
 
 function logGameError(gameState: IGameState, error: any) {

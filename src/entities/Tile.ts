@@ -1,4 +1,4 @@
-import { ITileData, TileType } from '../types/game/map.type.js'
+import { DANGEROUS_TILES, ITileData, TileType } from '../types/game/map.type.js'
 import Position from './Position.js'
 
 class Tile {
@@ -29,6 +29,10 @@ class Tile {
 
   get armed(): boolean {
     return this.isArmed
+  }
+
+  public isDangerous(): boolean {
+    return DANGEROUS_TILES.has(this.type)
   }
 }
 

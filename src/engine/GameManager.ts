@@ -1,6 +1,6 @@
 import GameEngine from './GameEngine.js'
 import { GameMode, GameStatus } from '../types/game/state.type.js'
-import Map from '../entities/Map.js'
+import GameMap from '../entities/GameMap.js'
 import Agent from '../entities/Agents/Agent.js'
 import PlayerAgent from '../entities/Agents/PlayerAgent.js'
 import { GameService } from '../services/GameService.js'
@@ -8,7 +8,7 @@ import { CKEY } from '../constants/constants.js'
 
 class GameManager {
   private engine!: GameEngine
-  private gameService: GameService
+  private readonly gameService: GameService
 
   constructor() {
     this.gameService = new GameService(CKEY, GameMode.Sandbox)
@@ -59,12 +59,18 @@ class GameManager {
     console.debug('Initializing game engine...')
 
     const gameState = this.gameService.getGameState()
+    const round = this.gameService.getRound()
 
-    const map = new Map(gameState.map)
-    const bearer = new PlayerAgent(this.gameService, gameState.players.bearer)
+    const map = new GameMap(gameState.map)
+    
+    const bearer = new PlayerAgent(
+      this.gameService,
+      map,
+      gameState.players.bearer
+    )
     const opponent = new Agent(gameState.players.opponent)
 
-    this.engine = new GameEngine(this.gameService, map, bearer, opponent)
+    this.engine = new GameEngine(this.gameService, map, bearer, opponent, round)
 
     await this.gameService.updateGameState()
 

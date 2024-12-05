@@ -1,9 +1,8 @@
 class Position {
-  constructor(public x: number, public y: number) {}
-
-  equals(position: Position): boolean {
-    return this.x === position.x && this.y === position.y;
-  }
+  constructor(
+    public x: number,
+    public y: number
+  ) {}
 }
 
-export default Position;
+export default Position

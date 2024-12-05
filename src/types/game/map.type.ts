@@ -45,6 +45,15 @@ export enum TileType {
   BombTile = 21
 }
 
+export const DANGEROUS_TILES = new Set<TileType>([
+  TileType.DeathPit,
+  TileType.ZapTrap,
+  TileType.ProximityMine,
+  TileType.BoobyTrap,
+  TileType.Craze,
+  TileType.BombTile
+])
+
 export interface ITileData {
   id: number
   type: TileType
