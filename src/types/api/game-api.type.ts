@@ -1,5 +1,5 @@
-import type { IGameState } from '../game/index.js'
 import type { GameMode } from '../game/state.type.js'
+import { IGameState } from '../game/index.js'
 
 export interface IGameAPI {
   check(ckey: string): Promise<IGameState>

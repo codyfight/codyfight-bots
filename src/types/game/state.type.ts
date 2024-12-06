@@ -25,6 +25,7 @@ export enum GameMode {
 }
 
 export enum GameStatus {
+  Terminated = -2,
   Empty = -1,
   Registering = 0,
   Playing = 1,

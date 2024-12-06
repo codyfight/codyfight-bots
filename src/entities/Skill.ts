@@ -19,6 +19,14 @@ class Skill {
     )
   }
 
+  public getID(): number{
+    return this.id
+  }
+
+  public isReady(): boolean {
+    return this.status === SkillStatus.Ready
+  }
+
   public getTarget(): Position {
     const index = Math.floor(Math.random() * this.possibleTargets.length)
     return this.possibleTargets[index]
@@ -26,10 +34,6 @@ class Skill {
 
   public hasTargets(): boolean {
     return this.possibleTargets.length > 0
-  }
-
-  public isReady(): boolean {
-    return this.status === SkillStatus.Ready
   }
 }
 

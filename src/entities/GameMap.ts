@@ -20,7 +20,6 @@ class GameMap implements Updatable {
   }
 
   public reset(mapData: ITileData[][]): void {
-    console.debug('MAP DATA: ', mapData)
     this.tiles = this.buildMap(mapData)
   }
 

@@ -1,59 +1,30 @@
-import Agent from './Agent.js'
+import GameAgent from './GameAgent.js'
 import Skill from '../Skill.js'
 import Position from '../Position.js'
-import { GameService } from '../../services/GameService.js'
 import { IAgentData } from '../../types/game/player.type.js'
-import GameMap from '../GameMap.js'
 
-class PlayerAgent extends Agent {
+class PlayerAgent extends GameAgent {
   private possibleMoves: Position[] = []
   private skills: Skill[] = []
-
-  constructor(
-    protected gameService: GameService,
-    private gameMap: GameMap,
-    agentData: IAgentData
-  ) {
-    super(agentData)
-  }
-
-  public async castSkill(): Promise<void> {
-    if (!this.canCastSkill()) return
-
-    const skill = this.getRandomCastableSkill()
-    const target = skill.getTarget()
-    await this.gameService.castSkill(skill.id, target)
-  }
-
-  public async makeMove(): Promise<void> {
-    const position = this.getRandomSafeMove()
-    await this.gameService.move(position)
-  }
+  private isPlayerTurn = false
 
   public update(agentData: IAgentData) {
     this.possibleMoves = this.mapToPositions(agentData.possible_moves)
     this.skills = this.mapToSkills(agentData.skills)
+    this.isPlayerTurn = agentData.is_player_turn
     super.update(agentData)
   }
 
-  private getRandomCastableSkill(): Skill {
-    const castableSkills = this.skills.filter((skill) => skill.isReady())
-    const index = Math.floor(Math.random() * castableSkills.length)
-    return castableSkills[index]
+  public isTurn() {
+    return this.isPlayerTurn
   }
 
-  private getRandomSafeMove(): Position {
-    const safeMoves = this.possibleMoves.filter((position) => {
-      const tile = this.gameMap.getTile(position)
-      return !tile.isDangerous()
-    })
-
-    const index = Math.floor(Math.random() * safeMoves.length)
-    return safeMoves[index]
+  public getPossibleMoves(): Position[] {
+    return this.possibleMoves
   }
 
-  private canCastSkill(): boolean {
-    return this.skills.some((skill) => skill.isReady())
+  public getSkills(): Skill[] {
+    return this.skills
   }
 
   private mapToPositions(data: { x: number; y: number }[]): Position[] {

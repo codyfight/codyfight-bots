@@ -9,4 +9,3 @@ function getEnvVariable(key: string): string {
 }
 
 export const GAME_API_URL = getEnvVariable('GAME_URL')
-export const CKEY = getEnvVariable('CKEY')
