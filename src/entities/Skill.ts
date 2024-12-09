@@ -35,6 +35,7 @@ class Skill {
   public hasTargets(): boolean {
     return this.possibleTargets.length > 0
   }
+
 }
 
 export default Skill

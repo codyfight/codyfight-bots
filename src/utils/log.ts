@@ -2,27 +2,35 @@ import { IGameState } from '../types/game/index.js'
 import { formatName } from './index.js'
 
 function logGameInfo(gameState: IGameState, ckey: string) {
-  const status = gameState.state.status;
-  const currentRound = gameState?.state?.round;
+  try{
+    const status = gameState?.state?.status ?? '';
+    const currentRound = gameState?.state?.round ?? '';
 
-  const playerTurn = gameState.players.bearer.is_player_turn;
-  const playerPosition = gameState.players.bearer.position;
-  const possibleMoves = gameState?.players?.bearer?.possible_moves || [];
+    const playerTurn = gameState?.players?.bearer?.is_player_turn ?? '';
+    const playerPosition = gameState?.players?.bearer?.position ?? '';
+    const possibleMoves = gameState?.players?.bearer?.possible_moves || [];
 
-  const mapSize = gameState.map.length;
+    const opponentName = gameState?.players?.opponent?.name ?? '';
 
-  const tableData = [
-    { Key: "Game Status", Value: status },
-    { Key: "Current Round", Value: currentRound },
-    { Key: "Player Turn", Value: playerTurn ? "Yes" : "No" },
-    { Key: "Player Position", Value: `x: ${playerPosition.x}, y: ${playerPosition.y}` },
-    { Key: "Map Size", Value: mapSize },
-    { Key: "Possible Moves", Value: possibleMoves.map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
-  ];
+    const mapSize = gameState?.map?.length;
 
-  console.info(`--- Game Info: ${ckey} ---`);
-  console.table(tableData);
-  console.info('------------------');
+    const tableData = [
+      { Key: "Game Status", Value: status },
+      { Key: "Current Round", Value: currentRound },
+      { Key: "Opponent Name", Value: opponentName},
+      { Key: "Player Turn", Value: playerTurn ? "Yes" : "No" },
+      { Key: "Player Position", Value: `x: ${playerPosition.x}, y: ${playerPosition.y}` },
+      { Key: "Map Size", Value: mapSize },
+      { Key: "Possible Moves", Value: possibleMoves.map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
+    ];
+
+    console.info(`--- Game Info: ${ckey} ---`);
+    console.table(tableData);
+    console.info('------------------');
+  }catch(error){
+    console.log("Logging Error", error)
+  }
+
 }
 
 
@@ -39,12 +47,14 @@ function logApiError(action: string, error: any): void {
   const response = error.response || {};
   const request = error.request || "N/A";
   const message = error.message || "No message provided";
+  const errorCode = error.code || "N/A";
 
   const responseStatus = response.status || "N/A";
   const responseData = response.data ? JSON.stringify(response.data, null, 2) : "No data";
 
   const errorDetails = [
     { Key: "Action", Value: action },
+    { Key: "Error Code", Value: errorCode },
     { Key: "Response Status", Value: responseStatus },
     { Key: "Response Data", Value: responseData },
     { Key: "Request", Value: request },
@@ -55,6 +65,7 @@ function logApiError(action: string, error: any): void {
   console.table(errorDetails);
   console.error('----------------------');
 }
+
 
 
 const log = {

@@ -29,11 +29,17 @@ class GameState implements Updatable {
   }
 
   public update(gameState: IGameState): void {
-    this.map.update(gameState.map)
-    this.status = gameState.state.status
 
-    this.bearer.update(gameState.players.bearer)
-    this.opponent.update(gameState.players.opponent)
+    try{
+      this.map.update(gameState.map)
+      this.status = gameState.state.status
+
+      this.bearer.update(gameState.players.bearer)
+      this.opponent.update(gameState.players.opponent)
+    }catch(error){
+      console.log("An error occurred while updating game state", error)
+    }
+
   }
 
   public getStatus(): GameStatus {
@@ -54,6 +60,22 @@ class GameState implements Updatable {
 
   public isPlayerTurn(): boolean {
     return this.bearer.isTurn()
+  }
+
+  public logGameState(): void {
+
+    const tableData = [
+      { Key: "Game Status", Value: this.status },
+      { Key: "Current Round", Value: 'N/A' },
+      { Key: "Player Turn", Value: this.isPlayerTurn() ? "Yes" : "No" },
+      { Key: "Player Position", Value: `x: ${this.getBearer().getPosition().x}, y: ${this.getBearer().getPosition().y}` },
+      { Key: "Map Size", Value: this.getMap().getSize()},
+      { Key: "Possible Moves", Value: this.getBearer().getPossibleMoves().map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
+    ];
+
+    console.info(`--- GameState Info: ---`);
+    console.table(tableData);
+    console.info('------------------');
   }
 }
 

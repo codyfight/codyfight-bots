@@ -12,7 +12,17 @@ class GameAgent implements Updatable {
   }
 
   public update(agentData: IAgentData): void {
-    this.position = new Position(agentData.position.x, agentData.position.y)
+    this.setPosition(agentData)
+  }
+
+  public getPosition(): Position{
+    return this.position
+  }
+
+  private setPosition(agentData: IAgentData): void{
+    if(agentData.position){
+      this.position = new Position(agentData.position.x, agentData.position.y)
+    }
   }
   
 }
