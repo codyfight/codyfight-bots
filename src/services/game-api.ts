@@ -2,7 +2,7 @@ import GameAPI from 'codyfight-game-client'
 
 import type { IGameAPI } from '../types/api/game-api.type.js'
 
-const GAME_API_URL = process.env.GAME_URL as string
+const GAME_API_URL = "https://game-dev.codyfight.com"
 
 export default function gameAPI() {
   if (!GAME_API_URL) {

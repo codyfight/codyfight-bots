@@ -24,10 +24,8 @@ class CBot {
   }
 
   public async run(strategy: any) {
-
-   while (this.getStatus() !== GameStatus.Terminated) {
-
-
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       switch (this.getStatus()) {
         case GameStatus.Empty:
           await this.init(strategy)
@@ -38,11 +36,11 @@ class CBot {
         case GameStatus.Ended:
           await this.init(strategy)
           break
+        default:
+          await this.check()
+          break
       }
-
-
-
-   }
+    }
   }
 
   public getStatus(): GameStatus {
@@ -50,9 +48,9 @@ class CBot {
   }
 
   private async play() {
-
     await this.check()
-    this.game.logGameState()
+
+    // this.game.logGameState()
 
     if (this.game.isPlayerTurn()) {
       await this.castSkills()
@@ -71,7 +69,13 @@ class CBot {
     // TODO: foreach the skills
     await this.check()
 
-    console.log("GAME STATE BEARER OBJECT", this.game.getBearer())
+    console.log(
+      'GAME STATE BEARER OBJECT',
+      this.game
+        .getBearer()
+        .getSkills()
+        .map((skill) => skill.possibleTargets)
+    )
 
     const skill = this.strategyManager.determineCast(this.game)
 
@@ -97,7 +101,7 @@ class CBot {
       const responseTime = endTime - startTime
       console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
 
-      log.gameInfo(gameStateData, this.ckey)
+      // log.gameInfo(gameStateData, this.ckey)
 
       this.game = new GameState(gameStateData, strategy)
     } catch (error) {
@@ -112,11 +116,17 @@ class CBot {
       const gameStateData = await this.gameAPI.check(this.ckey)
       const endTime = performance.now()
 
-      console.log("GAME STATE BEARER DATA: ", gameStateData.players.bearer)
+      console.log(
+        'GAME STATE BEARER DATA: ',
+        this.game
+          .getBearer()
+          .getSkills()
+          .map((skill) => skill.possibleTargets)
+      )
 
       const responseTime = endTime - startTime
       console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
-      log.gameInfo(gameStateData, this.ckey)
+      // log.gameInfo(gameStateData, this.ckey)
       this.game.update(gameStateData)
     } catch (error) {
       log.apiError(`${this.ckey} - check()`, error)
@@ -125,30 +135,55 @@ class CBot {
 
   private async cast(skill: Skill) {
     try {
-
       const target = skill.getTarget()
       console.debug(
         `Calling cast() - ${skill.name} on Target X:${target.x}, Y:${target.y}, SKILL: ${JSON.stringify(skill, null, 2)}`
       )
 
-
       const startTime = performance.now()
+
+      console.log('CAST PAYLOAD: ', [
+        this.ckey,
+        skill.getID(),
+        target.x,
+        target.y
+      ])
+
       const gameStateData = await this.gameAPI.cast(
         this.ckey,
         skill.getID(),
-        skill.getTarget().x,
-        skill.getTarget().y
+        target.x,
+        target.y
       )
-      console.log("GAME STATE BEARER DATA FROM CAST: ", gameStateData.players.bearer)
+
+      console.log(
+        'GAME STATE BEARER DATA FROM CAST: ',
+        this.game
+          .getBearer()
+          .getSkills()
+          .map((skill) => skill.possibleTargets)
+      )
       const endTime = performance.now()
 
       const responseTime = endTime - startTime
       console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
 
-      log.gameInfo(gameStateData, this.ckey)
+      // log.gameInfo(gameStateData, this.ckey)
       this.game.update(gameStateData)
     } catch (error) {
       log.apiError(`${this.ckey} - cast()`, error)
+
+      await this.gameAPI.check(this.ckey).then((data) => {
+        console.log(
+          JSON.stringify(
+            data?.players?.bearer?.skills?.map(
+              (skill: any) => skill?.possible_targets
+            ),
+            null,
+            2
+          )
+        )
+      })
     }
   }
 
@@ -168,7 +203,7 @@ class CBot {
       const responseTime = endTime - startTime
       console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
 
-      log.gameInfo(gameStateData, this.ckey)
+      // log.gameInfo(gameStateData, this.ckey)
       this.game.update(gameStateData)
     } catch (error) {
       log.apiError(`${this.ckey} - move()`, error)

@@ -20,7 +20,7 @@ const gameConfigs = [
 const retry = async <T>(runBot: () => Promise<T>): Promise<T> => {
   for (let i = 0; i < RETRIES; i++) {
     try {
-      return await runBot()
+      return runBot()
     } catch (error) {
       console.warn(`Attempt ${i + 1} failed. Retrying...`)
     }
