@@ -1,4 +1,5 @@
 import log from './log.js'
+import { GameStatus } from '../types/game/state.type.js'
 
 /**
  * Wrapper function for API calls to log errors
@@ -11,6 +12,21 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
   } catch (error) {
     log.apiError(`Error in ${fn.name}`, error)
   }
+}
+
+/**
+ * Safely retrieves an environment variable, throwing an error if it's not set.
+ *
+ * @param name The name of the environment variable to retrieve.
+ * @returns The value of the environment variable as a string.
+ * @throws If the environment variable is not defined.
+ */
+export function getEnvVar(name: string): string {
+  const value = process.env[name];
+  if (typeof value === 'undefined' || value === '') {
+    throw new Error(`Environment variable ${name} is not defined.`);
+  }
+  return value;
 }
 
 /**
@@ -33,6 +49,25 @@ export function randomElement<T>(array: T[]): T | null {
  */
 export function formatName(name: string | null): string {
   return name ? String(name)?.padEnd(10)?.toUpperCase() : 'Player'
+}
+
+
+/**
+ * Maps the Game status enum to a string value.
+ *
+ * @param {GameStatus } status - The status to map.
+ * @returns {string} The formatted name.
+ */
+export function getGameStatusName(status: GameStatus): string {
+  const statusMap: { [key in GameStatus]: string } = {
+    [GameStatus.Terminated]: 'Terminated',
+    [GameStatus.Empty]: 'Empty',
+    [GameStatus.Registering]: 'Registering',
+    [GameStatus.Playing]: 'Playing',
+    [GameStatus.Ended]: 'Ended',
+  };
+
+  return statusMap[status] || `Unknown (${status})`;
 }
 
 /**

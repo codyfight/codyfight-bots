@@ -15,17 +15,14 @@ class GameState implements Updatable {
   private opponent: GameAgent
 
   private strategy: any
-  public strategyManager: StrategyManager
 
-  constructor(gameState: IGameState, strategy: any) {
+  constructor(gameState: IGameState) {
     this.map = new GameMap(gameState.map)
     this.status = gameState.state.status
 
     this.bearer = new PlayerAgent(gameState.players.bearer)
     this.opponent = new GameAgent(gameState.players.opponent)
 
-    this.strategy = strategy
-    this.strategyManager = StrategyManagerFactory.get()
   }
 
   public update(gameState: IGameState): void {

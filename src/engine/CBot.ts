@@ -3,50 +3,62 @@ import Position from '../entities/Position.js'
 import GameAPIFactory from '../factories/GameAPIFactory.js'
 import { IGameAPI } from '../types/api/game-api.type.js'
 import GameState from '../entities/GameState.js'
-import StrategyManager from './StrategyManager.js'
-import StrategyManagerFactory from '../factories/StrategyManagerFactory.js'
 import Skill from '../entities/Skill.js'
 import { safeApiCall } from '../utils/utils.js'
+import MoveStrategy from './strategy/MoveStrategy.js'
+import CastStrategy from './strategy/CastStrategy.js'
+import RandomMoveStrategy from './strategy/RandomMoveStrategy.js'
+import RandomCastStrategy from './strategy/RandomCastStrategy.js'
+import Logger from '../utils/Logger.js'
 
 class CBot {
   private game!: GameState
 
   private gameAPI: IGameAPI
-  private strategyManager: StrategyManager
+
+  private moveStrategy: MoveStrategy
+  private castStrategy: CastStrategy
+
+  private logger: Logger
 
   constructor(
     public readonly ckey: string,
     private mode: GameMode,
-    private opponent?: string
+    loggingEnabled = false
   ) {
+    this.logger = new Logger(loggingEnabled)
     this.gameAPI = GameAPIFactory.get()
-    this.strategyManager = StrategyManagerFactory.get()
+    this.moveStrategy = new RandomMoveStrategy()
+    this.castStrategy = new RandomCastStrategy()
   }
 
-  public async run(strategy: any) {
+  public async run() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      switch (this.getStatus()) {
+      this.logger.startRun(this.ckey);
+      const status = this.getStatus()
+
+      switch (status) {
         case GameStatus.Empty:
-          console.debug(`ckey: ${this.ckey}, GameStatus: Empty -> init`);
-          await this.init(strategy);
-          break;
+          this.logger.logGameStatus(this.ckey, status, 'init');
+          await this.init()
+          break
         case GameStatus.Registering:
-          console.debug(`ckey: ${this.ckey}, GameStatus: Registering -> check`);
-          await this.check();
-          break;
+          this.logger.logGameStatus(this.ckey, status, 'check');
+          await this.check()
+          break
         case GameStatus.Playing:
-          console.debug(`ckey: ${this.ckey}, GameStatus: Playing -> play`);
-          await this.play();
-          break;
+          this.logger.logGameStatus(this.ckey, status, 'play');
+          await this.play()
+          break
         case GameStatus.Ended:
-          console.debug(`ckey: ${this.ckey}, GameStatus: Ended -> init`);
-          await this.init(strategy);
-          break;
+          this.logger.logGameStatus(this.ckey, status, 'init');
+          await this.init()
+          break
         default:
-          console.debug(`ckey: ${this.ckey}, GameStatus: Unknown -> check`);
-          await this.check();
-          break;
+          this.logger.logGameStatus(this.ckey, status, 'check');
+          await this.check()
+          break
       }
     }
   }
@@ -68,30 +80,30 @@ class CBot {
   }
 
   private async castSkills() {
-    const result = this.strategyManager.determineCast(this.game)
+    const nextCast = this.castStrategy.determineCast(this.game)
 
-    if (!result) return
+    if (!nextCast) return
 
-    const [skill, target] = result
+    const [skill, target] = nextCast
 
     await this.cast(skill, target)
   }
 
   private async performMove() {
-    const move = this.strategyManager.determineMove(this.game)
+    const nextMove = this.moveStrategy.determineMove(this.game)
 
-    if (!move) return
+    if (!nextMove) return
 
-    await this.move(move)
+    await this.move(nextMove)
   }
 
-  private async init(strategy: any) {
+  private async init() {
     const gameStateData = await safeApiCall(() =>
       this.gameAPI.init(this.ckey, this.mode)
     )
 
     if (gameStateData) {
-      this.game = new GameState(gameStateData, strategy)
+      this.game = new GameState(gameStateData)
     }
   }
 
