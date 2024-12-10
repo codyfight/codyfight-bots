@@ -1,5 +1,4 @@
 import { GameMode, GameStatus } from '../types/game/state.type.js'
-import { log } from '../utils/index.js'
 import Position from '../entities/Position.js'
 import GameAPIFactory from '../factories/GameAPIFactory.js'
 import { IGameAPI } from '../types/api/game-api.type.js'
@@ -7,6 +6,7 @@ import GameState from '../entities/GameState.js'
 import StrategyManager from './StrategyManager.js'
 import StrategyManagerFactory from '../factories/StrategyManagerFactory.js'
 import Skill from '../entities/Skill.js'
+import { safeApiCall } from '../utils/utils.js'
 
 class CBot {
   private game!: GameState
@@ -28,17 +28,25 @@ class CBot {
     while (true) {
       switch (this.getStatus()) {
         case GameStatus.Empty:
-          await this.init(strategy)
-          break
+          console.debug(`ckey: ${this.ckey}, GameStatus: Empty -> init`);
+          await this.init(strategy);
+          break;
+        case GameStatus.Registering:
+          console.debug(`ckey: ${this.ckey}, GameStatus: Registering -> check`);
+          await this.check();
+          break;
         case GameStatus.Playing:
-          await this.play()
-          break
+          console.debug(`ckey: ${this.ckey}, GameStatus: Playing -> play`);
+          await this.play();
+          break;
         case GameStatus.Ended:
-          await this.init(strategy)
-          break
+          console.debug(`ckey: ${this.ckey}, GameStatus: Ended -> init`);
+          await this.init(strategy);
+          break;
         default:
-          await this.check()
-          break
+          console.debug(`ckey: ${this.ckey}, GameStatus: Unknown -> check`);
+          await this.check();
+          break;
       }
     }
   }
@@ -50,8 +58,6 @@ class CBot {
   private async play() {
     await this.check()
 
-    // this.game.logGameState()
-
     if (this.game.isPlayerTurn()) {
       await this.castSkills()
     }
@@ -59,154 +65,61 @@ class CBot {
     if (this.game.isPlayerTurn()) {
       await this.performMove()
     }
-
-    // if (!this.game.isPlayerTurn()) {
-    //   await this.check()
-    // }
   }
 
   private async castSkills() {
-    // TODO: foreach the skills
-    await this.check()
+    const result = this.strategyManager.determineCast(this.game)
 
-    console.log(
-      'GAME STATE BEARER OBJECT',
-      this.game
-        .getBearer()
-        .getSkills()
-        .map((skill) => skill.possibleTargets)
-    )
+    if (!result) return
 
-    const skill = this.strategyManager.determineCast(this.game)
+    const [skill, target] = result
 
-    if (!skill) return
-
-    await this.cast(skill)
+    await this.cast(skill, target)
   }
 
   private async performMove() {
     const move = this.strategyManager.determineMove(this.game)
 
+    if (!move) return
+
     await this.move(move)
   }
 
   private async init(strategy: any) {
-    try {
-      console.debug(`Calling init()`)
+    const gameStateData = await safeApiCall(() =>
+      this.gameAPI.init(this.ckey, this.mode)
+    )
 
-      const startTime = performance.now()
-      const gameStateData = await this.gameAPI.init(this.ckey, this.mode)
-      const endTime = performance.now()
-
-      const responseTime = endTime - startTime
-      console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
-
-      // log.gameInfo(gameStateData, this.ckey)
-
+    if (gameStateData) {
       this.game = new GameState(gameStateData, strategy)
-    } catch (error) {
-      log.apiError(`${this.ckey} - init()`, error)
     }
   }
 
   private async check(): Promise<void> {
-    try {
-      console.debug(`Calling check()`)
-      const startTime = performance.now()
-      const gameStateData = await this.gameAPI.check(this.ckey)
-      const endTime = performance.now()
+    const gameStateData = await safeApiCall(() => this.gameAPI.check(this.ckey))
 
-      console.log(
-        'GAME STATE BEARER DATA: ',
-        this.game
-          .getBearer()
-          .getSkills()
-          .map((skill) => skill.possibleTargets)
-      )
-
-      const responseTime = endTime - startTime
-      console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
-      // log.gameInfo(gameStateData, this.ckey)
+    if (gameStateData) {
       this.game.update(gameStateData)
-    } catch (error) {
-      log.apiError(`${this.ckey} - check()`, error)
     }
   }
 
-  private async cast(skill: Skill) {
-    try {
-      const target = skill.getTarget()
-      console.debug(
-        `Calling cast() - ${skill.name} on Target X:${target.x}, Y:${target.y}, SKILL: ${JSON.stringify(skill, null, 2)}`
-      )
+  private async cast(skill: Skill, target: Position) {
+    const gameStateData = await safeApiCall(() =>
+      this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
+    )
 
-      const startTime = performance.now()
-
-      console.log('CAST PAYLOAD: ', [
-        this.ckey,
-        skill.getID(),
-        target.x,
-        target.y
-      ])
-
-      const gameStateData = await this.gameAPI.cast(
-        this.ckey,
-        skill.getID(),
-        target.x,
-        target.y
-      )
-
-      console.log(
-        'GAME STATE BEARER DATA FROM CAST: ',
-        this.game
-          .getBearer()
-          .getSkills()
-          .map((skill) => skill.possibleTargets)
-      )
-      const endTime = performance.now()
-
-      const responseTime = endTime - startTime
-      console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
-
-      // log.gameInfo(gameStateData, this.ckey)
+    if (gameStateData) {
       this.game.update(gameStateData)
-    } catch (error) {
-      log.apiError(`${this.ckey} - cast()`, error)
-
-      await this.gameAPI.check(this.ckey).then((data) => {
-        console.log(
-          JSON.stringify(
-            data?.players?.bearer?.skills?.map(
-              (skill: any) => skill?.possible_targets
-            ),
-            null,
-            2
-          )
-        )
-      })
     }
   }
 
   private async move(position: Position) {
-    try {
-      console.debug(`Calling move() - X: ${position.x}, Y: ${position.y}`)
+    const gameStateData = await safeApiCall(() =>
+      this.gameAPI.move(this.ckey, position.x, position.y)
+    )
 
-      const startTime = performance.now()
-      const gameStateData = await this.gameAPI.move(
-        this.ckey,
-        position.x,
-        position.y
-      )
-
-      const endTime = performance.now()
-
-      const responseTime = endTime - startTime
-      console.debug(`API response time: ${responseTime.toFixed(2)} ms`)
-
-      // log.gameInfo(gameStateData, this.ckey)
+    if (gameStateData) {
       this.game.update(gameStateData)
-    } catch (error) {
-      log.apiError(`${this.ckey} - move()`, error)
     }
   }
 }

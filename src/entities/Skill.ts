@@ -2,11 +2,11 @@ import Position from './Position.js'
 import { SkillStatus } from '../types/game/skill.type.js'
 
 class Skill {
-  id: number
-  name: string
-  type: number
-  status: number
-  possibleTargets: Position[]
+  public readonly id: number
+  public readonly name: string
+  public readonly type: number
+  public readonly status: number
+  public readonly possibleTargets: Position[]
 
   constructor(skillData: any) {
     this.id = skillData.id
@@ -19,23 +19,9 @@ class Skill {
     )
   }
 
-  public getID(): number{
-    return this.id
-  }
-
   public isReady(): boolean {
     return this.status === SkillStatus.Ready
   }
-
-  public getTarget(): Position {
-    const index = Math.floor(Math.random() * this.possibleTargets.length)
-    return this.possibleTargets[index]
-  }
-
-  public hasTargets(): boolean {
-    return this.possibleTargets.length > 0
-  }
-
 }
 
 export default Skill

@@ -1,31 +1,41 @@
 import Skill from '../entities/Skill.js'
 import GameState from '../entities/GameState.js'
 import Position from '../entities/Position.js'
+import { randomElement } from '../utils/utils.js'
 
 class StrategyManager {
 
-  public determineMove(game: GameState): Position {
-
-    // TODO :: use game.getStrategy()
-
-    const possibleMoves = game.getBearer().getPossibleMoves()
+  // TODO - Implement Strategy
+  public determineMove(game: GameState): Position | null {
+    const map = game.getMap();
+    const bearer = game.getBearer();
+    const possibleMoves = bearer.getPossibleMoves();
 
     const safeMoves = possibleMoves.filter((position) => {
-      const tile = game.getMap().getTile(position)
-      return !tile.isDangerous()
-    })
+      const tile = map.getTile(position);
+      return !tile.isDangerous();
+    });
 
-    const index = Math.floor(Math.random() * safeMoves.length)
-    return safeMoves[index]
+    return randomElement(safeMoves);
   }
 
-  public determineCast(game: GameState): Skill | null {
-    // TODO :: use game.getStrategy()
+  // TODO - Implement Strategy
+  public determineCast(game: GameState): [Skill, Position] | null {
+    const bearer = game.getBearer();
+    const skills = bearer.getSkills();
 
-    const skills = game.getBearer().getSkills()
-    const castableSkills = skills.filter((skill) => skill.isReady())
-    const index = Math.floor(Math.random() * castableSkills.length)
-    return castableSkills[index]
+    const castableSkills = skills.filter((skill) => skill.isReady());
+
+    if (castableSkills.length < 1) return null;
+
+    const randomSkill = randomElement(castableSkills);
+    if (!randomSkill) return null;
+
+    const randomTarget = randomElement(randomSkill.possibleTargets);
+    if (!randomTarget) return null;
+
+    return [randomSkill, randomTarget];
   }
+
 }
  export default StrategyManager

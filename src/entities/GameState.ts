@@ -68,9 +68,9 @@ class GameState implements Updatable {
       { Key: "Game Status", Value: this.status },
       { Key: "Current Round", Value: 'N/A' },
       { Key: "Player Turn", Value: this.isPlayerTurn() ? "Yes" : "No" },
-      { Key: "Player Position", Value: `x: ${this.getBearer().getPosition().x}, y: ${this.getBearer().getPosition().y}` },
+      { Key: "Player Position", Value: `x: ${this.bearer.getPosition().x}, y: ${this.getBearer().getPosition().y}` },
       { Key: "Map Size", Value: this.getMap().getSize()},
-      { Key: "Possible Moves", Value: this.getBearer().getPossibleMoves().map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
+      { Key: "Possible Moves", Value: this.bearer.getPossibleMoves().map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
     ];
 
     console.info(`--- GameState Info: ---`);

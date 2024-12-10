@@ -1,7 +1,7 @@
 class Position {
   constructor(
-    public x: number,
-    public y: number
+    public readonly x: number,
+    public readonly y: number
   ) {}
 }
 
