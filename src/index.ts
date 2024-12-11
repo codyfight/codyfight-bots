@@ -25,7 +25,7 @@ const retry = async <T>(runBot: () => Promise<T>): Promise<T> => {
     try {
       return await runBot();
     } catch (error) {
-      console.warn(`Attempt ${attempt} failed. Retrying...`);
+      console.warn(`Attempt ${attempt} failed with ${error} Retrying...`);
     }
   }
   throw new Error(`Failed to start bot after ${BOT_RETRIES} attempts.`);

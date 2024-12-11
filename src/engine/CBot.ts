@@ -98,11 +98,9 @@ class CBot {
   }
 
   private async init() {
-    // const gameStateData = await safeApiCall(() =>
-    //   this.gameAPI.init(this.ckey, this.mode)
-    // )
-
-    const gameStateData = await this.gameAPI.init(this.ckey, this.mode)
+    const gameStateData = await safeApiCall(() =>
+      this.gameAPI.init(this.ckey, this.mode)
+    )
 
     if (gameStateData) {
       this.game = new GameState(gameStateData)
