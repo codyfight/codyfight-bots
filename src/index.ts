@@ -3,10 +3,11 @@ dotenv.config();
 
 import { GameMode } from './types/game/state.type.js'
 import CBot from './engine/CBot.js'
-import botsConfig from './config/bots-config.js';
 import { getEnvVar } from './utils/utils.js'
 
 const BOT_RETRIES = parseInt(getEnvVar('BOT_RETRIES'));
+const BOTS_CONFIG = JSON.parse(getEnvVar('BOTS_CONFIG'))
+
 
 type BotConfig = {
   ckey: string;
@@ -35,7 +36,7 @@ const retry = async <T>(runBot: () => Promise<T>): Promise<T> => {
  * Start the application by initializing and running bots based on game configurations.
  */
 const startApplication = async () => {
-  for (const { ckey, mode } of botsConfig  ) {
+  for (const { ckey, mode } of BOTS_CONFIG  ) {
     console.info(`Starting bot for ckey: ${ckey}, mode: ${mode}`);
     const logging = true
     const cbot = new CBot(ckey, mode, logging);
