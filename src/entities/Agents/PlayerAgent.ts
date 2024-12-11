@@ -1,14 +1,15 @@
 import GameAgent from './GameAgent.js'
 import Skill from '../Skill.js'
 import Position from '../Position.js'
-import { IAgentData } from '../../types/game/player.type.js'
+import { IPlayerAgent } from '../../types/game/agent.type.js'
+
 
 class PlayerAgent extends GameAgent {
   private possibleMoves: Position[] = []
   private skills: Skill[] = []
   private isPlayerTurn = false
 
-  public update(agentData: IAgentData) {
+  public update(agentData: IPlayerAgent) {
     this.possibleMoves = this.mapToPositions(agentData.possible_moves)
     this.skills = this.mapToSkills(agentData.skills)
     this.isPlayerTurn = agentData.is_player_turn

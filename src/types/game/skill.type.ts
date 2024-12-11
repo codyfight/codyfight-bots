@@ -1,4 +1,5 @@
-import type { IPosition } from './map.type.js'
+import Position from '../../entities/Position.js'
+
 
 export interface ISkill {
   id: number
@@ -14,7 +15,7 @@ export interface ISkill {
   damage: number
   duration: number
   targeting_type: TargetingType
-  possible_targets: IPosition[]
+  possible_targets: Position[]
 }
 
 enum SkillType {

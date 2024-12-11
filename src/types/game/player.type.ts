@@ -1,34 +1,4 @@
-import type { ISkill } from './skill.type.js'
-import type { IPosition } from './map.type.js'
 import type { IAgentStats } from './special-agent.type.js'
-import Position from '../../entities/Position.js'
-import Skill from '../../entities/Skill.js'
-
-export interface IAgentData {
-  name: string
-  is_player_turn: boolean
-  stats: {
-    hitpoints: number
-    energy: number
-  }
-  position: IPosition
-  possible_moves: Position[]
-  skills: Skill[]
-}
-
-export interface IPlayer {
-  id: number | null
-  turn: number | null
-  name: string | null
-  owner: string | null
-  is_player_turn: boolean
-  score: IScore
-  skills: ISkill[] | []
-  stats: IPlayerStats | []
-  position: IPosition | null
-  codyfighter: ICodyfighter | null
-  possible_moves: IPossibleMove[] | []
-}
 
 interface IPlayerStats extends IAgentStats {
   durability: number
@@ -51,9 +21,6 @@ interface IScore {
   death_count: number
 }
 
-interface IPossibleMove extends IPosition {
-  direction: MoveDirection
-}
 
 enum CodyfighterType {
   Sapper = 0,

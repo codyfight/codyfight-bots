@@ -4,15 +4,16 @@ import { IGameState } from '../types/game/index.js'
 import { GameStatus } from '../types/game/state.type.js'
 import GameAgent from './Agents/GameAgent.js'
 import PlayerAgent from './Agents/PlayerAgent.js'
+import SpecialAgent from './Agents/SpecialAgent.js'
 
 class GameState implements Updatable {
-  private map: GameMap
+  private readonly map: GameMap
   private status: GameStatus
 
-  private bearer: PlayerAgent
+  private readonly bearer: PlayerAgent
   private opponent: GameAgent
 
-  private strategy: any
+  private specialAgents: SpecialAgent [] = []
 
   constructor(gameState: IGameState) {
     this.map = new GameMap(gameState.map)
@@ -21,21 +22,34 @@ class GameState implements Updatable {
     this.bearer = new PlayerAgent(gameState.players.bearer)
     this.opponent = new GameAgent(gameState.players.opponent)
 
+    for (const agent of gameState.special_agents) {
+      this.specialAgents.push(new SpecialAgent(agent));
+    }
   }
 
   public update(gameState: IGameState): void {
+    try {
+      this.map.update(gameState.map);
+      this.status = gameState.state.status;
 
-    try{
-      this.map.update(gameState.map)
-      this.status = gameState.state.status
+      this.bearer.update(gameState.players.bearer);
+      this.opponent.update(gameState.players.opponent);
 
-      this.bearer.update(gameState.players.bearer)
-      this.opponent.update(gameState.players.opponent)
-    }catch(error){
-      console.log("An error occurred while updating game state", error)
+
+      for (const agent of this.specialAgents) {
+        const updatedAgentData = gameState.special_agents.find(a => a.id === agent.id);
+
+        if (updatedAgentData) {
+          agent.update(updatedAgentData);
+        }
+
+      }
+
+    } catch (error) {
+      console.log("An error occurred while updating game state", error);
     }
-
   }
+
 
   public getStatus(): GameStatus {
     return this.status
@@ -53,21 +67,6 @@ class GameState implements Updatable {
     return this.bearer.isTurn()
   }
 
-  public logGameState(): void {
-
-    const tableData = [
-      { Key: "Game Status", Value: this.status },
-      { Key: "Current Round", Value: 'N/A' },
-      { Key: "Player Turn", Value: this.isPlayerTurn() ? "Yes" : "No" },
-      { Key: "Player Position", Value: `x: ${this.bearer.getPosition().x}, y: ${this.getBearer().getPosition().y}` },
-      { Key: "Map Size", Value: this.getMap().getSize()},
-      { Key: "Possible Moves", Value: this.bearer.getPossibleMoves().map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
-    ];
-
-    console.info(`--- GameState Info: ---`);
-    console.table(tableData);
-    console.info('------------------');
-  }
 }
 
 export default GameState

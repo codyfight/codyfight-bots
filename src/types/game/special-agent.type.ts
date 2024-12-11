@@ -1,13 +1,4 @@
-import type { IPosition } from './map.type.js'
 
-export interface ISpecialAgent {
-  id: number
-  name: string
-  team: Team
-  type: SpecialAgentType
-  stats: ISpecialAgentStats
-  position: IPosition
-}
 
 export interface IAgentStats {
   is_alive: boolean
@@ -32,7 +23,7 @@ interface IStatusEffect {
 
 interface ISpecialAgentStats extends IAgentStats {}
 
-enum SpecialAgentType {
+export enum SpecialAgentType {
   MrRyo = 1,
   Kix = 2,
   Llama = 3,

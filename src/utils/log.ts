@@ -1,5 +1,6 @@
 import { IGameState } from '../types/game/index.js'
 import { formatName } from './utils.js'
+import Position from '../entities/Position.js'
 
 function logGameInfo(gameState: IGameState, ckey: string) {
   try{
@@ -22,7 +23,7 @@ function logGameInfo(gameState: IGameState, ckey: string) {
       { Key: "Player Turn", Value: playerTurn },
       { Key: "Player Position", Value: playerPosition },
       { Key: "Map Size", Value: mapSize },
-      { Key: "Possible Moves", Value: possibleMoves.map((move) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
+      { Key: "Possible Moves", Value: possibleMoves.map((move ) => `[x: ${move.x}, y: ${move.y}]`).join(", ") },
     ];
 
     console.info(`--- Game Info: ${ckey} ---`);

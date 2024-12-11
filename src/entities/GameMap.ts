@@ -1,20 +1,20 @@
-import { ITileData, TileType } from '../types/game/map.type.js'
 import Updatable from '../interfaces/Updatable.js'
 import Tile from './Tile.js'
 import Position from './Position.js'
+import { ITile, TileType } from '../types/game/tile.type.js'
 
 class GameMap implements Updatable {
   private lastMapHash: string | null = null
   private tiles: Tile[][]
   private size: number
 
-  constructor(mapData: ITileData[][]) {
+  constructor(mapData: ITile[][]) {
     this.size = mapData.length
     this.tiles = this.buildMap(mapData)
     this.lastMapHash = this.computeHash(mapData)
   }
 
-  public update(mapData: ITileData[][]): void {
+  public update(mapData: ITile[][]): void {
     if (this.isMapUnchanged(mapData)) return
 
     //this.updateTiles(mapData)
@@ -22,7 +22,7 @@ class GameMap implements Updatable {
     this.lastMapHash = this.computeHash(mapData)
   }
 
-  public reset(mapData: ITileData[][]): void {
+  public reset(mapData: ITile[][]): void {
     this.tiles = this.buildMap(mapData)
   }
 
@@ -49,31 +49,31 @@ class GameMap implements Updatable {
     return this.size
   }
 
-  private updateTiles(mapData: ITileData[][]): void {
+  private updateTiles(mapData: ITile[][]): void {
     for (let y = 0; y < mapData.length; y++) {
       this.updateRow(mapData[y], y)
     }
   }
 
-  private updateRow(rowData: ITileData[], y: number): void {
+  private updateRow(rowData: ITile[], y: number): void {
     const tileRow = this.tiles[y]
     for (let x = 0; x < rowData.length; x++) {
       tileRow[x].update(rowData[x])
     }
   }
 
-  private isMapUnchanged(mapData: ITileData[][]): boolean {
+  private isMapUnchanged(mapData: ITile[][]): boolean {
     const newMapHash = this.computeHash(mapData)
     return this.lastMapHash === newMapHash
   }
 
-  private buildMap(mapData: ITileData[][]): Tile[][] {
+  private buildMap(mapData: ITile[][]): Tile[][] {
     return mapData.map((rowData) =>
       rowData.map((tileData) => new Tile(tileData))
     )
   }
 
-  private computeHash(mapData: ITileData[][]): string {
+  private computeHash(mapData: ITile[][]): string {
     return JSON.stringify(mapData)
   }
 }

@@ -1,16 +1,17 @@
-import type { Map } from './map.type.js'
+
 import type { IState } from './state.type.js'
-import { IAgentData } from './player.type.js'
 import type { IVerdict } from './verdict.type.js'
-import type { ISpecialAgent } from './special-agent.type.js'
+
+import { IPlayerAgent, ISpecialAgent } from './agent.type.js'
+import { ITile } from './tile.type.js'
 
 export interface IGameState {
-  map: Map | []
+  map: ITile [][]
   state: IState
   verdict: IVerdict
   players: {
-    bearer: IAgentData
-    opponent: IAgentData
+    bearer: IPlayerAgent
+    opponent: IPlayerAgent
   }
   special_agents: ISpecialAgent[] | []
 }

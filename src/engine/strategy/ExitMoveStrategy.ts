@@ -3,7 +3,7 @@ import GameState from '../../entities/GameState.js'
 import MoveStrategy from './MoveStrategy.js'
 import PlayerAgent from '../../entities/Agents/PlayerAgent.js'
 import GameMap from '../../entities/GameMap.js'
-import { TileType } from '../../types/game/map.type.js'
+import { TileType } from '../../types/game/tile.type.js'
 import { MathHelper } from '../../helpers/MathHelper.js'
 import PathFinder from '../../helpers/PathFinder.js'
 

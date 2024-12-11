@@ -67,7 +67,7 @@ class PathFinder {
         : true
 
     const notVisited = !visited.has(neighbor.position)
-    const validMove = neighbor.isWalkable()
+    const validMove = neighbor.isSafe()
 
     return movePossible && notVisited && validMove
   }
