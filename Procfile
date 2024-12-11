@@ -1,1 +1,1 @@
-web: yarn build && node dist/index.js
+worker: yarn build && node dist/index.js
