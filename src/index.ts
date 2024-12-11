@@ -7,7 +7,7 @@ import { getEnvVar } from './utils/utils.js'
 
 const BOT_RETRIES = parseInt(getEnvVar('BOT_RETRIES'));
 const BOTS_CONFIG = JSON.parse(getEnvVar('BOTS_CONFIG'))
-
+const LOGGING = getEnvVar('LOGGING').toLowerCase() === 'true';
 
 type BotConfig = {
   ckey: string;
@@ -39,7 +39,7 @@ const startApplication = async () => {
   for (const { ckey, mode } of BOTS_CONFIG  ) {
     console.info(`Starting bot for ckey: ${ckey}, mode: ${mode}`);
     const logging = true
-    const cbot = new CBot(ckey, mode, logging);
+    const cbot = new CBot(ckey, mode, LOGGING);
 
     try {
       retry(() => cbot.run());
