@@ -4,8 +4,6 @@ import { IGameState } from '../types/game/index.js'
 import { GameStatus } from '../types/game/state.type.js'
 import GameAgent from './Agents/GameAgent.js'
 import PlayerAgent from './Agents/PlayerAgent.js'
-import StrategyManagerFactory from '../factories/StrategyManagerFactory.js'
-import StrategyManager from '../engine/StrategyManager.js'
 
 class GameState implements Updatable {
   private map: GameMap
@@ -49,10 +47,6 @@ class GameState implements Updatable {
 
   public getMap(): GameMap {
     return this.map
-  }
-
-  public getStrategy(): any {
-    return this.strategy
   }
 
   public isPlayerTurn(): boolean {

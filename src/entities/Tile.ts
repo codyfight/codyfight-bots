@@ -1,4 +1,4 @@
-import { DANGEROUS_TILES, ITileData, TileType } from '../types/game/map.type.js'
+import { DANGEROUS_TILES, ITileData, TileType, WALKABLE_TILES } from '../types/game/map.type.js'
 import Position from './Position.js'
 
 class Tile {
@@ -23,16 +23,16 @@ class Tile {
     this.isArmed = data.config?.is_armed || false
   }
 
-  get charged(): boolean {
-    return this.isCharged
-  }
-
-  get armed(): boolean {
-    return this.isArmed
+  public equals(other : Tile) : boolean{
+    return this.position.equals(other.position)
   }
 
   public isDangerous(): boolean {
     return DANGEROUS_TILES.has(this.type)
+  }
+
+  public isWalkable(): boolean {
+    return WALKABLE_TILES.has(this.type)
   }
 }
 

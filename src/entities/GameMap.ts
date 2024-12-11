@@ -1,4 +1,4 @@
-import { ITileData } from '../types/game/map.type.js'
+import { ITileData, TileType } from '../types/game/map.type.js'
 import Updatable from '../interfaces/Updatable.js'
 import Tile from './Tile.js'
 import Position from './Position.js'
@@ -26,8 +26,23 @@ class GameMap implements Updatable {
     this.tiles = this.buildMap(mapData)
   }
 
-  public getTile(position: Position) {
-    return this.tiles?.[position?.x]?.[position?.y]
+  public getTile(position: Position): Tile | null {
+    if (!this.tiles[position.x]?.[position.y]) {
+      return null
+    }
+    return this.tiles[position.x][position.y]
+  }
+
+  public getTiles(type: TileType): Tile[] {
+    const found: Tile[] = [];
+    for (const row of this.tiles) {
+      for (const tile of row) {
+        if (tile.type === type) {
+          found.push(tile);
+        }
+      }
+    }
+    return found;
   }
 
   public getSize(){
@@ -64,17 +79,3 @@ class GameMap implements Updatable {
 }
 
 export default GameMap
-
-// Calling cast() - Attack on Target X:4, Y:2
-// --- API Error Log ---
-// ┌─────────┬───────────────────┬──────────────────────────────────────────────────────────────────────────────┐
-// │ (index) │        Key        │                                    Value                                     │
-// ├─────────┼───────────────────┼──────────────────────────────────────────────────────────────────────────────┤
-// │    0    │     'Action'      │                    '571422-12faa5-917db5-358bae - cast()'                    │
-// │    1    │   'Error Code'    │                              'ERR_BAD_REQUEST'                               │
-// │    2    │ 'Response Status' │                                     400                                      │
-// │    3    │  'Response Data'  │ '{\n  "code": 63,\n  "message": "Can not cast skill on selected target!"\n}' │
-// │    4    │     'Request'     │                               [ClientRequest]                                │
-// │    5    │     'Message'     │                    'Request failed with status code 400'                     │
-// └─────────┴───────────────────┴──────────────────────────────────────────────────────────────────────────────┘
-// ----------------------

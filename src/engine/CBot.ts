@@ -7,9 +7,9 @@ import Skill from '../entities/Skill.js'
 import { safeApiCall } from '../utils/utils.js'
 import MoveStrategy from './strategy/MoveStrategy.js'
 import CastStrategy from './strategy/CastStrategy.js'
-import RandomMoveStrategy from './strategy/RandomMoveStrategy.js'
 import RandomCastStrategy from './strategy/RandomCastStrategy.js'
 import Logger from '../utils/Logger.js'
+import ExitMoveStrategy from './strategy/ExitMoveStrategy.js'
 
 class CBot {
   private game!: GameState
@@ -28,7 +28,7 @@ class CBot {
   ) {
     this.logger = new Logger(loggingEnabled)
     this.gameAPI = GameAPIFactory.get()
-    this.moveStrategy = new RandomMoveStrategy()
+    this.moveStrategy = new ExitMoveStrategy()
     this.castStrategy = new RandomCastStrategy()
   }
 
@@ -98,9 +98,11 @@ class CBot {
   }
 
   private async init() {
-    const gameStateData = await safeApiCall(() =>
-      this.gameAPI.init(this.ckey, this.mode)
-    )
+    // const gameStateData = await safeApiCall(() =>
+    //   this.gameAPI.init(this.ckey, this.mode)
+    // )
+
+    const gameStateData = await this.gameAPI.init(this.ckey, this.mode)
 
     if (gameStateData) {
       this.game = new GameState(gameStateData)

@@ -45,6 +45,24 @@ export enum TileType {
   BombTile = 21
 }
 
+export const WALKABLE_TILES = new Set<TileType>([
+  TileType.Blank,
+  TileType.ExitGate,
+  TileType.EnergyRegenerator,
+  TileType.ArmorRegenerator,
+  TileType.HitpointsRegenerator,
+  TileType.DirectionalSliderUp,
+  TileType.DirectionalSliderDown,
+  TileType.DirectionalSliderLeft,
+  TileType.DirectionalSliderRight,
+  TileType.BidirectionalTeleport,
+  TileType.ZapTrap,
+  TileType.ProximityMine,
+  TileType.BoobyTrap,
+  TileType.Craze,
+  TileType.BombTile,
+])
+
 export const DANGEROUS_TILES = new Set<TileType>([
   TileType.DeathPit,
   TileType.ZapTrap,

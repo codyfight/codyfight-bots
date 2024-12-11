@@ -13,7 +13,7 @@ class StrategyManager {
 
     const safeMoves = possibleMoves.filter((position) => {
       const tile = map.getTile(position);
-      return !tile.isDangerous();
+      return !tile!.isDangerous();
     });
 
     return randomElement(safeMoves);

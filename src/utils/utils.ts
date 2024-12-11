@@ -35,8 +35,7 @@ export function getEnvVar(name: string): string {
  * @param {T[]} array - The array to pick a random element from.
  * @returns {T | null} A random element from the array, or null if the array is empty.
  */
-export function randomElement<T>(array: T[]): T | null {
-  if (array.length === 0) return null
+export function randomElement<T>(array: T[]): T {
   const index = Math.floor(Math.random() * array.length)
   return array[index]
 }
