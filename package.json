@@ -13,7 +13,7 @@
   "packageManager": "yarn@3.6.4",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "start": "node dist/src/index.js",
+    "start": "yarn build && node dist/index.js",
     "dev": "node --loader ts-node/esm --watch src/index.ts",
     "pre-commit": "yarn format && yarn lint",
     "lint": "yarn eslint --ext .js,.ts,.cjs,.mjs ./src && tsc --noEmit",
