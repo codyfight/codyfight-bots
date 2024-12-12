@@ -1,75 +1,82 @@
-import Tile from '../game/entities/core/Tile.js'
 import Position from '../game/entities/core/Position.js'
 import GameMap from '../game/entities/core/GameMap.js'
 
-
 class PathFinder {
-  public findPathToTarget(
-    map: GameMap,
-    start: Position,
-    target: Position,
-    possibleMoves: Position[] = []
-  ): Position[] {
-    const visited = new Set<Position>()
-    const queue: Position[][] = []
+  constructor(
+    private map: GameMap,
+    private visited = new Set<string>(),
+    private queue: Position[][] = []
+  ) {}
 
-    queue.push([start])
-    visited.add(start)
+  public findPathToTarget(start: Position, target: Position): Position[] {
+    this.queue.push([start])
+    this.visited.add(start.toString())
 
-    while (queue.length > 0) {
-      const currentPath = queue.shift()!
-      const position = currentPath[currentPath.length - 1]
-
-      if (position.equals(target)) {
-        return currentPath
-      }
-
-      const neighbors = this.getNeighbors(map, position)
-
-      for (const neighbor of neighbors) {
-        if (this.isValidMove(neighbor, possibleMoves, visited, currentPath.length)) {
-          visited.add(neighbor.position)
-          const newPath = [...currentPath, neighbor.position]
-          queue.push(newPath)
+    try {
+      while (this.queue.length > 0) {
+        const currentPath = this.processQueue(target)
+        if (currentPath.length > 0) {
+          return currentPath
         }
       }
-
+    } catch (error) {
+      console.error("Error in findPathToTarget()");
+      console.error("start position:", start);
+      console.error("Target position:", target);
+      throw error;
     }
 
     return []
   }
 
-  private getNeighbors(map: GameMap, position: Position): Tile[] {
-    const neighbors: Tile[] = []
+  private processQueue(target: Position): Position[] {
+    const currentPath = this.queue.shift()!
+    const position = currentPath[currentPath.length - 1]
 
-    const directions = [
-      new Position(0, 1),
-      new Position(1, 0),
-      new Position(0, -1),
-      new Position(-1, 0)
-    ]
-
-    for (const direction of directions) {
-      const neighbor = map.getTile(position.add(direction))
-      if (neighbor !== null) {
-        neighbors.push(neighbor)
-      }
+    if (position.equals(target)) {
+      return currentPath
     }
 
-    return neighbors
+    const neighbors = this.getNeighbors(position)
+    this.processNeighbors(currentPath, neighbors)
+
+    return []
   }
 
-  private isValidMove(neighbor: Tile, possibleMoves: Position[], visited: Set<Position>, currentPathLength: number): boolean {
+  private processNeighbors(currentPath: Position[], neighbors: Position[]) {
+    for (const position of neighbors) {
+      if (this.isValidMove(position)) {
+        this.visited.add(position.toString())
+        const newPath = [...currentPath, position]
+        this.queue.push(newPath)
+      }
+    }
+  }
 
-    const movePossible =
-      currentPathLength === 1
-        ? possibleMoves.some((move) => move.equals(neighbor.position))
-        : true
+  private getNeighbors(position: Position): Position[] {
+    return Position.getDirections().map(direction => position.add(direction));
+  }
 
-    const notVisited = !visited.has(neighbor.position)
-    const validMove = neighbor.isSafe()
+  private isValidMove(position: Position): boolean {
 
-    return movePossible && notVisited && validMove
+    // Check if the position was already visited
+    if(this.visited.has(position.toString())){
+      return false
+    }
+
+    // is the tile occupied by another agent
+    if(this.map.isPositionOccupied(position)){
+      return false
+    }
+
+    const tile = this.map.getTile(position)
+
+    // is it a valid safe tile?
+    if (!tile || !tile.isSafe()) {
+      return false;
+    }
+
+    return true
   }
 }
 

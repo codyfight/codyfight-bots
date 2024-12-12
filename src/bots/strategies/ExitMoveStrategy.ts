@@ -17,19 +17,25 @@ class ExitMoveStrategy extends MoveStrategy {
 
     const exit = this.getClosestExit(bearer, map)
 
-    if(!exit){
+    if(!exit) {
       return this.getRandomMove(map, bearer)
     }
 
-    const pathFinder = new PathFinder()
-    const path = pathFinder.findPathToTarget(map, tile!.position, exit, possibleMoves)
+    const pathFinder = new PathFinder(map)
+    const path = pathFinder.findPathToTarget(tile!.position, exit)
 
-    if(path.length > 0){
-      return path[1]
+    if (path.length > 1) {
+      const nextMove = path[1]
+      // Check if nextMove is in possibleMoves
+      const isPossibleMove = possibleMoves.some(move => move.equals(nextMove))
+      if (isPossibleMove) {
+        return nextMove
+      }
     }
 
     return this.getRandomMove(map, bearer)
   }
+
 
   private getClosestExit(bearer: PlayerAgent, map: GameMap): Position | null {
     const exits = map.getTiles(TileType.ExitGate)

@@ -2,11 +2,14 @@ import Updatable from '../../interfaces/Updatable.js'
 import Tile from './Tile.js'
 import Position from './Position.js'
 import { ITile, TileType } from '../../../types/game/tile.type.js'
+import GameAgent from '../agents/GameAgent.js'
 
 class GameMap implements Updatable {
   private lastMapHash: string | null = null
   private tiles: Tile[][]
-  private size: number
+  private readonly size: number
+  private agentPositions: Map<number, Position> = new Map();
+
 
   constructor(mapData: ITile[][]) {
     this.size = mapData.length
@@ -14,12 +17,18 @@ class GameMap implements Updatable {
     this.lastMapHash = this.computeHash(mapData)
   }
 
-  public update(mapData: ITile[][]): void {
-    if (this.isMapUnchanged(mapData)) return
+  public update(mapData: ITile[][], agents: GameAgent[]): void {
+    // Update map if it has changed
+    if (!this.isMapUnchanged(mapData)) {
+      this.tiles = this.buildMap(mapData);
+      this.lastMapHash = this.computeHash(mapData);
+    }
 
-    //this.updateTiles(mapData)
-    this.tiles = this.buildMap(mapData)
-    this.lastMapHash = this.computeHash(mapData)
+    // Update agent positions
+    this.agentPositions.clear();
+    for (const agent of agents) {
+      this.agentPositions.set(agent.id, agent.getPosition());
+    }
   }
 
   public reset(mapData: ITile[][]): void {
@@ -48,6 +57,16 @@ class GameMap implements Updatable {
   public getSize(){
     return this.size
   }
+
+  public isPositionOccupied(position: Position): boolean {
+    for (const agentPosition of this.agentPositions.values()) {
+      if (agentPosition.equals(position)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   private updateTiles(mapData: ITile[][]): void {
     for (let y = 0; y < mapData.length; y++) {

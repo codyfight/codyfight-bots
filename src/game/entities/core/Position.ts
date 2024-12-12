@@ -15,6 +15,15 @@ class Position {
   public toString(): string {
     return `(${this.x}, ${this.y})`
   }
+
+  public static getDirections(): Position[] {
+    return [
+      new Position(0, 1),  // Up
+      new Position(1, 0),  // Right
+      new Position(0, -1), // Down
+      new Position(-1, 0)  // Left
+    ];
+  }
 }
 
 export default Position

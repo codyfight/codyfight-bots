@@ -2,61 +2,48 @@ import GameMap from './GameMap.js'
 import Updatable from '../../interfaces/Updatable.js'
 import { IGameState } from '../../../types/game/index.js'
 import { GameStatus } from '../../../types/game/state.type.js'
-import GameAgent from '../agents/GameAgent.js'
 import PlayerAgent from '../agents/PlayerAgent.js'
-import SpecialAgent from '../agents/SpecialAgent.js'
+import GameAgentManager from '../agents/GameAgentManger.js'
 
 class GameState implements Updatable {
-  private readonly map: GameMap
   private status: GameStatus
-
-  private readonly bearer: PlayerAgent
-  private opponent: GameAgent
-
-  private specialAgents: SpecialAgent [] = []
+  private gameAgentManager: GameAgentManager
+  private readonly map: GameMap
 
   constructor(gameState: IGameState) {
-    this.map = new GameMap(gameState.map)
+
+    const { bearer, opponent } = gameState.players;
+    const { special_agents } = gameState;
+
     this.status = gameState.state.status
-
-    this.bearer = new PlayerAgent(gameState.players.bearer)
-    this.opponent = new GameAgent(gameState.players.opponent)
-
-    for (const agent of gameState.special_agents) {
-      this.specialAgents.push(new SpecialAgent(agent));
-    }
+    this.gameAgentManager = new GameAgentManager(bearer, opponent, special_agents);
+    this.map = new GameMap(gameState.map)
   }
 
   public update(gameState: IGameState): void {
     try {
-      this.map.update(gameState.map);
+      const { bearer, opponent } = gameState.players;
+      const { special_agents } = gameState;
+
       this.status = gameState.state.status;
-
-      this.bearer.update(gameState.players.bearer);
-      this.opponent.update(gameState.players.opponent);
-
-
-      for (const agent of this.specialAgents) {
-        const updatedAgentData = gameState.special_agents.find(a => a.id === agent.id);
-
-        if (updatedAgentData) {
-          agent.update(updatedAgentData);
-        }
-
-      }
+      this.gameAgentManager.update(bearer, opponent, special_agents);
+      this.map.update(gameState.map, this.gameAgentManager.getAgents());
 
     } catch (error) {
-      console.log("An error occurred while updating game state", error);
+      console.error('An error occurred while updating game state', {
+        error,
+        context: this,
+        gameState
+      })
     }
   }
-
 
   public getStatus(): GameStatus {
     return this.status
   }
 
   public getBearer(): PlayerAgent {
-    return this.bearer
+    return this.gameAgentManager.getBearer()
   }
 
   public getMap(): GameMap {
@@ -64,9 +51,8 @@ class GameState implements Updatable {
   }
 
   public isPlayerTurn(): boolean {
-    return this.bearer.isTurn()
+    return this.gameAgentManager.getBearer().isTurn()
   }
-
 }
 
 export default GameState
