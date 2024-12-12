@@ -1,11 +1,11 @@
-import Position from '../../entities/Position.js'
-import GameState from '../../entities/GameState.js'
+import Position from '../../game/entities/core/Position.js'
+import GameState from '../../game/entities/core/GameState.js'
 import MoveStrategy from './MoveStrategy.js'
-import PlayerAgent from '../../entities/Agents/PlayerAgent.js'
-import GameMap from '../../entities/GameMap.js'
+import PlayerAgent from '../../game/entities/agents/PlayerAgent.js'
+import GameMap from '../../game/entities/core/GameMap.js'
 import { TileType } from '../../types/game/tile.type.js'
-import { MathHelper } from '../../helpers/MathHelper.js'
-import PathFinder from '../../helpers/PathFinder.js'
+import MathUtils  from '../../utils/MathUtils.js'
+import PathFinder from '../../utils/PathFinder.js'
 
 class ExitMoveStrategy extends MoveStrategy {
   determineMove(game: GameState): Position {
@@ -47,7 +47,7 @@ class ExitMoveStrategy extends MoveStrategy {
     let minDistance = Infinity
 
     for (const target of targets) {
-      const distance = MathHelper.euclideanDistance(origin, target)
+      const distance = MathUtils.euclideanDistance(origin, target)
 
       if (distance < minDistance) {
         minDistance = distance

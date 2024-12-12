@@ -1,7 +1,7 @@
-import Updatable from '../interfaces/Updatable.js'
+import Updatable from '../../interfaces/Updatable.js'
 import Tile from './Tile.js'
 import Position from './Position.js'
-import { ITile, TileType } from '../types/game/tile.type.js'
+import { ITile, TileType } from '../../../types/game/tile.type.js'
 
 class GameMap implements Updatable {
   private lastMapHash: string | null = null

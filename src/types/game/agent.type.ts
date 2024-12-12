@@ -1,5 +1,5 @@
-import Position from '../../entities/Position.js'
-import Skill from '../../entities/Skill.js'
+import Position from '../../game/entities/core/Position.js'
+import Skill from '../../game/entities/core/Skill.js'
 import { SpecialAgentType } from './special-agent.type.js'
 
 export interface IAgent {

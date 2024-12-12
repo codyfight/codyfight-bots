@@ -1,4 +1,4 @@
-import StrategyManager from '../engine/StrategyManager.js'
+import StrategyManager from '../strategies/StrategyManager.js'
 
 class StrategyManagerFactory {
   private static strategyManager?: StrategyManager

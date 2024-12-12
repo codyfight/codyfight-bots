@@ -1,6 +1,6 @@
-import Position from '../Position.js'
+import Position from '../core/Position.js'
 import Updatable from '../../interfaces/Updatable.js'
-import { IAgent } from '../../types/game/agent.type.js'
+import { IAgent } from '../../../types/game/agent.type.js'
 
 
 class GameAgent implements Updatable {

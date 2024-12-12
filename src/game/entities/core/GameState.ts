@@ -1,10 +1,10 @@
 import GameMap from './GameMap.js'
-import Updatable from '../interfaces/Updatable.js'
-import { IGameState } from '../types/game/index.js'
-import { GameStatus } from '../types/game/state.type.js'
-import GameAgent from './Agents/GameAgent.js'
-import PlayerAgent from './Agents/PlayerAgent.js'
-import SpecialAgent from './Agents/SpecialAgent.js'
+import Updatable from '../../interfaces/Updatable.js'
+import { IGameState } from '../../../types/game/index.js'
+import { GameStatus } from '../../../types/game/state.type.js'
+import GameAgent from '../agents/GameAgent.js'
+import PlayerAgent from '../agents/PlayerAgent.js'
+import SpecialAgent from '../agents/SpecialAgent.js'
 
 class GameState implements Updatable {
   private readonly map: GameMap

@@ -1,6 +1,6 @@
 import { IGameState } from '../types/game/index.js'
 import { formatName } from './utils.js'
-import Position from '../entities/Position.js'
+import Position from '../game/entities/core/Position.js'
 
 function logGameInfo(gameState: IGameState, ckey: string) {
   try{

@@ -1,5 +1,5 @@
 import Position from './Position.js'
-import { SkillStatus } from '../types/game/skill.type.js'
+import { SkillStatus } from '../../../types/game/skill.type.js'
 
 class Skill {
   public readonly id: number

@@ -140,5 +140,5 @@ dist
 .LSOverride
 
 
-/src/config/bots-config.ts
+/src/bots/config/bots-config.ts
 

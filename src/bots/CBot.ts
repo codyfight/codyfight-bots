@@ -1,15 +1,15 @@
 import { GameMode, GameStatus } from '../types/game/state.type.js'
-import Position from '../entities/Position.js'
-import GameAPIFactory from '../factories/GameAPIFactory.js'
+import Position from '../game/entities/core/Position.js'
+import GameAPIFactory from '../game/factories/GameAPIFactory.js'
 import { IGameAPI } from '../types/api/game-api.type.js'
-import GameState from '../entities/GameState.js'
-import Skill from '../entities/Skill.js'
+import GameState from '../game/entities/core/GameState.js'
+import Skill from '../game/entities/core/Skill.js'
 import { safeApiCall } from '../utils/utils.js'
-import MoveStrategy from './strategy/MoveStrategy.js'
-import CastStrategy from './strategy/CastStrategy.js'
-import RandomCastStrategy from './strategy/RandomCastStrategy.js'
+import MoveStrategy from './strategies/MoveStrategy.js'
+import CastStrategy from './strategies/CastStrategy.js'
+import RandomCastStrategy from './strategies/RandomCastStrategy.js'
 import Logger from '../utils/Logger.js'
-import ExitMoveStrategy from './strategy/ExitMoveStrategy.js'
+import ExitMoveStrategy from './strategies/ExitMoveStrategy.js'
 
 class CBot {
   private game!: GameState

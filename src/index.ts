@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import http from 'http'
 
-import CBot from './engine/CBot.js'
+import CBot from './bots/CBot.js'
 import { GameMode } from './types/game/state.type.js'
 import { getEnvVar } from './utils/utils.js'
 

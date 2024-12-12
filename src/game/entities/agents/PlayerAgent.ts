@@ -1,7 +1,7 @@
 import GameAgent from './GameAgent.js'
-import Skill from '../Skill.js'
-import Position from '../Position.js'
-import { IPlayerAgent } from '../../types/game/agent.type.js'
+import Skill from '../core/Skill.js'
+import Position from '../core/Position.js'
+import { IPlayerAgent } from '../../../types/game/agent.type.js'
 
 
 class PlayerAgent extends GameAgent {

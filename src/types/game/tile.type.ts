@@ -1,4 +1,4 @@
-import Position from '../../entities/Position.js'
+import Position from '../../game/entities/core/Position.js'
 
 export interface ITile {
   id: number

@@ -1,8 +1,8 @@
-import Position from '../../entities/Position.js'
-import GameState from '../../entities/GameState.js'
+import Position from '../../game/entities/core/Position.js'
+import GameState from '../../game/entities/core/GameState.js'
 import { randomElement } from '../../utils/utils.js'
-import GameMap from '../../entities/GameMap.js'
-import PlayerAgent from '../../entities/Agents/PlayerAgent.js'
+import GameMap from '../../game/entities/core/GameMap.js'
+import PlayerAgent from '../../game/entities/agents/PlayerAgent.js'
 
 abstract class MoveStrategy {
   abstract determineMove(game: GameState): Position;

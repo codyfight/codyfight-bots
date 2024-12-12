@@ -1,6 +1,6 @@
 
 import Position from './Position.js'
-import { DANGEROUS_TILES, ITile, SAFE_TILES, TileType } from '../types/game/tile.type.js'
+import { DANGEROUS_TILES, ITile, SAFE_TILES, TileType } from '../../../types/game/tile.type.js'
 
 class Tile {
   readonly id: number

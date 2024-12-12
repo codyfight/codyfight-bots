@@ -1,6 +1,6 @@
-import Tile from '../entities/Tile.js'
-import Position from '../entities/Position.js'
-import GameMap from '../entities/GameMap.js'
+import Tile from '../game/entities/core/Tile.js'
+import Position from '../game/entities/core/Position.js'
+import GameMap from '../game/entities/core/GameMap.js'
 
 
 class PathFinder {

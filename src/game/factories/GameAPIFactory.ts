@@ -1,6 +1,6 @@
 import GameAPI from 'codyfight-game-client'
-import { IGameAPI } from '../types/api/game-api.type.js'
-import { getEnvVar } from '../utils/utils.js'
+import { IGameAPI } from '../../types/api/game-api.type.js'
+import { getEnvVar } from '../../utils/utils.js'
 
 const GAME_API_URL = getEnvVar('GAME_API_URL');
 

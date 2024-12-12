@@ -1,7 +1,7 @@
 import CastStrategy from './CastStrategy.js'
-import Position from '../../entities/Position.js'
-import Skill from '../../entities/Skill.js'
-import GameState from '../../entities/GameState.js'
+import Position from '../../game/entities/core/Position.js'
+import Skill from '../../game/entities/core/Skill.js'
+import GameState from '../../game/entities/core/GameState.js'
 import { randomElement } from '../../utils/utils.js'
 
 

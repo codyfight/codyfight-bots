@@ -1,4 +1,4 @@
-import { GameMode } from '../types/game/state.type.js'
+import { GameMode } from '../../types/game/state.type.js'
 
 export default [
   {
