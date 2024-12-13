@@ -1,5 +1,6 @@
-import { GameStatus } from '../types/game/state.type.js'
+import { GameStatus } from '../game/state/game-state.type.js'
 import { getGameStatusName } from './utils.js'
+
 
 class Logger {
   private readonly loggingEnabled: boolean;

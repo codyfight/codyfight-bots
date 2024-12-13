@@ -1,5 +1,5 @@
-import CBot from './bots/CBot.js'
-import { CBotFactory } from './bots/factories/CBotFactory.js'
+import CBot from './bots/cbot/CBot.js'
+import { CBotFactory } from './bots/cbot/CBotFactory.js'
 
 const cbots = CBotFactory.createAllBots()
 

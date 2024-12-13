@@ -1,5 +1,5 @@
-import Position from '../game/entities/core/Position.js'
-import GameMap from '../game/entities/core/GameMap.js'
+import Position from '../game/map/Position.js'
+import GameMap from '../game/map/GameMap.js'
 
 class PathFinder {
   constructor(

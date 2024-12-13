@@ -1,4 +1,4 @@
-import Position from '../game/entities/core/Position.js'
+import Position from '../game/map/Position.js'
 
 class MathUtils {
   public static euclideanDistance(pos1: Position, pos2: Position): number {

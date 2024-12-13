@@ -1,5 +1,4 @@
-import log from './log.js'
-import { GameStatus } from '../types/game/state.type.js'
+import { GameStatus } from '../game/state/game-state.type.js'
 
 /**
  * Wrapper function for API calls to log errors
@@ -10,7 +9,7 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
   try {
     return await fn()
   } catch (error) {
-    log.apiError(`Error in ${fn.name}`, error)
+    console.error(`Error in ${fn.name}`, error)
   }
 }
 
