@@ -4,6 +4,11 @@ import { randomElement } from '../../utils/utils.js'
 import GameMap from '../../game/entities/core/GameMap.js'
 import PlayerAgent from '../../game/entities/agents/PlayerAgent.js'
 
+export enum MoveStrategyType {
+  Exit = 'Exit',
+  Random = 'Random',
+}
+
 abstract class MoveStrategy {
   abstract determineMove(game: GameState): Position;
 

@@ -6,12 +6,16 @@ import GameState from '../game/entities/core/GameState.js'
 import Skill from '../game/entities/core/Skill.js'
 import { safeApiCall } from '../utils/utils.js'
 import MoveStrategy from './strategies/MoveStrategy.js'
-import CastStrategy from './strategies/CastStrategy.js'
-import RandomCastStrategy from './strategies/RandomCastStrategy.js'
+import CastStrategy, { CastStrategyType } from './strategies/CastStrategy.js'
 import Logger from '../utils/Logger.js'
-import ExitMoveStrategy from './strategies/ExitMoveStrategy.js'
+import { CBotConfig } from '../types/game/index.js'
+import { StrategyFactory } from './factories/StrategyFactory.js'
 
 class CBot {
+
+  public readonly ckey : string
+  private readonly mode: GameMode
+
   private game!: GameState
 
   private gameAPI: IGameAPI
@@ -21,15 +25,14 @@ class CBot {
 
   private logger: Logger
 
-  constructor(
-    public readonly ckey: string,
-    private mode: GameMode,
-    loggingEnabled = false
-  ) {
-    this.logger = new Logger(loggingEnabled)
-    this.gameAPI = GameAPIFactory.get()
-    this.moveStrategy = new ExitMoveStrategy()
-    this.castStrategy = new RandomCastStrategy()
+  constructor({ ckey, mode, url, logging, move_strategy }: CBotConfig) {
+    this.ckey = ckey
+    this.mode = mode
+    this.gameAPI = GameAPIFactory.create(url)
+    this.logger = new Logger(logging)
+
+    this.moveStrategy = StrategyFactory.createMoveStrategy(move_strategy)
+    this.castStrategy = StrategyFactory.createCastStrategy(CastStrategyType.Random)
   }
 
   public async run() {
