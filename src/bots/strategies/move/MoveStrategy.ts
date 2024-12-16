@@ -4,13 +4,11 @@ import { randomElement } from '../../../utils/utils.js'
 import GameMap from '../../../game/map/GameMap.js'
 import PlayerAgent from '../../../game/agents/PlayerAgent.js'
 
-export enum MoveStrategyType {
-  Exit = 'Exit',
-  Random = 'Random',
-}
-
-abstract class MoveStrategy {
-  abstract determineMove(game: GameState): Position;
+class MoveStrategy {
+  public determineMove(game: GameState): Position {
+    const bearer = game.getBearer()
+    return bearer.getPosition() // don't move
+  }
 
   protected getRandomMove(map: GameMap, bearer: PlayerAgent ): Position {
 

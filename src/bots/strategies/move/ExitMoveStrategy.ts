@@ -8,7 +8,7 @@ import MathUtils  from '../../../utils/MathUtils.js'
 import PathFinder from '../../../utils/PathFinder.js'
 
 class ExitMoveStrategy extends MoveStrategy {
-  determineMove(game: GameState): Position {
+  public determineMove(game: GameState): Position {
     const map = game.getMap()
     const bearer = game.getBearer()
     const position = bearer.getPosition()
@@ -35,7 +35,6 @@ class ExitMoveStrategy extends MoveStrategy {
 
     return this.getRandomMove(map, bearer)
   }
-
 
   private getClosestExit(bearer: PlayerAgent, map: GameMap): Position | null {
     const exits = map.getTiles(TileType.ExitGate)

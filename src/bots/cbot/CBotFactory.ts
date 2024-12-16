@@ -13,7 +13,8 @@ export class CBotFactory {
         mode: this.loadConfigParam(config, 'mode'),
         url: this.loadConfigParam(config, 'url'),
         logging: this.loadConfigParam(config, 'logging'),
-        move_strategy: this.loadConfigParam(config, 'move_strategy')
+        move_strategy: this.loadConfigParam(config, 'move_strategy'),
+        cast_strategy: this.loadConfigParam(config, 'cast_strategy')
       }
 
       return new CBot(botConfig)

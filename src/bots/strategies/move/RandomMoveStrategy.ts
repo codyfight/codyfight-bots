@@ -4,7 +4,7 @@ import MoveStrategy from './MoveStrategy.js'
 
 
 class RandomMoveStrategy extends MoveStrategy {
-  determineMove(game: GameState): Position {
+  public determineMove(game: GameState): Position {
     return this.getRandomMove(game.getMap(), game.getBearer())
   }
 }

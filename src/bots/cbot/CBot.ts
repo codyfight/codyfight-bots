@@ -1,8 +1,6 @@
 import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
 import GameState from '../../game/state/GameState.js'
 import { IGameAPI } from '../../api/IGameAPi.js'
-import MoveStrategy from '../strategies/move/MoveStrategy.js'
-import CastStrategy, { CastStrategyType } from '../strategies/cast/CastStrategy.js'
 import Logger from '../../utils/Logger.js'
 import GameAPIFactory from '../../api/GameAPIFactory.js'
 import { StrategyFactory } from '../strategies/StrategyFactory.js'
@@ -10,6 +8,8 @@ import { safeApiCall } from '../../utils/utils.js'
 import Skill from '../../game/skills/Skill.js'
 import Position from '../../game/map/Position.js'
 import ICBotConfig from './ICBotConfig.js'
+import MoveStrategy from '../strategies/move/MoveStrategy.js'
+import CastStrategy from '../strategies/cast/CastStrategy.js'
 
 class CBot {
 
@@ -25,14 +25,14 @@ class CBot {
 
   private logger: Logger
 
-  constructor({ ckey, mode, url, logging, move_strategy }: ICBotConfig) {
+  constructor({ ckey, mode, url, logging, move_strategy, cast_strategy}: ICBotConfig) {
     this.ckey = ckey
     this.mode = mode
     this.gameAPI = GameAPIFactory.create(url)
     this.logger = new Logger(logging)
 
     this.moveStrategy = StrategyFactory.createMoveStrategy(move_strategy)
-    this.castStrategy = StrategyFactory.createCastStrategy(CastStrategyType.Random)
+    this.castStrategy = StrategyFactory.createCastStrategy(cast_strategy)
   }
 
   public async run() {
