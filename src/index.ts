@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import CBot from './bots/cbot/CBot.js'
 import { CBotFactory } from './bots/cbot/CBotFactory.js'
 
