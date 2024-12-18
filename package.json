@@ -17,7 +17,8 @@
     "dev": "node --loader ts-node/esm --watch src/index.ts",
     "pre-commit": "yarn format && yarn lint",
     "lint": "yarn eslint --ext .js,.ts,.cjs,.mjs ./src && tsc --noEmit",
-    "format": "yarn prettier --config ./.prettierrc './src/**/*.ts' --write"
+    "format": "yarn prettier --config ./.prettierrc './src/**/*.ts' --write",
+    "heroku-postbuild": "yarn install && yarn build"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
