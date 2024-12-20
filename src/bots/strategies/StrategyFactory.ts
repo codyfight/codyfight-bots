@@ -5,6 +5,9 @@ import { MoveStrategyType } from './move/move-strategy.type.js'
 import MoveStrategy from './move/MoveStrategy.js'
 import RandomMoveStrategy from './move/RandomMoveStrategy.js'
 import ExitMoveStrategy from './move/ExitMoveStrategy.js'
+import IdleMoveStrategy from './move/IdleMoveStrategy.js'
+import AggressiveMoveStrategy from './move/AggressiveMoveStrategy.js'
+import DynamicMoveStrategy from './move/DynamicMoveStrategy.js'
 
 
 export class StrategyFactory {
@@ -21,12 +24,16 @@ export class StrategyFactory {
 
   static createMoveStrategy(type: MoveStrategyType): MoveStrategy {
     switch (type) {
-      case  MoveStrategyType.None:
-        return new MoveStrategy()
+      case  MoveStrategyType.Idle:
+        return new IdleMoveStrategy()
       case MoveStrategyType.Random:
         return new RandomMoveStrategy()
       case MoveStrategyType.Exit:
         return new ExitMoveStrategy()
+      case MoveStrategyType.Aggressive:
+        return new AggressiveMoveStrategy()
+      case MoveStrategyType.Dynamic:
+        return new DynamicMoveStrategy()
       default:
         throw new Error(`Unknown MoveStrategyType: ${type}`)
     }

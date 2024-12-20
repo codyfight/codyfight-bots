@@ -1,11 +1,10 @@
 import Position from '../../../game/map/Position.js'
 import MoveStrategy from './MoveStrategy.js'
 
-
-class RandomMoveStrategy extends MoveStrategy {
+class IdleMoveStrategy extends MoveStrategy {
   protected getTarget(): Position {
-    return this.getRandomMove()
+    return this.bearer.getPosition()
   }
 }
 
-export default RandomMoveStrategy
+export default IdleMoveStrategy

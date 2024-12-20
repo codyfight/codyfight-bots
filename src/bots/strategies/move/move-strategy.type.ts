@@ -2,9 +2,11 @@ import GameState from '../../../game/state/GameState.js'
 import Position from '../../../game/map/Position.js'
 
 export enum MoveStrategyType {
-  None = 'None',
+  Idle = 'Idle',
   Random = 'Random',
   Exit = 'Exit',
+  Aggressive = 'Aggressive',
+  Dynamic = 'Dynamic'
 }
 
 export interface IMoveStrategy {
