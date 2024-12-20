@@ -35,6 +35,10 @@ class GameAgentManager implements IUpdatable {
     return this.bearer;
   }
 
+  public getOpponent(): GameAgent{
+    return this.opponent
+  }
+
   public getAgents(): GameAgent[] {
     return [this.opponent, ...this.specialAgents.values()];
   }

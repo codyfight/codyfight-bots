@@ -10,10 +10,10 @@ import Position from '../../game/map/Position.js'
 import ICBotConfig from './ICBotConfig.js'
 import MoveStrategy from '../strategies/move/MoveStrategy.js'
 import CastStrategy from '../strategies/cast/CastStrategy.js'
+import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 
 class CBot {
-
-  public readonly ckey : string
+  public readonly ckey: string
   private readonly mode: GameMode
 
   private game!: GameState
@@ -25,7 +25,14 @@ class CBot {
 
   private logger: Logger
 
-  constructor({ ckey, mode, url, logging, move_strategy, cast_strategy}: ICBotConfig) {
+  constructor({
+    ckey,
+    mode,
+    url,
+    logging,
+    move_strategy,
+    cast_strategy
+  }: ICBotConfig) {
     this.ckey = ckey
     this.mode = mode
     this.gameAPI = GameAPIFactory.create(url)
@@ -38,28 +45,28 @@ class CBot {
   public async run() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      this.logger.startRun(this.ckey);
+      this.logger.startRun(this.ckey)
       const status = this.getStatus()
 
       switch (status) {
         case GameStatus.Empty:
-          this.logger.logGameStatus(this.ckey, status, 'init');
+          this.logger.logGameStatus(this.ckey, status, 'init')
           await this.init()
           break
         case GameStatus.Registering:
-          this.logger.logGameStatus(this.ckey, status, 'check');
+          this.logger.logGameStatus(this.ckey, status, 'check')
           await this.check()
           break
         case GameStatus.Playing:
-          this.logger.logGameStatus(this.ckey, status, 'play');
+          this.logger.logGameStatus(this.ckey, status, 'play')
           await this.play()
           break
         case GameStatus.Ended:
-          this.logger.logGameStatus(this.ckey, status, 'init');
+          this.logger.logGameStatus(this.ckey, status, 'init')
           await this.init()
           break
         default:
-          this.logger.logGameStatus(this.ckey, status, 'check');
+          this.logger.logGameStatus(this.ckey, status, 'check')
           await this.check()
           break
       }
@@ -93,7 +100,7 @@ class CBot {
   }
 
   private async performMove() {
-    const nextMove = this.moveStrategy.determineMove(this.game)
+    const nextMove = this.moveStrategy.determineMove()
 
     if (!nextMove) return
 
@@ -107,6 +114,7 @@ class CBot {
 
     if (gameStateData) {
       this.game = new GameState(gameStateData)
+      this.moveStrategy.init(this.game)
     }
   }
 

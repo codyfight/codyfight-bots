@@ -3,6 +3,7 @@ import IUpdatable from '../interfaces/IUpdatable.js'
 import GameAgentManager from '../agents/GameAgentManger.js'
 import GameMap from '../map/GameMap.js'
 import PlayerAgent from '../agents/PlayerAgent.js'
+import GameAgent from '../agents/GameAgent.js'
 
 
 class GameState implements IUpdatable {
@@ -44,6 +45,10 @@ class GameState implements IUpdatable {
 
   public getBearer(): PlayerAgent {
     return this.gameAgentManager.getBearer()
+  }
+
+  public getOpponent(): GameAgent{
+    return this.gameAgentManager.getOpponent()
   }
 
   public getMap(): GameMap {
