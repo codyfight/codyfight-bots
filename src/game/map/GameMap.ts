@@ -3,24 +3,25 @@ import Tile from './tile/Tile.js'
 import Position from './Position.js'
 import { ITile, TileType } from './tile/tile.type.js'
 import GameAgent from '../agents/GameAgent.js'
+import TeleportEffect from './tile/effects/TeleportEffect.js'
 
 class GameMap implements IUpdatable {
   private lastMapHash: string | null = null
-  private tiles: Tile[][]
+  private tiles!: Tile[][]
   private readonly size: number
   private agentPositions: Map<number, Position> = new Map();
 
 
   constructor(mapData: ITile[][]) {
     this.size = mapData.length
-    this.tiles = this.buildMap(mapData)
+    this.buildMap(mapData)
     this.lastMapHash = this.computeHash(mapData)
   }
 
   public update(mapData: ITile[][], agents: GameAgent[]): void {
     // Update map if it has changed
     if (!this.isMapUnchanged(mapData)) {
-      this.tiles = this.buildMap(mapData);
+      this.buildMap(mapData);
       this.lastMapHash = this.computeHash(mapData);
     }
 
@@ -32,7 +33,7 @@ class GameMap implements IUpdatable {
   }
 
   public reset(mapData: ITile[][]): void {
-    this.tiles = this.buildMap(mapData)
+    this.buildMap(mapData)
   }
 
   public getTile(position: Position): Tile | null {
@@ -86,10 +87,26 @@ class GameMap implements IUpdatable {
     return this.lastMapHash === newMapHash
   }
 
-  private buildMap(mapData: ITile[][]): Tile[][] {
-    return mapData.map((rowData) =>
+  private buildMap(mapData: ITile[][]): void {
+    this.tiles  = mapData.map((rowData) =>
       rowData.map((tileData) => new Tile(tileData))
-    )
+    );
+
+    this.resolveTeleports();
+  }
+
+  // TODO - this code is a bit if work around, Ideally the teleport should store its own destination
+  private resolveTeleports(): void {
+    const teleports = this.getTiles(TileType.BidirectionalTeleport);
+    if (teleports.length === 2) {
+      const [t1, t2] = teleports;
+
+      const effect1 = t1.getEffect() as TeleportEffect;
+      const effect2 = t2.getEffect() as TeleportEffect;
+
+      effect1.setDestination(t2.position);
+      effect2.setDestination(t1.position);
+    }
   }
 
   private computeHash(mapData: ITile[][]): string {

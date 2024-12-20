@@ -1,11 +1,13 @@
 import Position from '../game/map/Position.js'
 import GameMap from '../game/map/GameMap.js'
+import TileEffectResolver from '../game/map/tile/effects/TileEffectResolver.js'
 
 class PathFinder {
   constructor(
     private map: GameMap,
     private visited = new Set<string>(),
-    private queue: Position[][] = []
+    private queue: Position[][] = [],
+    private tileEffectResolver = new TileEffectResolver(map)
   ) {}
 
   public findPathToTarget(start: Position, target: Position): Position[] {
@@ -20,10 +22,10 @@ class PathFinder {
         }
       }
     } catch (error) {
-      console.error("Error in findPathToTarget()");
-      console.error("start position:", start);
-      console.error("Target position:", target);
-      throw error;
+      console.error('Error in findPathToTarget()')
+      console.error('start position:', start)
+      console.error('Target position:', target)
+      throw error
     }
 
     return []
@@ -32,20 +34,25 @@ class PathFinder {
   private processQueue(target: Position): Position[] {
     const currentPath = this.queue.shift()!
     const position = currentPath[currentPath.length - 1]
+    const finalPosition = this.tileEffectResolver.resolve(position)
 
-    if (position.equals(target)) {
+    if (finalPosition.equals(target)) {
       return currentPath
     }
 
-    const neighbors = this.getNeighbors(position)
-    this.processNeighbors(currentPath, neighbors)
+    const neighbors = this.getNeighbors(finalPosition)
+    this.processNeighbors(currentPath, neighbors, target)
 
     return []
   }
 
-  private processNeighbors(currentPath: Position[], neighbors: Position[]) {
+  private processNeighbors(
+    currentPath: Position[],
+    neighbors: Position[],
+    target: Position
+  ) {
     for (const position of neighbors) {
-      if (this.isValidMove(position)) {
+      if (this.isValidMove(position, target)) {
         this.visited.add(position.toString())
         const newPath = [...currentPath, position]
         this.queue.push(newPath)
@@ -54,18 +61,21 @@ class PathFinder {
   }
 
   private getNeighbors(position: Position): Position[] {
-    return Position.getDirections().map(direction => position.add(direction));
+    return Position.getDirections().map((direction) => position.add(direction))
   }
 
-  private isValidMove(position: Position): boolean {
-
+  private isValidMove(position: Position, target: Position): boolean {
     // Check if the position was already visited
-    if(this.visited.has(position.toString())){
+    if (this.visited.has(position.toString())) {
       return false
     }
 
+    if (position.equals(target)) {
+      return true
+    }
+
     // is the tile occupied by another agent
-    if(this.map.isPositionOccupied(position)){
+    if (this.map.isPositionOccupied(position)) {
       return false
     }
 
@@ -73,7 +83,7 @@ class PathFinder {
 
     // is it a valid safe tile?
     if (!tile || !tile.isSafe()) {
-      return false;
+      return false
     }
 
     return true
