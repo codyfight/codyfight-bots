@@ -5,6 +5,9 @@ export interface ITile {
   name: string
   type: TileType
   position: Position
+  config: {
+    is_charged: boolean
+  }
 }
 
 export enum TileType {
