@@ -1,14 +1,14 @@
 import { CastStrategyType } from './cast/cast-strategy.type.js'
 import CastStrategy from './cast/CastStrategy.js'
 import RandomCastStrategy from './cast/RandomCastStrategy.js'
+import ScoutCastStrategy from './cast/ScoutCastStrategy.js'
+import AggressiveMoveStrategy from './move/AggressiveMoveStrategy.js'
+import DynamicMoveStrategy from './move/DynamicMoveStrategy.js'
+import ExitMoveStrategy from './move/ExitMoveStrategy.js'
+import IdleMoveStrategy from './move/IdleMoveStrategy.js'
 import { MoveStrategyType } from './move/move-strategy.type.js'
 import MoveStrategy from './move/MoveStrategy.js'
 import RandomMoveStrategy from './move/RandomMoveStrategy.js'
-import ExitMoveStrategy from './move/ExitMoveStrategy.js'
-import IdleMoveStrategy from './move/IdleMoveStrategy.js'
-import AggressiveMoveStrategy from './move/AggressiveMoveStrategy.js'
-import DynamicMoveStrategy from './move/DynamicMoveStrategy.js'
-
 
 export class StrategyFactory {
   static createCastStrategy(type: CastStrategyType): CastStrategy {
@@ -17,6 +17,8 @@ export class StrategyFactory {
         return new CastStrategy()
       case CastStrategyType.Random:
         return new RandomCastStrategy()
+      case CastStrategyType.Scout:
+        return new ScoutCastStrategy()
       default:
         throw new Error(`Unknown CastStrategyType: ${type}`)
     }
@@ -24,7 +26,7 @@ export class StrategyFactory {
 
   static createMoveStrategy(type: MoveStrategyType): MoveStrategy {
     switch (type) {
-      case  MoveStrategyType.Idle:
+      case MoveStrategyType.Idle:
         return new IdleMoveStrategy()
       case MoveStrategyType.Random:
         return new RandomMoveStrategy()

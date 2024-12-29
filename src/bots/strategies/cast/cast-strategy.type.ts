@@ -4,7 +4,8 @@ import Position from '../../../game/map/Position.js'
 
 export enum CastStrategyType {
   None = 'None',
-  Random = 'Random'
+  Random = 'Random',
+  Scout = 'Scout'
 }
 
 export interface ICastStrategy {

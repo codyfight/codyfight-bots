@@ -2,11 +2,20 @@ import Position from '../../../game/map/Position.js'
 import MoveStrategy from './MoveStrategy.js'
 import { TileType } from '../../../game/map/tile/tile.type.js'
 import MathUtils from '../../../utils/MathUtils.js'
+import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 class ExitMoveStrategy extends MoveStrategy {
   protected getTarget(): Position {
     const closestExit = this.getClosestExit()
     return closestExit ?? this.getRandomMove()
+  }
+
+  protected getRyoPosition(): Position | null {
+    const ryo = this.agents.find((agent) => agent.id === SpecialAgentType.MrRyo)
+
+    if (!ryo) return null
+
+    return ryo.getPosition()
   }
 
   // TODO - I think the map should handle this logic

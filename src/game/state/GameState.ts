@@ -51,6 +51,10 @@ class GameState implements IUpdatable {
     return this.gameAgentManager.getOpponent()
   }
 
+  public getAgents(): GameAgent[] {
+    return this.gameAgentManager.getAgents()
+  }
+
   public getMap(): GameMap {
     return this.map
   }

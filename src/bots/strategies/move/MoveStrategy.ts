@@ -11,11 +11,13 @@ abstract class MoveStrategy implements IMoveStrategy {
   protected map!: GameMap
   protected bearer!: PlayerAgent
   protected opponent!: GameAgent
+  protected agents!: GameAgent[]
 
   public init(game: GameState): void {
     this.map = game.getMap()
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
+    this.agents = game.getAgents()
   }
 
   /**
