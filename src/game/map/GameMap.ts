@@ -4,6 +4,7 @@ import Position from './Position.js'
 import { ITile, TileType } from './tile/tile.type.js'
 import GameAgent from '../agents/GameAgent.js'
 import TeleportEffect from './tile/effects/TeleportEffect.js'
+import SpatialUtils from '../../utils/SpatialUtils.js'
 
 class GameMap implements IUpdatable {
   private lastMapHash: string | null = null
@@ -54,6 +55,19 @@ class GameMap implements IUpdatable {
     }
     return found;
   }
+
+  public findClosestTilePosition(type: TileType, origin: Position): Position | null {
+    const tiles = this.getTiles(type);
+
+    if (tiles.length === 0) {
+      return null;
+    }
+
+    const targets = tiles.map((tile) => tile.position);
+
+    return SpatialUtils.findClosestPosition(origin, targets);
+  }
+
 
   public getSize(){
     return this.size
