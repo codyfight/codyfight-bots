@@ -10,3 +10,9 @@ export enum CastStrategyType {
 export interface ICastStrategy {
   determineCast(game: GameState): [Skill, Position] | null;
 }
+
+// Options for dropdown
+export const castStrategyOptions = Object.values(CastStrategyType).map(value => ({
+  label: value,
+  value: value,
+}));

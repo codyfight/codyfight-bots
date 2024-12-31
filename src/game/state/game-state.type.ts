@@ -68,3 +68,8 @@ enum VerdictStatement {
   GameTimeout = 'game-timeout',
   GameCancelled = 'game-cancelled'
 }
+
+// Options for dropdown
+export const gameModeOptions = Object.entries(GameMode)
+  .filter(([key, value]) => typeof value === 'number')
+  .map(([key, value]) => ({ label: key, value: value }));

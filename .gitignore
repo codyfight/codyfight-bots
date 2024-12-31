@@ -139,6 +139,7 @@ dist
 .AppleDouble
 .LSOverride
 
+*.db
 
-/src/bots/config/bots-config.ts
-
+src/client/public/*.js
+src/client/public/*.map

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bot Management</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+
+  <script src="./bot_management.js" defer></script>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="mb-4">Bot Management</h1>
+
+  <div class="row mb-4">
+    <div class="col-12">
+
+      <div class="card p-3">
+        <form onsubmit="addBot(event)" class="row g-3 align-items-center">
+
+          <div class="col-md-4">
+            <label for="ckey" class="form-label mb-0">CKey</label>
+            <input type="text" class="form-control" name="ckey" id="ckey" placeholder="CKey" required />
+          </div>
+
+          <div class="col-md-4">
+            <label for="mode" class="form-label mb-0">Mode</label>
+            <select name="mode" id="mode" class="form-select" required></select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="url" class="form-label mb-0">URL</label>
+            <input type="url" class="form-control" name="url" id="url" placeholder="URL" required />
+          </div>
+
+          <div class="col-md-4">
+            <label for="logging" class="form-label mb-0">Logging</label>
+            <select name="logging" id="logging" class="form-select" required>
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="move_strategy" class="form-label mb-0">Move Strategy</label>
+            <select name="move_strategy" id="move_strategy" class="form-select" required></select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="cast_strategy" class="form-label mb-0">Cast Strategy</label>
+            <select name="cast_strategy" id="cast_strategy" class="form-select" required></select>
+          </div>
+
+          <hr />
+
+          <div class="col-md-4 d-grid gap-2 mx-auto">
+            <button type="submit" class="btn btn-success">Add Bot</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table id="botTable" class="table table-striped table-hover align-middle">
+          <thead class="table-dark">
+          <tr>
+            <th scope="col">CKey</th>
+            <th scope="col">Mode</th>
+            <th scope="col">URL</th>
+            <th scope="col">Logging</th>
+            <th scope="col">Move Strategy</th>
+            <th scope="col">Cast Strategy</th>
+            <th scope="col">Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+7MG2a0Lj7FjvzoM2y3p3Je9mKCrG" crossorigin="anonymous"></script>
+</body>
+</html>
