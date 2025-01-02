@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Aldrich&display=swap');
+
+:root {
+    --bg-dark: #141221;
+    --bg-darker: #1C2136;
+    --accent: #31F3E3;
+    --accent-hover: #B2FFF9;
+    --text-light: #FFFFFF;
+    --text-light-alt: #D8D6E0;
+    --text-muted: #dedede;
+    --border-light: #3c6278;
+    --font-family: 'Aldrich', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: var(--font-family);
+    background-image: url("./bg.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--text-light-alt);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--accent);
+    color: #000;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active {
+    background-color: var(--accent-hover);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
+}
+
+.btn:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(49, 243, 227, 0.5);
+}
+
+.btn-delete {
+    background-color: #cc1c1c;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.btn-delete:hover,
+.btn-delete:focus,
+.btn-delete:active {
+    background-color: #df1e1e;
+    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
+}
+
+.card {
+    background: var(--bg-darker);
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--bg-darker);
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--bg-darker);
+}
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: var(--bg-dark);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bg-darker);
+    filter: brightness(1.1);
+}
+
+.table th {
+    background-color: var(--bg-darker);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--bg-darker);
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(49, 243, 227, 0.5);
+}

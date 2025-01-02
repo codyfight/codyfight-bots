@@ -1,5 +1,6 @@
-import CBot from '../bots/cbot/CBot.js'
-import { CBotFactory } from '../bots/cbot/CBotFactory.js'
+import 'dotenv/config'
+import CBot from './cbot/CBot.js'
+import { CBotFactory } from './cbot/CBotFactory.js'
 
 try {
   const cbots: CBot[] = await CBotFactory.createAllBots()
