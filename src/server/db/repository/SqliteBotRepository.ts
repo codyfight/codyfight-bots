@@ -4,7 +4,7 @@ import ICBotConfig from '../../../bots/cbot/ICBotConfig.js'
 import { IBotRepository } from './IBotRepository.js'
 import { getEnvVar } from '../../../utils/utils.js'
 
-export class BotRepository implements IBotRepository {
+export class SqliteBotRepository implements IBotRepository {
   private readonly dbPath: string
 
   constructor() {
