@@ -1,5 +1,5 @@
-import Position from '../map/Position.js'
-import Skill from '../skills/Skill.js'
+import Position from '../map/position.js'
+import Skill from '../skills/skill.js'
 
 export interface IAgent {
   id: number

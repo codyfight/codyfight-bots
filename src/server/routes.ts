@@ -2,10 +2,10 @@ import { NextFunction, Request, Response, Router } from 'express'
 import { gameModeOptions } from '../game/state/game-state.type.js'
 import { moveStrategyOptions } from '../bots/strategies/move/move-strategy.type.js'
 import { castStrategyOptions } from '../bots/strategies/cast/cast-strategy.type.js'
-import { createBotRepository } from './db/repository/index.js'
+import { createCBotRepository } from './db/repository/create-c-bot-repository.js'
 
 const router = Router()
-const botRepository = createBotRepository()
+const botRepository = createCBotRepository()
 
 const asyncHandler =
   (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>

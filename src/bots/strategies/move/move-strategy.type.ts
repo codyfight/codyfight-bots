@@ -1,5 +1,5 @@
-import GameState from '../../../game/state/GameState.js'
-import Position from '../../../game/map/Position.js'
+import GameState from '../../../game/state/game-state.js'
+import Position from '../../../game/map/position.js'
 
 export enum MoveStrategyType {
   Idle = 'Idle',
@@ -10,11 +10,13 @@ export enum MoveStrategyType {
 }
 
 export interface IMoveStrategy {
-  determineMove(game: GameState): Position;
+  determineMove(game: GameState): Position
 }
 
 // Options for dropdown
-export const moveStrategyOptions = Object.values(MoveStrategyType).map(value => ({
-  label: value,
-  value: value,
-}));
+export const moveStrategyOptions = Object.values(MoveStrategyType).map(
+  (value) => ({
+    label: value,
+    value: value
+  })
+)

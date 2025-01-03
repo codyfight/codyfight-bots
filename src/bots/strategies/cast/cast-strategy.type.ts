@@ -1,6 +1,6 @@
-import GameState from '../../../game/state/GameState.js'
-import Skill from '../../../game/skills/Skill.js'
-import Position from '../../../game/map/Position.js'
+import GameState from '../../../game/state/game-state.js'
+import Skill from '../../../game/skills/skill.js'
+import Position from '../../../game/map/position.js'
 
 export enum CastStrategyType {
   None = 'None',
@@ -8,11 +8,13 @@ export enum CastStrategyType {
 }
 
 export interface ICastStrategy {
-  determineCast(game: GameState): [Skill, Position] | null;
+  determineCast(game: GameState): [Skill, Position] | null
 }
 
 // Options for dropdown
-export const castStrategyOptions = Object.values(CastStrategyType).map(value => ({
-  label: value,
-  value: value,
-}));
+export const castStrategyOptions = Object.values(CastStrategyType).map(
+  (value) => ({
+    label: value,
+    value: value
+  })
+)
