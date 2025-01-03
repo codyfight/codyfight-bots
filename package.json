@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc && yarn build:client && cp -R src/client/public dist/client/public",
     "dev:config": "node --loader ts-node/esm --watch src/server/server.ts",
-    "dev:run-bots": "node --loader ts-node/esm --watch src/c-bots/bot-runner.ts",
+    "dev:run-bots": "node --loader ts-node/esm --watch src/c-bots/c-bot-runner.ts",
     "dev:client": "tsc -p tsconfig.client.json --watch",
     "start:config": "node dist/server/server.js",
     "start:run-bots": "node dist/bots/bot-runner.js",
