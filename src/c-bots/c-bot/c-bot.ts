@@ -2,10 +2,7 @@ import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
 import GameState from '../../game/state/game-state.js'
 import { IGameAPI } from '../api/game-api.interface.js'
 import Logger from '../../utils/logger.js'
-import {
-  createCastStrategy,
-  createMoveStrategy
-} from '../strategies/strategy-factory.js'
+import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
 import { safeApiCall } from '../../utils/utils.js'
 import Skill from '../../game/skills/skill.js'
 import Position from '../../game/map/position.js'
@@ -13,6 +10,22 @@ import ICBotConfig from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import { createGameAPI } from '../api/game-api-factory.js'
+
+/**
+ * The CBot class is responsible for managing the lifecycle of a bot in the game.
+ *
+ * Key Responsibilities:
+ * - Communicates with the game API to initialize, register, and play games.
+ * - Implements move and cast strategies to determine the bot's actions during gameplay.
+ * - Maintains the game state and updates it based on API responses.
+ *
+ * Overview:
+ * - The bot operates in a loop (`run` method), continuously checking the game status
+ *   and taking appropriate actions (e.g., initializing, registering, or playing).
+ * - Strategies (`moveStrategy` and `castStrategy`) are used to make decisions for moves
+ *   and skill casts during gameplay.
+ * - The class uses a logger that can be enabled or disabled when creating the class.
+ */
 
 class CBot {
   private readonly ckey: string

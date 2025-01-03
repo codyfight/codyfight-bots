@@ -1,6 +1,23 @@
 import GameMap from '../../game-map.js'
 import Position from '../../position.js'
 
+/**
+ * The TileEffectResolver class determines the final position of a player after interacting with tiles on the game map.
+ *
+ * Key Responsibilities:
+ * - Resolves tile effects recursively to simulate the player's movement across the map.
+ * - Handles "chain effects" where one tile effect (e.g., a slider) leads to another tile.
+ * - Prevents infinite loops by tracking visited tiles during resolution.
+ *
+ * Usage:
+ * - This class is mainly used by pathfinding algorithms to determine where a player will ultimately end up
+ *   after stepping on a tile with an effect.
+ *
+ * Example:
+ * - A slider moves the player to another tile, which could have another effect (e.g., teleporting).
+ * - The resolve method keeps applying effects until the player "settles" at a final position.
+ */
+
 class TileEffectResolver {
   constructor(private map: GameMap) {}
 

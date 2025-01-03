@@ -5,6 +5,23 @@ import GameMap from '../map/game-map.js'
 import PlayerAgent from '../agents/player-agent.js'
 import GameAgent from '../agents/game-agent.js'
 
+/**
+ * The GameState class represents the current state of the game and provides methods to update it.
+ *
+ * Key Responsibilities:
+ * - Holds and manages all game entities, including players, agents, and the game map.
+ * - Implements the `IUpdatable` interface to define how the game state and its components
+ *   are updated when new game data is received.
+ * - Provides utility methods for querying game information (e.g., turn status, players).
+ *
+ * Overview:
+ * - The `update` method is called whenever new game state data is received from the API.
+ *   It updates the status, agents, and map accordingly.
+ * - Includes helper methods to access specific parts of the game state, such as the player's
+ *   turn, the map, or the opponent.
+ * - Designed to work closely with other updatable components (e.g., agents, maps).
+ */
+
 class GameState implements IUpdatable {
   private status: GameStatus
   private gameAgentManager: GameAgentManager
