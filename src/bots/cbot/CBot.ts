@@ -10,11 +10,11 @@ import Position from '../../game/map/Position.js'
 import ICBotConfig from './ICBotConfig.js'
 import MoveStrategy from '../strategies/move/MoveStrategy.js'
 import CastStrategy from '../strategies/cast/CastStrategy.js'
-import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 
 class CBot {
-  public readonly ckey: string
+  private readonly ckey: string
   private readonly mode: GameMode
+  private readonly url: string
 
   private game!: GameState
 
@@ -35,6 +35,7 @@ class CBot {
   }: ICBotConfig) {
     this.ckey = ckey
     this.mode = mode
+    this.url = url
     this.gameAPI = GameAPIFactory.create(url)
     this.logger = new Logger(logging)
 
@@ -75,6 +76,17 @@ class CBot {
 
   public getStatus(): GameStatus {
     return this.game ? this.game.getStatus() : GameStatus.Empty
+  }
+
+  public toString(): string {
+    return `
+    CBot {
+      ckey: "${this.ckey}",
+      mode: "${GameMode[this.mode]}",
+      url: "${this.url}",
+      moveStrategy: "${this.moveStrategy.constructor.name}",
+      castStrategy: "${this.castStrategy.constructor.name}",
+    }`
   }
 
   private async play() {
