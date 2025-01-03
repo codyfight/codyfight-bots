@@ -11,7 +11,10 @@ export class PostgresBotRepository implements IBotRepository {
   constructor() {
     const connectionString = getEnvVar('DATABASE_URL')
     this.client = new Client({
-      connectionString
+      connectionString,
+      ssl: {
+        rejectUnauthorized: false
+      }
     })
 
     this.client
