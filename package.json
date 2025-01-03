@@ -13,7 +13,6 @@
   "packageManager": "yarn@3.6.4",
   "scripts": {
     "build": "rm -rf dist && tsc && yarn build:client && cp -R src/client/public dist/client/public",
-    "start": "yarn build && node dist/index.js",
     "dev:config": "node --loader ts-node/esm --watch src/server/server.ts",
     "dev:run-bots": "node --loader ts-node/esm --watch src/bots/bot_runner.ts",
     "dev:client": "tsc -p tsconfig.client.json --watch",
