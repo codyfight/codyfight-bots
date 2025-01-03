@@ -1,17 +1,12 @@
-import { NextFunction, Request, Response, Router } from 'express'
+import { Request, Response, Router } from 'express'
 import { gameModeOptions } from '../game/state/game-state.type.js'
-import { moveStrategyOptions } from '../bots/strategies/move/move-strategy.type.js'
-import { castStrategyOptions } from '../bots/strategies/cast/cast-strategy.type.js'
+import { moveStrategyOptions } from '../c-bots/strategies/move/move-strategy.type.js'
+import { castStrategyOptions } from '../c-bots/strategies/cast/cast-strategy.type.js'
 import { createCBotRepository } from './db/repository/create-c-bot-repository.js'
+import { asyncHandler } from '../utils/utils.js'
 
 const router = Router()
 const botRepository = createCBotRepository()
-
-const asyncHandler =
-  (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next)
-  }
 
 router.get('/dropdown-options', (req, res) => {
   res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions })

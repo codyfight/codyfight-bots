@@ -1,5 +1,5 @@
 import pkg from 'pg'
-import ICBotConfig from '../../../bots/cbot/c-bot-config.interface.js'
+import ICBotConfig from '../../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import { getEnvVar } from '../../../utils/utils.js'
 

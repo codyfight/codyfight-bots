@@ -1,7 +1,7 @@
-import sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3'
+import { getEnvVar } from '../../../../utils/utils.js'
 
-//todo set db in .env
-const db = new sqlite3.Database('../bots.db');
+const db = new sqlite3.Database(getEnvVar('DB_PATH'))
 
 const botsToInsert = [
   {
@@ -10,7 +10,7 @@ const botsToInsert = [
     url: 'https://game.codyfight.com/',
     logging: 0,
     move_strategy: 'Dynamic',
-    cast_strategy: 'Random',
+    cast_strategy: 'Random'
   },
   {
     ckey: '5678',
@@ -18,9 +18,9 @@ const botsToInsert = [
     url: 'https://game.codyfight.com/',
     logging: 0,
     move_strategy: 'Random',
-    cast_strategy: 'None',
-  },
-];
+    cast_strategy: 'None'
+  }
+]
 
 db.serialize(() => {
   botsToInsert.forEach((bot) => {
@@ -33,11 +33,11 @@ db.serialize(() => {
         bot.url,
         bot.logging,
         bot.move_strategy,
-        bot.cast_strategy,
+        bot.cast_strategy
       ]
-    );
-  });
-  console.log('Database Seeded');
-});
+    )
+  })
+  console.log('Database Seeded')
+})
 
-db.close();
+db.close()

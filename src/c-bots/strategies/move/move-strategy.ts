@@ -1,12 +1,14 @@
-import Position from '../../../game/map/position.js'
-import GameState from '../../../game/state/game-state.js'
-import { randomElement } from '../../../utils/utils.js'
+import { IMoveStrategy } from './move-strategy.type.js'
 import GameMap from '../../../game/map/game-map.js'
 import PlayerAgent from '../../../game/agents/player-agent.js'
-import { IMoveStrategy } from './move-strategy.type.js'
-import PathFinder from '../../../utils/path-finder.js'
 import GameAgent from '../../../game/agents/game-agent.js'
-import SpatialUtils from '../../../utils/spatial-utils.js'
+import Position from '../../../game/map/position.js'
+import GameState from '../../../game/state/game-state.js'
+import {
+  filterSafeMoves,
+  randomElement
+} from '../../../game/utils/game-utils.js'
+import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   protected map!: GameMap
@@ -57,7 +59,7 @@ abstract class MoveStrategy implements IMoveStrategy {
    */
   protected getRandomMove(): Position {
     const possibleMoves = this.bearer.getPossibleMoves()
-    const safeMoves = SpatialUtils.filterSafeMoves(this.map, possibleMoves)
+    const safeMoves = filterSafeMoves(this.map, possibleMoves)
 
     return safeMoves.length > 0
       ? randomElement(safeMoves)
@@ -65,7 +67,7 @@ abstract class MoveStrategy implements IMoveStrategy {
   }
 
   private findPath(start: Position, target: Position): Position[] {
-    const pathFinder = new PathFinder(this.map)
+    const pathFinder = new BFSPathFinder(this.map)
     return pathFinder.findPathToTarget(start, target)
   }
 

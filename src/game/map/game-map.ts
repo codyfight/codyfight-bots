@@ -1,10 +1,10 @@
+import GameAgent from '../agents/game-agent.js'
 import IUpdatable from '../interfaces/updatable.interface.js'
 import Tile from './tile/tile.js'
 import Position from './position.js'
 import { ITile, TileType } from './tile/tile.type.js'
-import GameAgent from '../agents/game-agent.js'
+import { findClosestPosition } from '../utils/game-utils.js'
 import TeleportEffect from './tile/effects/teleport-effect.js'
-import SpatialUtils from '../../utils/spatial-utils.js'
 
 class GameMap implements IUpdatable {
   private lastMapHash: string | null = null
@@ -67,7 +67,7 @@ class GameMap implements IUpdatable {
 
     const targets = tiles.map((tile) => tile.position)
 
-    return SpatialUtils.findClosestPosition(origin, targets)
+    return findClosestPosition(origin, targets)
   }
 
   public getSize() {

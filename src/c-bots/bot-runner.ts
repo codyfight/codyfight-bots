@@ -1,13 +1,13 @@
 import 'dotenv/config'
-import CBot from './cbot/c-bot.js'
+import CBot from './c-bot/c-bot.js'
 import Logger from '../utils/logger.js'
-import { createAllBots } from './cbot/create-all-bots.js'
+import { createAllCBots } from './c-bot/create-all-c-bots.js'
 
 const logger = new Logger(true)
 
 try {
   logger.logInfo('Application Started, Running Bots...')
-  const cbots: CBot[] = await createAllBots()
+  const cbots: CBot[] = await createAllCBots()
 
   cbots.forEach((cbot: CBot) => {
     try {

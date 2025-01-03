@@ -1,8 +1,8 @@
-import Position from '../game/map/position.js'
-import GameMap from '../game/map/game-map.js'
-import TileEffectResolver from '../game/map/tile/effects/tile-effect-resolver.js'
+import Position from '../map/position.js'
+import GameMap from '../map/game-map.js'
+import TileEffectResolver from '../map/tile/effects/tile-effect-resolver.js'
 
-class PathFinder {
+class BFSPathFinder {
   constructor(
     private map: GameMap,
     private visited = new Set<string>(),
@@ -90,4 +90,4 @@ class PathFinder {
   }
 }
 
-export default PathFinder
+export default BFSPathFinder

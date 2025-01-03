@@ -1,4 +1,19 @@
-import { GameStatus } from '../game/state/game-state.type.js'
+import { NextFunction, Request, Response } from 'express'
+
+/**
+ * Safely retrieves an environment variable, throwing an error if it's not set.
+ *
+ * @param name The name of the environment variable to retrieve.
+ * @returns The value of the environment variable as a string.
+ * @throws If the environment variable is not defined.
+ */
+export function getEnvVar(name: string): string {
+  const value = process.env[name]
+  if (typeof value === 'undefined' || value === '') {
+    throw new Error(`Environment variable ${name} is not defined.`)
+  }
+  return value
+}
 
 /**
  * Wrapper function for API calls to log errors
@@ -14,66 +29,13 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
 }
 
 /**
- * Safely retrieves an environment variable, throwing an error if it's not set.
- *
- * @param name The name of the environment variable to retrieve.
- * @returns The value of the environment variable as a string.
- * @throws If the environment variable is not defined.
+ * Wraps an async Express route handler in a try/catch
+ * to forward errors to `next()`.
  */
-export function getEnvVar(name: string): string {
-  const value = process.env[name];
-  if (typeof value === 'undefined' || value === '') {
-    throw new Error(`Environment variable ${name} is not defined.`);
+export function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>
+) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
   }
-  return value;
-}
-
-/**
- * Returns a random element from an array.
- *
- * @param {T[]} array - The array to pick a random element from.
- * @returns {T | null} A random element from the array, or null if the array is empty.
- */
-export function randomElement<T>(array: T[]): T {
-  const index = Math.floor(Math.random() * array.length)
-  return array[index]
-}
-
-/**
- * Formats a name to uppercase, padded to 10 characters, or defaults to 'Player'.
- *
- * @param {string | null} name - The name to format.
- * @returns {string} The formatted name.
- */
-export function formatName(name: string | null): string {
-  return name ? String(name)?.padEnd(10)?.toUpperCase() : 'Player'
-}
-
-
-/**
- * Maps the Game status enum to a string value.
- *
- * @param {GameStatus } status - The status to map.
- * @returns {string} The formatted name.
- */
-export function getGameStatusName(status: GameStatus): string {
-  const statusMap: { [key in GameStatus]: string } = {
-    [GameStatus.Terminated]: 'Terminated',
-    [GameStatus.Empty]: 'Empty',
-    [GameStatus.Registering]: 'Registering',
-    [GameStatus.Playing]: 'Playing',
-    [GameStatus.Ended]: 'Ended',
-  };
-
-  return statusMap[status] || `Unknown (${status})`;
-}
-
-/**
- * Delays execution for the specified number of milliseconds.
- *
- * @param {number} ms - The delay in milliseconds.
- * @returns {Promise<void>} A promise that resolves after the delay.
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }

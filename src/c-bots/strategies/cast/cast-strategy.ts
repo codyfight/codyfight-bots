@@ -1,9 +1,9 @@
 import GameState from '../../../game/state/game-state.js'
 import Skill from '../../../game/skills/skill.js'
 import Position from '../../../game/map/position.js'
-import { randomElement } from '../../../utils/utils.js'
 import PlayerAgent from '../../../game/agents/player-agent.js'
 import { ICastStrategy } from './cast-strategy.type.js'
+import { randomElement } from '../../../game/utils/game-utils.js'
 
 class CastStrategy implements ICastStrategy {
   public determineCast(game: GameState): [Skill, Position] | null {

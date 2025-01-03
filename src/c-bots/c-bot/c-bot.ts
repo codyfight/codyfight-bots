@@ -1,6 +1,6 @@
 import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
 import GameState from '../../game/state/game-state.js'
-import { IGameAPI } from '../../game/api/game-api.interface.js'
+import { IGameAPI } from '../api/game-api.interface.js'
 import Logger from '../../utils/logger.js'
 import {
   createCastStrategy,
@@ -12,7 +12,7 @@ import Position from '../../game/map/position.js'
 import ICBotConfig from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
-import { createGameAPI } from '../../game/api/game-api-factory.js'
+import { createGameAPI } from '../api/game-api-factory.js'
 
 class CBot {
   private readonly ckey: string
