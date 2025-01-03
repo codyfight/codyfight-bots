@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "outDir": "src/client/public",
+    "rootDir": "src/client",
+    "strict": true,
+    "esModuleInterop": true,
+    "sourceMap": false
+  },
+  "include": ["src/client/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,4 +1,4 @@
-import { GameMode, IGameState } from '../game/state/game-state.type.js'
+import { GameMode, IGameState } from '../state/game-state.type.js'
 
 export interface IGameAPI {
   check(ckey: string): Promise<IGameState>

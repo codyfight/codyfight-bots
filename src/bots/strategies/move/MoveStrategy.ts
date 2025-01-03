@@ -6,11 +6,16 @@ import PlayerAgent from '../../../game/agents/PlayerAgent.js'
 import { IMoveStrategy } from './move-strategy.type.js'
 import PathFinder from '../../../utils/PathFinder.js'
 import GameAgent from '../../../game/agents/GameAgent.js'
+import SpatialUtils from '../../../utils/SpatialUtils.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   protected map!: GameMap
   protected bearer!: PlayerAgent
   protected opponent!: GameAgent
+
+  protected targets: Position[] = []
+
+  protected abstract setTargets(): void
 
   public init(game: GameState): void {
     this.map = game.getMap()
@@ -19,35 +24,31 @@ abstract class MoveStrategy implements IMoveStrategy {
   }
 
   /**
-   * Get the next from the result of the pathfinding.
+   * return the first valid position found from pathfinding on the targets array.
    * If the path is valid, and the next step is found, returns that step.
-   * Otherwise, returns the current position.
+   * Otherwise, returns the default move.
    */
   public determineMove(): Position {
-    const pathFinder = new PathFinder(this.map)
+    this.targets = []
+    this.setTargets()
+    const start = this.bearer.getPosition()
 
-    const startPosition = this.bearer.getPosition()
-    let target = this.getTarget()
+    for (const target of this.targets) {
+      const path = this.findPath(start, target)
 
-    let path = pathFinder.findPathToTarget(startPosition, target)
-
-    // TODO - Handle this better
-    if (!path || path.length === 0) {
-      target = this.getSecondaryTarget();
-      path = pathFinder.findPathToTarget(startPosition, target);
+      if (path.length > 1) {
+        return this.getNextValidMove(path)
+      }
     }
 
-    return this.getNextValidMove(path) || startPosition
+    return this.getDefaultMove()
   }
 
   /**
-   * Concrete move strategies must determine the target
+   * Returns the default move to make if not path can be found
    */
-  protected abstract getTarget(): Position
-
-  // TODO - Handle this better
-  protected getSecondaryTarget() : Position {
-    return this.bearer.getPosition()
+  protected getDefaultMove(): Position {
+    return this.getRandomMove()
   }
 
   /**
@@ -56,39 +57,31 @@ abstract class MoveStrategy implements IMoveStrategy {
    */
   protected getRandomMove(): Position {
     const possibleMoves = this.bearer.getPossibleMoves()
-    const safeMoves = this.filterSafeMoves(possibleMoves)
+    const safeMoves = SpatialUtils.filterSafeMoves(this.map, possibleMoves)
 
     return safeMoves.length > 0
       ? randomElement(safeMoves)
       : randomElement(possibleMoves)
   }
 
+  private findPath(start: Position, target: Position): Position[] {
+    const pathFinder = new PathFinder(this.map)
+    return pathFinder.findPathToTarget(start, target)
+  }
+
   /**
    * Using the path from the player position to the target,
    * returns the next valid move or null
    */
-  private getNextValidMove(path: Position[]): Position | null {
-    if (path.length > 1) {
-      const nextPosition = path[1]
-      if (this.isMovePossible(nextPosition)) {
-        return nextPosition
-      }
-    }
-    return null
-  }
-
-  private isMovePossible(position: Position): boolean {
-    return this.bearer.getPossibleMoves().some((move) => move.equals(position))
+  private getNextValidMove(path: Position[]): Position {
+    return this.isMovePossible(path[1]) ? path[1] : this.bearer.getPosition()
   }
 
   /**
-   * Returning only moves that are considered safe.
+   * Checks if move is present in available moves
    */
-  private filterSafeMoves(positions: Position[]): Position[] {
-    return positions.filter((pos) => {
-      const tile = this.map.getTile(pos)
-      return tile && !tile.isDangerous()
-    })
+  private isMovePossible(position: Position): boolean {
+    return this.bearer.getPossibleMoves().some((move) => move.equals(position))
   }
 }
 

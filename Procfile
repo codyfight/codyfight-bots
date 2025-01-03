@@ -1,1 +1,2 @@
-worker: node dist/index.js
+web: yarn start:config
+worker: yarn start:run-bots

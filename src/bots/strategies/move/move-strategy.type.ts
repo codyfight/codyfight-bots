@@ -12,3 +12,9 @@ export enum MoveStrategyType {
 export interface IMoveStrategy {
   determineMove(game: GameState): Position;
 }
+
+// Options for dropdown
+export const moveStrategyOptions = Object.values(MoveStrategyType).map(value => ({
+  label: value,
+  value: value,
+}));
