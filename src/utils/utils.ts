@@ -25,6 +25,7 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
     return await fn()
   } catch (error) {
     console.error(`Error in ${fn.name}`, error)
+    throw error
   }
 }
 

@@ -136,9 +136,8 @@ class CBot {
   }
 
   private async init() {
-    const gameStateData = await safeApiCall(() =>
-      this.gameAPI.init(this.ckey, this.mode)
-    )
+    const initGameState = async () => this.gameAPI.init(this.ckey, this.mode);
+    const gameStateData = await safeApiCall(initGameState);
 
     if (gameStateData) {
       this.game = new GameState(gameStateData)
@@ -147,7 +146,8 @@ class CBot {
   }
 
   private async check(): Promise<void> {
-    const gameStateData = await safeApiCall(() => this.gameAPI.check(this.ckey))
+    const checkGameState = async () => this.gameAPI.check(this.ckey)
+    const gameStateData = await safeApiCall(checkGameState)
 
     if (gameStateData) {
       this.game.update(gameStateData)
@@ -155,9 +155,8 @@ class CBot {
   }
 
   private async cast(skill: Skill, target: Position) {
-    const gameStateData = await safeApiCall(() =>
-      this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
-    )
+    const castSkill = async () => this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
+    const gameStateData = await safeApiCall(castSkill)
 
     if (gameStateData) {
       this.game.update(gameStateData)
@@ -165,9 +164,8 @@ class CBot {
   }
 
   private async move(position: Position) {
-    const gameStateData = await safeApiCall(() =>
-      this.gameAPI.move(this.ckey, position.x, position.y)
-    )
+    const moveAgent = async () =>  this.gameAPI.move(this.ckey, position.x, position.y)
+    const gameStateData = await safeApiCall(moveAgent)
 
     if (gameStateData) {
       this.game.update(gameStateData)

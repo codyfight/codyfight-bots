@@ -39,7 +39,7 @@ class Logger {
   }
 
   logError(message: string): void {
-    console.error(message)
+    console.log(message)
   }
 }
 
