@@ -17,7 +17,7 @@
     "dev:run-bots": "node --loader ts-node/esm --watch src/c-bots/c-bot-runner.ts",
     "dev:client": "tsc -p tsconfig.client.json --watch",
     "start:config": "node dist/server/server.js",
-    "start:run-bots": "node dist/bots/bot-runner.js",
+    "start:run-bots": "node dist/c-bots/c-bot-runner.js",
     "build:client": "tsc -p tsconfig.client.json",
     "pre-commit": "npm run format && npm run lint",
     "lint": "npm run eslint --ext .js,.ts,.cjs,.mjs ./src && tsc --noEmit",
