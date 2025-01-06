@@ -1,4 +1,4 @@
-import Position from '../Position.js'
+import Position from '../position.js'
 
 export interface ITile {
   id: number

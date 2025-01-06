@@ -12,17 +12,17 @@
   },
   "packageManager": "yarn@3.6.4",
   "scripts": {
-    "build": "rm -rf dist && tsc && yarn build:client && cp -R src/client/public dist/client/public",
+    "build": "rm -rf dist && tsc && npm run build:client && cp -R src/client/public dist/client/public",
     "dev:config": "node --loader ts-node/esm --watch src/server/server.ts",
-    "dev:run-bots": "node --loader ts-node/esm --watch src/bots/bot_runner.ts",
+    "dev:run-bots": "node --loader ts-node/esm --watch src/c-bots/c-bot-runner.ts",
     "dev:client": "tsc -p tsconfig.client.json --watch",
     "start:config": "node dist/server/server.js",
-    "start:run-bots": "node dist/bots/bot_runner.js",
+    "start:run-bots": "node dist/bots/bot-runner.js",
     "build:client": "tsc -p tsconfig.client.json",
-    "pre-commit": "yarn format && yarn lint",
-    "lint": "yarn eslint --ext .js,.ts,.cjs,.mjs ./src && tsc --noEmit",
-    "format": "yarn prettier --config ./.prettierrc './src/**/*.ts' --write",
-    "heroku-postbuild": "yarn install && yarn build"
+    "pre-commit": "npm run format && npm run lint",
+    "lint": "npm run eslint --ext .js,.ts,.cjs,.mjs ./src && tsc --noEmit",
+    "format": "npm run prettier --config ./.prettierrc './src/**/*.ts' --write",
+    "heroku-postbuild": "npm install && npm run build"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",

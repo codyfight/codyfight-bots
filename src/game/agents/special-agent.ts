@@ -1,0 +1,14 @@
+import GameAgent from './game-agent.js'
+import { IAgent, ISpecialAgent } from './game-agent.type.js'
+
+class SpecialAgent extends GameAgent {
+  constructor(agentData: ISpecialAgent) {
+    super(agentData as IAgent)
+  }
+
+  update(agentData: ISpecialAgent): void {
+    super.update(agentData)
+  }
+}
+
+export default SpecialAgent

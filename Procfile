@@ -1,2 +1,2 @@
-web: yarn start:config
-worker: yarn start:run-bots
+web: npm run start:config
+worker: npm run start:run-bots
