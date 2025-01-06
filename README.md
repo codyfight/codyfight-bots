@@ -33,8 +33,8 @@ A **TypeScript**, **Express**, and **Node.js** project that allows developers to
 ## **Requirements**
 - **TypeScript**: `>= 5.0.0`
 - **Express**: `^4.18.2`
-- **Node.js**: `>= 18.0.0`
-- **Yarn**: `3.6.4` or later
+- **Node.js**: `>= 23.3.0`
+- **NPM**: `10.9.1` or later
 
 ---
 
@@ -115,11 +115,11 @@ DB_DIALECT=sqlite
 
 Below are the **relevant commands**:
 
-- **`yarn dev:config`**: Starts the **configuration server** in dev mode.
-- **`yarn dev:run-bots`**: Starts the **bot runner** in dev mode.
-- **`yarn start:config`**: Runs the **configuration server** from the compiled `dist` folder.
-- **`yarn start:run-bots`**: Runs the **bot runner** from the compiled `dist` folder.
-- **`yarn build`**: Builds the project for production, including server and client assets.
+- **`npm run dev:config`**: Starts the **configuration server** in dev mode.
+- **`npm run dev:run-bots`**: Starts the **bot runner** in dev mode.
+- **`npm run start:config`**: Runs the **configuration server** from the compiled `dist` folder.
+- **`npm run start:run-bots`**: Runs the **bot runner** from the compiled `dist` folder.
+- **`npm run build`**: Builds the project for production, including server and client assets.
 
 ---
 
@@ -127,7 +127,7 @@ Below are the **relevant commands**:
 
 1. **Install Dependencies**
    ```bash
-   yarn install
+   npm install
    ```
 
 2. **Database**
@@ -137,11 +137,11 @@ Below are the **relevant commands**:
 3. **Start in Development Mode**
     - **Configuration Page**:
       ```bash
-      yarn dev:config
+      npm run dev:config
       ```
     - **Bot Runner**:
       ```bash
-      yarn dev:run-bots
+      npm run dev:run-bots
       ```
 ---
 
@@ -149,17 +149,17 @@ Below are the **relevant commands**:
 
 1. **Build the Project**
    ```bash
-   yarn build
+   npm build
    ```
 
 2. **Start the Compiled Server**
     - **Configuration Page**:
       ```bash
-      yarn start:config
+      npm run start:config
       ```
     - **Bot Runner**:
       ```bash
-      yarn start:run-bots
+      npm run start:run-bots
       ```
 
 ---
