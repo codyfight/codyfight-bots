@@ -19,8 +19,8 @@ try {
 
   // Time-based error handling
   // if max errors occurs within time window, execution of bot is stopped
-  const MAX_ERRORS = 3
-  const ERROR_TIME_WINDOW = 3 * 60 * 1000
+  const MAX_ERRORS = 100
+  const ERROR_TIME_WINDOW = 5 * 60 * 1000
   const botErrorLogs = new Map<string, number[]>()
 
   const botPromises = cbots.map(async (cbot) => {
