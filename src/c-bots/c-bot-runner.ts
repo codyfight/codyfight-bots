@@ -19,7 +19,7 @@ try {
 
   // Time-based error handling
   // if max errors occurs within time window, execution of bot is stopped
-  const MAX_ERRORS = 100
+  const MAX_ERRORS = 5000
   const ERROR_TIME_WINDOW = 5 * 60 * 1000
   const botErrorLogs = new Map<string, number[]>()
 
