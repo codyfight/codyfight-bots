@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
-import { AxiosError } from 'axios'
+/** Returns how long to wait (in ms) based on the error type/response. */
+import axios from 'axios' // Ensure axios is imported
 import { ERROR_WAIT_LONG, ERROR_WAIT_SHORT } from './constants.js'
 import GameError from '../game/utils/game-error.js'
+import Logger from './logger.js'
 
 
 /**
@@ -50,15 +52,24 @@ export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Returns how long to wait (in ms) based on the error type/response. */
 export function getWaitTime(error: unknown): number {
-  if (error instanceof AxiosError) {
-    // For 5xx or missing status, wait longer
-    const status = error.response?.status;
-    if (!status || status >= 500) {
-      return ERROR_WAIT_LONG;
-    }
+  Logger.info(`Error: ${error}`);
+
+  if (axios.isAxiosError(error)) {
+    Logger.info("isAxiosError = true");
+  } else {
+    Logger.info("isAxiosError = false");
   }
-  // Default short wait
+
+  const status = Number((error as any)?.response?.status);
+
+  Logger.info(`Extracted ERROR STATUS: ${status}`);
+
+  if (isNaN(status) || status >= 500) {
+    Logger.info(`Returning LONG wait time: ${ERROR_WAIT_LONG} ms`);
+    return ERROR_WAIT_LONG;
+  }
+  
+  Logger.info(`Returning SHORT wait time: ${ERROR_WAIT_SHORT} ms`);
   return ERROR_WAIT_SHORT;
 }
