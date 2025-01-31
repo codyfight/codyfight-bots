@@ -38,7 +38,6 @@ async function fetchBots(): Promise<void> {
     <td>${bot.ckey}</td>
     <td>${modeLabel}</td>
     <td>${bot.url}</td>
-    <td>${bot.logging ? "Yes" : "No"}</td>
     <td>${moveStrategyLabel}</td>
     <td>${castStrategyLabel}</td>
     <td>

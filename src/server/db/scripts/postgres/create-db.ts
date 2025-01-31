@@ -19,7 +19,6 @@ try {
       ckey TEXT PRIMARY KEY,
       mode INTEGER NOT NULL,
       url TEXT NOT NULL,
-      logging BOOLEAN NOT NULL,
       move_strategy TEXT NOT NULL,
       cast_strategy TEXT NOT NULL
     );

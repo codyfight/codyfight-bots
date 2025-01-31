@@ -33,20 +33,13 @@ export class SqliteCBotRepository implements ICBotRepository {
       const db = new sqlite3.Database(this.dbPath)
 
       const query = `
-          INSERT INTO bots (ckey, mode, url, logging, move_strategy, cast_strategy)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO bots (ckey, mode, url, move_strategy, cast_strategy)
+          VALUES (?, ?, ?, ?, ?)
       `
 
       db.run(
         query,
-        [
-          bot.ckey,
-          bot.mode,
-          bot.url,
-          bot.logging ? 1 : 0,
-          bot.move_strategy,
-          bot.cast_strategy
-        ],
+        [bot.ckey, bot.mode, bot.url, bot.move_strategy, bot.cast_strategy],
         (err) => {
           db.close()
           if (err) return reject(err)
@@ -77,7 +70,6 @@ export class SqliteCBotRepository implements ICBotRepository {
       ckey: row.ckey,
       mode: row.mode,
       url: row.url,
-      logging: Boolean(row.logging),
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy
     }
