@@ -1,5 +1,5 @@
 import { ICBotRepository } from './c-bot-repository.interface.js'
-import ICBotConfig from '../../../c-bots/c-bot/c-bot-config.interface.js'
+import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 
 /**
  * Example of a custom implementation of the ICBotRepository interface.
@@ -26,7 +26,36 @@ class CustomCBotRepository implements ICBotRepository {
    */
   addBot(bot: ICBotConfig): Promise<void> {
     // Implement logic to add a bot record to your custom database.
-    return Promise.resolve(undefined); // Replace with actual logic.
+    return Promise.resolve(undefined) // Replace with actual logic.
+  }
+
+  /**
+   * Get a single bots from the database using the ckey.
+   *
+   * @returns A promise that resolves a bot configuration.
+   */
+  getBot(ckey: string): Promise<ICBotConfig> {
+    throw new Error('Method not implemented.')
+  }
+
+  /**
+   * Fetch all bots from the database.
+   *
+   * @returns A promise that resolves with an array of all bot configurations.
+   */
+  getAllBots(): Promise<ICBotConfig[]> {
+    // Implement logic to fetch all bot records from your custom database.
+    return Promise.resolve([]) // Replace with actual logic.
+  }
+
+  /**
+   * Updates a bot in the database using its ckey and provide params.
+   *
+   * @param ICBotConfig- The configuration of a bot to update.
+   * @returns A promise that resolves when the bot is updated.
+   */
+  updateBot(bot: ICBotConfig): Promise<void> {
+    return Promise.resolve(undefined)
   }
 
   /**
@@ -37,18 +66,9 @@ class CustomCBotRepository implements ICBotRepository {
    */
   deleteBot(ckey: string): Promise<void> {
     // Implement logic to delete a bot record from your custom database.
-    return Promise.resolve(undefined); // Replace with actual logic.
+    return Promise.resolve(undefined) // Replace with actual logic.
   }
 
-  /**
-   * Fetch all bots from the database.
-   *
-   * @returns A promise that resolves with an array of all bot configurations.
-   */
-  getAllBots(): Promise<ICBotConfig[]> {
-    // Implement logic to fetch all bot records from your custom database.
-    return Promise.resolve([]); // Replace with actual logic.
-  }
 }
 
-export default CustomCBotRepository;
+export default CustomCBotRepository

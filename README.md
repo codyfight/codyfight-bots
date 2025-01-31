@@ -167,7 +167,7 @@ Below are the **relevant commands**:
 ## **Extending the Database Layer**
 
 To add support for a new database type (e.g., MongoDB):
-- See [`src/server/db/repository/custom-c-bot-repository.ts`](./src/server/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
+- See [`src/server/db/repository/custom-c-bot-repository.ts`](src/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
 
 ---
 

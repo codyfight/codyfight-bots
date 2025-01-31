@@ -1,7 +1,7 @@
 import { SqliteCBotRepository } from './sqlite-c-bot-repository.js'
 import { PostgresCBotRepository } from './postgres-c-bot-repository.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
-import { getEnvVar } from '../../../utils/utils.js'
+import { getEnvVar } from '../../utils/utils.js'
 
 /**
  * Factory function to create a `CBotRepository` based on the configured database dialect.

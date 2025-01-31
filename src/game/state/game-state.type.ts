@@ -1,9 +1,8 @@
 import { ITile } from '../map/tile/tile.type.js'
 import { IPlayerAgent, ISpecialAgent } from '../agents/game-agent.type.js'
 
-
 export interface IGameState {
-  map: ITile [][]
+  map: ITile[][]
   state: IState
   verdict: IVerdict
   players: {
@@ -25,7 +24,7 @@ export enum GameMode {
   Sandbox = 0,
   FriendlyDuel = 1,
   Casual = 2,
-  LlamasMaze = 3,
+  Ranked = 3,
   FactionWars = 4,
   Blitz = 5,
   Tournament = 6,
@@ -72,4 +71,4 @@ enum VerdictStatement {
 // Options for dropdown
 export const gameModeOptions = Object.entries(GameMode)
   .filter(([key, value]) => typeof value === 'number')
-  .map(([key, value]) => ({ label: key, value: value }));
+  .map(([key, value]) => ({ label: key, value: value }))
