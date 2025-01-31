@@ -43,8 +43,6 @@ class GameState implements IUpdatable {
 
   public update(gameState: IGameState): void {
     try {
-      this.validateState(gameState)
-
       const { bearer, opponent } = gameState.players
       const { special_agents } = gameState
 
@@ -84,11 +82,6 @@ class GameState implements IUpdatable {
     return JSON.stringify(this.status)
   }
 
-  private validateState(gameState: IGameState){
-    if(gameState.verdict.context == "game-not-initialized" && gameState.state.status == GameStatus.Empty){
-      throw new Error("Game not initialised")
-    }
-  }
 }
 
 export default GameState
