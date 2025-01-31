@@ -1,7 +1,6 @@
 import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
 import GameState from '../../game/state/game-state.js'
 import { IGameAPI } from '../api/game-api.interface.js'
-import Logger from '../../utils/logger.js'
 import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
 import { safeApiCall } from '../../utils/utils.js'
 import Skill from '../../game/skills/skill.js'
@@ -10,6 +9,7 @@ import ICBotConfig from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import { createGameAPI } from '../api/game-api-factory.js'
+import Logger from '../../utils/logger.js'
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -39,13 +39,10 @@ class CBot {
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
-  private logger: Logger
-
   constructor({
     ckey,
     mode,
     url,
-    logging,
     move_strategy,
     cast_strategy
   }: ICBotConfig) {
@@ -53,7 +50,6 @@ class CBot {
     this.mode = mode
     this.url = url
     this.gameAPI = createGameAPI(url)
-    this.logger = new Logger(logging)
 
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
@@ -62,28 +58,23 @@ class CBot {
   public async run() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      this.logger.startRun(this.ckey)
+
       const status = this.getStatus()
 
       switch (status) {
         case GameStatus.Empty:
-          this.logger.logGameStatus(this.ckey, status, 'init')
           await this.init()
           break
         case GameStatus.Registering:
-          this.logger.logGameStatus(this.ckey, status, 'check')
           await this.check()
           break
         case GameStatus.Playing:
-          this.logger.logGameStatus(this.ckey, status, 'play')
           await this.play()
           break
         case GameStatus.Ended:
-          this.logger.logGameStatus(this.ckey, status, 'init')
           await this.init()
           break
         default:
-          this.logger.logGameStatus(this.ckey, status, 'check')
           await this.check()
           break
       }
@@ -136,6 +127,7 @@ class CBot {
   }
 
   private async init() {
+    Logger.debug(`${this.ckey}, ${this.getStatus()}, init()`)
     const initGameState = async () => this.gameAPI.init(this.ckey, this.mode);
     const gameStateData = await safeApiCall(initGameState);
 
@@ -146,6 +138,7 @@ class CBot {
   }
 
   private async check(): Promise<void> {
+    Logger.debug(`${this.ckey}, ${this.getStatus()}, check()`)
     const checkGameState = async () => this.gameAPI.check(this.ckey)
     const gameStateData = await safeApiCall(checkGameState)
 
@@ -155,6 +148,7 @@ class CBot {
   }
 
   private async cast(skill: Skill, target: Position) {
+    Logger.debug(`${this.ckey}, ${this.getStatus()}, cast()`)
     const castSkill = async () => this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
     const gameStateData = await safeApiCall(castSkill)
 
@@ -164,6 +158,7 @@ class CBot {
   }
 
   private async move(position: Position) {
+    Logger.debug(`${this.ckey}, ${this.getStatus()}, move()`)
     const moveAgent = async () =>  this.gameAPI.move(this.ckey, position.x, position.y)
     const gameStateData = await safeApiCall(moveAgent)
 

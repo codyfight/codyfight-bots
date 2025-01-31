@@ -1,46 +1,59 @@
-import { GameStatus } from '../game/state/game-state.type.js'
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3
+}
 
 class Logger {
-  private readonly loggingEnabled: boolean
-  private runCount = 0
-  private lastRunTime: number | null = null
+  private static level: LogLevel = LogLevel.INFO
 
-  constructor(loggingEnabled = false) {
-    this.loggingEnabled = loggingEnabled
+  public static setLogLevel(level: LogLevel): void {
+    Logger.level = level
   }
 
-  startRun(ckey: string): void {
-    const currentTime = Date.now()
-    const timeBetweenTurns =
-      this.lastRunTime !== null ? currentTime - this.lastRunTime : 0
-    this.lastRunTime = currentTime
-    this.runCount++
-
-    this.logInfo(
-      `ckey: ${ckey}, Run Count: ${this.runCount}, Time Between Turns: ${timeBetweenTurns}ms`
-    )
-  }
-
-  logGameStatus(ckey: string, status: GameStatus, action: string): void {
-    const statusName = GameStatus[status]
-    this.logDebug(`ckey: ${ckey}: ${statusName} -> ${action}`)
-  }
-
-  logDebug(message: string): void {
-    if (this.loggingEnabled) {
-      console.debug(message)
+  public static debug(message: string): void {
+    if (Logger.level > LogLevel.DEBUG) {
+      return
     }
+
+    console.debug(Logger.format('[DEBUG] ' + message))
   }
 
-  logInfo(message: string): void {
-    if (this.loggingEnabled) {
-      console.info(message)
+  public static info(message: string): void {
+    if (Logger.level > LogLevel.INFO) {
+      return
     }
+
+    console.info(Logger.format('[INFO] ' + message))
   }
 
-  logError(message: string): void {
-    console.log(message)
+  public static warn(message: string): void {
+    if (Logger.level > LogLevel.WARN) {
+      return
+    }
+
+    console.warn(Logger.format('[WARN] ' + message))
   }
+
+  public static error(message: string, error: any): void {
+    if (Logger.level > LogLevel.ERROR) {
+      return
+    }
+
+    console.error(Logger.format('[ERROR] ' + message))
+    console.error(Logger.formatError(error))
+  }
+
+  private static format(message: string): string {
+    const now = new Date()
+    return `${now.toISOString()}: ${message}`
+  }
+
+  private static formatError(error: any): string {
+    return error?.toString() ?? 'Unknown error'
+  }
+
 }
 
 export default Logger

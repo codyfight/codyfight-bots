@@ -1,4 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
+import { AxiosError } from 'axios'
+import { ERROR_WAIT_LONG, ERROR_WAIT_SHORT } from './constants.js'
+import GameError from '../game/utils/game-error.js'
+
 
 /**
  * Safely retrieves an environment variable, throwing an error if it's not set.
@@ -24,8 +28,7 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
   try {
     return await fn()
   } catch (error) {
-    console.error(`Error in ${fn.name}`, error)
-    throw error
+    throw new GameError(error, {Message: `Error in ${fn.name}`})
   }
 }
 
@@ -39,4 +42,23 @@ export function asyncHandler(
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next)
   }
+}
+
+
+/** Helper to pause for a given number of milliseconds. */
+export function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Returns how long to wait (in ms) based on the error type/response. */
+export function getWaitTime(error: unknown): number {
+  if (error instanceof AxiosError) {
+    // For 5xx or missing status, wait longer
+    const status = error.status;
+    if (!status || status >= 500) {
+      return ERROR_WAIT_LONG;
+    }
+  }
+  // Default short wait
+  return ERROR_WAIT_SHORT;
 }

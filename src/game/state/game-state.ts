@@ -4,6 +4,7 @@ import GameAgentManager from '../agents/game-agent-manager.js'
 import GameMap from '../map/game-map.js'
 import PlayerAgent from '../agents/player-agent.js'
 import GameAgent from '../agents/game-agent.js'
+import GameError from '../utils/game-error.js'
 
 /**
  * The GameState class represents the current state of the game and provides methods to update it.
@@ -42,6 +43,8 @@ class GameState implements IUpdatable {
 
   public update(gameState: IGameState): void {
     try {
+      this.validateState(gameState)
+
       const { bearer, opponent } = gameState.players
       const { special_agents } = gameState
 
@@ -49,11 +52,11 @@ class GameState implements IUpdatable {
       this.gameAgentManager.update(bearer, opponent, special_agents)
       this.map.update(gameState.map, this.gameAgentManager.getAgents())
     } catch (error) {
-      console.error('An error occurred while updating game state', {
-        error,
-        context: this,
-        gameState
-      })
+      throw new GameError(error, {
+          Message: "An error occurred while updating game state",
+          GameState: this.toString()
+        }
+      );
     }
   }
 
@@ -75,6 +78,16 @@ class GameState implements IUpdatable {
 
   public isPlayerTurn(): boolean {
     return this.gameAgentManager.getBearer().isTurn()
+  }
+
+  public toString(): string {
+    return JSON.stringify(this.status)
+  }
+
+  private validateState(gameState: IGameState){
+    if(gameState.verdict.context == "game-not-initialized" && gameState.state.status == GameStatus.Empty){
+      throw new Error("Game not initialised")
+    }
   }
 }
 

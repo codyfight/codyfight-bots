@@ -1,6 +1,7 @@
 import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
 import TileEffectResolver from '../map/tile/effects/tile-effect-resolver.js'
+import GameError from '../utils/game-error.js'
 
 class BFSPathFinder {
   constructor(
@@ -22,10 +23,11 @@ class BFSPathFinder {
         }
       }
     } catch (error) {
-      console.error('Error in findPathToTarget()')
-      console.error('start position:', start)
-      console.error('Target position:', target)
-      throw error
+      throw new GameError(error, {
+        Message: 'Error in findPathToTarget()',
+        Start: start,
+        Target: target
+      })
     }
 
     return []
