@@ -54,7 +54,7 @@ export function wait(ms: number): Promise<void> {
 export function getWaitTime(error: unknown): number {
   if (error instanceof AxiosError) {
     // For 5xx or missing status, wait longer
-    const status = error.status;
+    const status = error.response?.status;
     if (!status || status >= 500) {
       return ERROR_WAIT_LONG;
     }
