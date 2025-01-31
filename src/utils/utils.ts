@@ -53,23 +53,19 @@ export function wait(ms: number): Promise<void> {
 }
 
 export function getWaitTime(error: unknown): number {
-  Logger.info(`Error: ${error}`);
+  const original = (error as GameError)?.error ?? error;
 
-  if (axios.isAxiosError(error)) {
-    Logger.info("isAxiosError = true");
-  } else {
-    Logger.info("isAxiosError = false");
+  if (axios.isAxiosError(original)) {
+    const status = Number(original.response?.status);
+
+    Logger.info(`ERROR STATUS: ${status}`);
+
+    if (isNaN(status) || status >= 500) {
+      Logger.info(`Returning LONG wait time: ${ERROR_WAIT_LONG} ms`);
+      return ERROR_WAIT_LONG;
+    }
   }
 
-  const status = Number((error as any)?.response?.status);
-
-  Logger.info(`Extracted ERROR STATUS: ${status}`);
-
-  if (isNaN(status) || status >= 500) {
-    Logger.info(`Returning LONG wait time: ${ERROR_WAIT_LONG} ms`);
-    return ERROR_WAIT_LONG;
-  }
-  
   Logger.info(`Returning SHORT wait time: ${ERROR_WAIT_SHORT} ms`);
   return ERROR_WAIT_SHORT;
 }
