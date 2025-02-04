@@ -1,4 +1,4 @@
-import { GameStatus, IGameState } from './game-state.type.js'
+import { GameMode, GameStatus, IGameState } from './game-state.type.js'
 import IUpdatable from '../interfaces/updatable.interface.js'
 import GameAgentManager from '../agents/game-agent-manager.js'
 import GameMap from '../map/game-map.js'
@@ -25,6 +25,7 @@ import GameError from '../utils/game-error.js'
 
 class GameState implements IUpdatable {
   private status: GameStatus
+  private mode: GameMode
   private gameAgentManager: GameAgentManager
   private readonly map: GameMap
 
@@ -33,6 +34,10 @@ class GameState implements IUpdatable {
     const { special_agents } = gameState
 
     this.status = gameState.state.status
+    this.mode = gameState.state.mode
+
+    this.map = new GameMap(gameState.map)
+
     this.gameAgentManager = new GameAgentManager(
       bearer,
       opponent,
@@ -47,6 +52,8 @@ class GameState implements IUpdatable {
       const { special_agents } = gameState
 
       this.status = gameState.state.status
+      this.mode = gameState.state.mode
+
       this.gameAgentManager.update(bearer, opponent, special_agents)
       this.map.update(gameState.map, this.gameAgentManager.getAgents())
     } catch (error) {
@@ -79,9 +86,20 @@ class GameState implements IUpdatable {
   }
 
   public toString(): string {
-    return JSON.stringify(this.status)
+    return `GameState {
+    status: "${this.status}",
+    mode: "${this.mode}",
+    opponent: "${this.getOpponent().name}"
+    }`;
   }
 
+  public toJSON(): object {
+    return {
+      status: this.status,
+      mode: this.mode,
+      opponent: this.getOpponent().name,
+    };
+  }
 }
 
 export default GameState

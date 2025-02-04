@@ -54,7 +54,7 @@ class CustomCBotRepository implements ICBotRepository {
    * @param ICBotConfig- The configuration of a bot to update.
    * @returns A promise that resolves when the bot is updated.
    */
-  updateBot(bot: ICBotConfig): Promise<void> {
+  updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
     return Promise.resolve(undefined)
   }
 

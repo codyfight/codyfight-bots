@@ -4,6 +4,6 @@ export interface ICBotRepository {
   addBot(bot: ICBotConfig): Promise<void>
   getBot(ckey: string): Promise<ICBotConfig>
   getAllBots(): Promise<ICBotConfig[]>
-  updateBot(bot: ICBotConfig): Promise<void>
+  updateBot(ckey: string, bot: ICBotConfig): Promise<void>
   deleteBot(ckey: string): Promise<void>
 }

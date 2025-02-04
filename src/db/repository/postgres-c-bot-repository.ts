@@ -63,7 +63,7 @@ export class PostgresCBotRepository implements ICBotRepository {
    * Updates an existing bot by ckey.
    * Throws an error if the bot doesn't exist.
    */
-  public async updateBot(bot: ICBotConfig): Promise<void> {
+  public async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
     const result = await this.client.query(
       `UPDATE bots
        SET mode = $1,
@@ -71,11 +71,11 @@ export class PostgresCBotRepository implements ICBotRepository {
            move_strategy = $3,
            cast_strategy = $4
        WHERE ckey = $5`,
-      [bot.mode, bot.url, bot.move_strategy, bot.cast_strategy, bot.ckey]
+      [bot.mode, bot.url, bot.move_strategy, bot.cast_strategy, ckey]
     );
     
     if (result.rowCount === 0) {
-      throw new Error(`Bot with ckey '${bot.ckey}' not found.`);
+      throw new Error(`Bot with ckey '${ckey}' not found.`);
     }
   }
 

@@ -60,7 +60,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    * Updates an existing bot by ckey.
    * Throws an error if the bot with the given ckey does not exist.
    */
-  public async updateBot(bot: ICBotConfig): Promise<void> {
+  public async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
     const query = `
     UPDATE bots
     SET mode = ?,
@@ -68,20 +68,23 @@ export class SqliteCBotRepository implements ICBotRepository {
         move_strategy = ?,
         cast_strategy = ?
     WHERE ckey = ?
-  `
+  `;
 
-    // Order of params matches the placeholders above
     const params = [
       bot.mode,
       bot.url,
       bot.move_strategy,
       bot.cast_strategy,
-      bot.ckey
-    ]
+      ckey
+    ];
 
-    // Use our helper method to run the update
-    await this.runSql(query, params)
+    const changes = await this.runSql(query, params);
+
+    if (changes === 0) {
+      throw new Error(`Bot with ckey ${ckey} not found`);
+    }
   }
+
 
   /**
    * Deletes a bot by its ckey.
@@ -107,20 +110,23 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Runs a SQL statement (INSERT, UPDATE, DELETE) without returning rows.
    */
-  private runSql(query: string, params: any[] = []): Promise<void> {
+  private runSql(query: string, params: any[] = []): Promise<number> {
     return new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.dbPath)
-      db.run(query, params, (err) => {
-        db.close()
+      const db = new sqlite3.Database(this.dbPath);
+
+      db.run(query, params, function (err) {  // Use function() to access `this.changes`
+        db.close();
 
         if (err) {
-          reject(err)
-          return
+          reject(err);
+          return;
         }
-        resolve()
-      })
-    })
+
+        resolve(this.changes);
+      });
+    });
   }
+
 
   /**
    * Runs a SQL statement expected to return a single row (e.g. SELECT one item).

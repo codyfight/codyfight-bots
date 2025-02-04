@@ -2,7 +2,8 @@ import 'dotenv/config'
 import path from 'path'
 import routes from './routes.js'
 
-import express, { Response } from 'express'
+import express from 'express'
+
 
 const app = express()
 
@@ -12,10 +13,16 @@ app.use(express.static(path.resolve('src/client/public')))
 
 app.use(routes)
 
-app.use((err: any, res: Response) => {
-  console.error(err.stack)
-  res.status(500).json({ error: err.message || 'An unknown error occurred' })
-})
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err.stack);
+
+  if (err.status) {
+    return res.status(err.status).json({ error: err.message });
+  }
+
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
+});
+
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
