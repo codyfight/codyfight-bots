@@ -32,7 +32,7 @@ class CBot {
   private readonly mode: GameMode
   private readonly url: string
 
-  private active = true
+  private active = false
 
   private game!: GameState
 
@@ -58,6 +58,8 @@ class CBot {
   }
 
   public async run() {
+    this.active = true
+
     while (this.active) {
 
       const status = this.getGameStatus()

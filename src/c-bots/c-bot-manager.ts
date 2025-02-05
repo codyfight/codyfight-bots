@@ -2,6 +2,7 @@ import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { getWaitTime, wait } from '../utils/utils.js'
+import ApiError from '../server/ApiError.js'
 
 class CBotManager {
   private botFactory: CBotFactory
@@ -28,16 +29,23 @@ class CBotManager {
     }
   }
 
+  /**
+   * Retrieves a single bot instance,
+   * registers it with the running bots and starts a game
+   */
   public async startBot(ckey: string) {
     const bot = await this.botFactory.createBot(ckey)
     this.registerAndStartBot(bot)
   }
 
+  /**
+   * Stops am active bot instance, and removes it from the running bots
+   */
   public stopBot(ckey: string) {
     const bot = this.activeBots.get(ckey)
 
     if (!bot) {
-      throw new Error(`Bot "${ckey}" is not running.`)
+      throw new ApiError(`Unable to stop bot with ckey ${ckey}, it is not currently running.`, 404);
     }
 
     bot.stop()
@@ -45,23 +53,21 @@ class CBotManager {
     Logger.info(`Bot ${ckey} stopped`)
   }
 
-  public getBotStatus(ckey: string): object {
-    const bot = this.activeBots.get(ckey);
-
-    if (!bot) {
-      return { error: `Bot "${ckey}" is not running.` };
-    }
-
-    return bot.getStatus();
+  /**
+   * Returns the status of a bot, weather it's running or not
+   * TODO - tidy this up, returning a tuple here is not the best implementation
+   */
+  public async getBotStatus(ckey: string): Promise<{ status: object; active: boolean }> {
+    const botInstance = this.activeBots.get(ckey) ?? await this.botFactory.createBot(ckey);
+    return { status: botInstance.getStatus(), active: botInstance.isActive() };
   }
-
 
   /**
    * Registers the bot in activeBots, starts its infinite loop.
    */
   private registerAndStartBot(bot: CBot): void {
     if (this.activeBots.has(bot.ckey)) {
-      throw new Error(`Bot "${bot.ckey}" is already running.`)
+      throw new ApiError(`Bot ${bot.ckey} is already running.`, 409)
     }
 
     this.activeBots.set(bot.ckey, bot)
@@ -77,7 +83,6 @@ class CBotManager {
 
   /** Runs a single bot in an infinite loop with error handling & retry. */
   private async runBot(bot: CBot): Promise<void> {
-    if (!bot.isActive()) return
 
     try {
       Logger.info(`Running Bot: ${bot.toString()}`)
@@ -87,6 +92,10 @@ class CBotManager {
       const waitTime = getWaitTime(error)
       Logger.info(`Waiting for ${waitTime} ms`)
       await wait(waitTime)
+    }
+
+    // if the bot crashes we want to retry
+    if (bot.isActive()){
       await this.runBot(bot)
     }
   }

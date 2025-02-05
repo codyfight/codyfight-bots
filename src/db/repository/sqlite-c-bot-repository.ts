@@ -4,6 +4,7 @@ import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import { getEnvVar } from '../../utils/utils.js'
 import LOGGER from '../../utils/logger.js'
+import ApiError from '../../server/ApiError.js'
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
@@ -41,7 +42,7 @@ export class SqliteCBotRepository implements ICBotRepository {
     const row = await this.runSqlGet(query, [ckey])
 
     if (!row) {
-      throw new Error(`Bot with ckey '${ckey}' not found.`)
+      throw new ApiError(`Bot with ckey '${ckey}' not found.`, 404)
     }
 
     return this.mapRow(row)
@@ -81,7 +82,7 @@ export class SqliteCBotRepository implements ICBotRepository {
     const changes = await this.runSql(query, params);
 
     if (changes === 0) {
-      throw new Error(`Bot with ckey ${ckey} not found`);
+      throw new ApiError(`Bot with ckey ${ckey} not found`, 404);
     }
   }
 

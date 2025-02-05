@@ -30,19 +30,19 @@ router.post('/bot',
 // Get Bot
 router.get('/bot/:ckey',
   asyncHandler(async (req: Request, res: Response) => {
-
-    const bot = await botRepository.getBot(req.params.ckey)
+    const bot = await botRepository.getBot(req.params.ckey);
 
     res.status(200).json({
       message: 'Bot retrieved successfully!',
       bot: bot
-    })
+    });
   })
-)
+);
+
 
 // Get All Bots
 router.get('/bots',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
 
     const bots = await botRepository.getAllBots()
 
@@ -93,7 +93,7 @@ router.post('/bot/:ckey/run',
 
     const { ckey } = req.params
     await botManager.startBot(ckey)
-    const status = botManager.getBotStatus(ckey)
+    const { status } = await botManager.getBotStatus(ckey);
 
     res.status(200).json({
       message: 'Bot started successfully!',
@@ -103,18 +103,18 @@ router.post('/bot/:ckey/run',
 )
 
 // Stop a bot
-router.post(
-  '/bot/:ckey/stop',
+router.post('/bot/:ckey/stop',
   asyncHandler(async (req: Request, res: Response) => {
 
     const { ckey } = req.params
     botManager.stopBot(ckey)
 
+    const { status } = await botManager.getBotStatus(ckey);
+
     res.status(200).json({
       message: 'Bot stopped successfully!',
-      status: 'stopped'
+      status: status
     })
-
   })
 )
 
@@ -123,21 +123,22 @@ router.get(
   '/bot/:ckey/status',
   asyncHandler(async (req: Request, res: Response) => {
 
-    const status = botManager.getBotStatus(req.params.ckey)
+    const { status, active } = await botManager.getBotStatus(req.params.ckey);
+    const message = active ? 'Bot is running.' : 'Bot is stopped.';
 
     res.status(200).json({
-      message: 'Status retrieved successfully!',
-      status: status
-    })
+      message,
+      status
+    });
   })
-)
+);
 
 // </editor-fold>
 
 // <editor-fold desc="Utility Routes">
 
 // Get options for config dropdowns
-router.get('/dropdown-options', (req: Request, res: Response) => {
+router.get('/dropdown-options', (_req: Request, res: Response) => {
   res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions })
 })
 

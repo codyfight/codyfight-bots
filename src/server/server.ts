@@ -3,7 +3,7 @@ import path from 'path'
 import routes from './routes.js'
 
 import express from 'express'
-
+import ApiError from './ApiError.js'
 
 const app = express()
 
@@ -16,8 +16,8 @@ app.use(routes)
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err.stack);
 
-  if (err.status) {
-    return res.status(err.status).json({ error: err.message });
+  if (err instanceof ApiError) {
+    return res.status(err.status).json({ error: err.message, details: err.details });
   }
 
   res.status(500).json({ error: err.message || 'Internal Server Error' });
