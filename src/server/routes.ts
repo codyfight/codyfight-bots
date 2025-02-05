@@ -46,12 +46,12 @@ router.get('/bot/:ckey',
 router.get('/bots',
   asyncHandler(async (req: Request, res: Response) => {
 
-    const user_id = parseInt(req.query.user_id as string);
-    if (!user_id) {
-      res.status(400).json({ message: "user_id is required" });
+    const player_id = parseInt(req.query.player_id as string);
+    if (!player_id) {
+      res.status(400).json({ message: "player_id is required" });
     }
 
-    const bots = await botRepository.getBots(user_id)
+    const bots = await botRepository.getBots(player_id)
 
     res.status(200).json({
       message: 'Bots retrieved successfully!',

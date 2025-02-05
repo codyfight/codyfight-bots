@@ -19,11 +19,11 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (user_id, ckey, mode, url, move_strategy, cast_strategy)
+      INSERT INTO bots (player_id, ckey, mode, url, move_strategy, cast_strategy)
       VALUES (?, ?, ?, ?, ?, ?)
     `
     const params = [
-      bot.user_id,
+      bot.player_id,
       bot.ckey,
       bot.mode,
       bot.url,
@@ -52,10 +52,10 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getBots(userId: number): Promise<ICBotConfig[]> {
-    const query = `SELECT * FROM bots WHERE user_id = ?`
+  public async getBots(playerId: number): Promise<ICBotConfig[]> {
+    const query = `SELECT * FROM bots WHERE player_id = ?`
 
-    const rows = await this.runSqlAll(query, [userId])
+    const rows = await this.runSqlAll(query, [playerId])
     return rows.map(row => this.mapRow(row))
   }
 
@@ -67,7 +67,7 @@ export class SqliteCBotRepository implements ICBotRepository {
     const query = `
     UPDATE bots
     SET 
-        user_id = ?,
+        player_id = ?,
         mode = ?,
         url = ?,
         move_strategy = ?,
@@ -76,7 +76,7 @@ export class SqliteCBotRepository implements ICBotRepository {
   `;
 
     const params = [
-      bot.user_id,
+      bot.player_id,
       bot.mode,
       bot.url,
       bot.move_strategy,
@@ -105,7 +105,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   private mapRow(row: any): ICBotConfig {
     return {
-      user_id: row.user_id,
+      player_id: row.player_id,
       ckey: row.ckey,
       mode: row.mode,
       url: row.url,

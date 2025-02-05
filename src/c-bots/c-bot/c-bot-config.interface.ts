@@ -3,7 +3,7 @@ import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 
 interface ICBotConfig {
-  user_id?: number
+  player_id?: number
   ckey: string
   mode: GameMode
   url: string
