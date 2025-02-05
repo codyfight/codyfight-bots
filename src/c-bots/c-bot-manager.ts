@@ -2,7 +2,7 @@ import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { getWaitTime, wait } from '../utils/utils.js'
-import ApiError from '../server/ApiError.js'
+import ApiError from '../server/api-error.js'
 
 class CBotManager {
   private botFactory: CBotFactory
@@ -18,7 +18,8 @@ class CBotManager {
    */
   public async runAll(): Promise<void> {
     Logger.info('Running All Bots...')
-    const cbots: CBot[] = await this.botFactory.createAllCBots()
+    const userId = 1
+    const cbots: CBot[] = await this.botFactory.createAllCBots(userId)
 
     for (const bot of cbots) {
       try {

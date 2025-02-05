@@ -3,7 +3,7 @@ import path from 'path'
 import routes from './routes.js'
 
 import express from 'express'
-import ApiError from './ApiError.js'
+import ApiError from './api-error.js'
 
 const app = express()
 

@@ -43,7 +43,7 @@ class CustomCBotRepository implements ICBotRepository {
    *
    * @returns A promise that resolves with an array of all bot configurations.
    */
-  getAllBots(): Promise<ICBotConfig[]> {
+  getBots(): Promise<ICBotConfig[]> {
     // Implement logic to fetch all bot records from your custom database.
     return Promise.resolve([]) // Replace with actual logic.
   }

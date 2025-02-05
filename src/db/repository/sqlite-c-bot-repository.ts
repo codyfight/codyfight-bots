@@ -4,7 +4,7 @@ import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import { getEnvVar } from '../../utils/utils.js'
 import LOGGER from '../../utils/logger.js'
-import ApiError from '../../server/ApiError.js'
+import ApiError from '../../server/api-error.js'
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
@@ -19,10 +19,11 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (ckey, mode, url, move_strategy, cast_strategy)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO bots (user_id, ckey, mode, url, move_strategy, cast_strategy)
+      VALUES (?, ?, ?, ?, ?, ?)
     `
     const params = [
+      bot.user_id,
       bot.ckey,
       bot.mode,
       bot.url,
@@ -51,9 +52,10 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getAllBots(): Promise<ICBotConfig[]> {
-    const query = `SELECT * FROM bots`
-    const rows = await this.runSqlAll(query)
+  public async getBots(userId: number): Promise<ICBotConfig[]> {
+    const query = `SELECT * FROM bots WHERE user_id = ?`
+
+    const rows = await this.runSqlAll(query, [userId])
     return rows.map(row => this.mapRow(row))
   }
 
@@ -64,7 +66,9 @@ export class SqliteCBotRepository implements ICBotRepository {
   public async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
     const query = `
     UPDATE bots
-    SET mode = ?,
+    SET 
+        user_id = ?,
+        mode = ?,
         url = ?,
         move_strategy = ?,
         cast_strategy = ?
@@ -72,6 +76,7 @@ export class SqliteCBotRepository implements ICBotRepository {
   `;
 
     const params = [
+      bot.user_id,
       bot.mode,
       bot.url,
       bot.move_strategy,
@@ -100,6 +105,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   private mapRow(row: any): ICBotConfig {
     return {
+      user_id: row.user_id,
       ckey: row.ckey,
       mode: row.mode,
       url: row.url,

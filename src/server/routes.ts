@@ -6,6 +6,7 @@ import { createCBotRepository } from '../db/repository/create-c-bot-repository.j
 import { asyncHandler, getEnvVar } from '../utils/utils.js'
 import Logger from '../utils/logger.js'
 import botManager from '../c-bots/c-bot-manager.js'
+import { authenticate } from './authentication.js'
 
 Logger.setLogLevel(+getEnvVar('LOG_LEVEL'))
 
@@ -16,6 +17,7 @@ const botRepository = createCBotRepository()
 
 // Create Bot
 router.post('/bot',
+  authenticate,
   asyncHandler(async (req: Request, res: Response) => {
 
     await botRepository.addBot(req.body)
@@ -42,9 +44,14 @@ router.get('/bot/:ckey',
 
 // Get All Bots
 router.get('/bots',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
 
-    const bots = await botRepository.getAllBots()
+    const user_id = parseInt(req.query.user_id as string);
+    if (!user_id) {
+      res.status(400).json({ message: "user_id is required" });
+    }
+
+    const bots = await botRepository.getBots(user_id)
 
     res.status(200).json({
       message: 'Bots retrieved successfully!',
@@ -55,6 +62,7 @@ router.get('/bots',
 
 // Update Bot
 router.put('/bot/:ckey',
+  authenticate,
   asyncHandler(async (req: Request, res: Response) => {
 
     const ckey = req.params.ckey
@@ -69,6 +77,7 @@ router.put('/bot/:ckey',
 
 // Delete Bot
 router.delete('/bot/:ckey',
+  authenticate,
   asyncHandler(async (req: Request, res: Response) => {
 
     const ckey = req.params.ckey
@@ -137,10 +146,11 @@ router.get(
 
 // <editor-fold desc="Utility Routes">
 
-// Get options for config dropdowns
-router.get('/dropdown-options', (_req: Request, res: Response) => {
-  res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions })
-})
+// Get options for dropdowns
+
+router.get('/bots/options', (_req: Request, res: Response) => {
+  res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions });
+});
 
 // </editor-fold>
 

@@ -5,6 +5,7 @@ const db = new sqlite3.Database('../bots.db')
 db.serialize(() => {
   db.run(`
       CREATE TABLE IF NOT EXISTS bots (
+        user_id INTEGER NOT NULL,
         ckey TEXT PRIMARY KEY,
         mode INTEGER NOT NULL,
         url TEXT NOT NULL,

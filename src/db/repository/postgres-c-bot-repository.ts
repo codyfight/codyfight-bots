@@ -54,7 +54,7 @@ export class PostgresCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getAllBots(): Promise<ICBotConfig[]> {
+  public async getBots(): Promise<ICBotConfig[]> {
     const result = await this.client.query(`SELECT * FROM bots`);
     return result.rows.map(this.mapRow);
   }
