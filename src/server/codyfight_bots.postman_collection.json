@@ -1,0 +1,328 @@
+{
+	"info": {
+		"_postman_id": "f83c32eb-7de0-4df9-ba5e-de863ff956bf",
+		"name": "Codyfight bots",
+		"description": "The **Codyfighter Bot API** is an application that allows developers to create, configure, and control bots in the Codyfighter game.\n\nThe API provides endpoints for:\n\n- Managing bots (creating, updating, deleting).\n    \n- Controlling bot execution (starting, stopping, checking status).\n    \n- Retrieving bot-related configuration options.\n    \n\n**Authentication** is required for modifying bots, using a JWT-based token system. Protected routes will return an error if unauthorized.\n\nAll responses follow a structured format, and errors are returned as JSON objects. Example:\n\n``` json\n{\n  \"error\": \"bot not found\"\n}\n\n ```\n\n---",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41750068"
+	},
+	"item": [
+		{
+			"name": "bot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "player_id",
+							"value": "{{player_id}}",
+							"type": "text"
+						},
+						{
+							"key": "ckey",
+							"value": "{{ckey}}",
+							"type": "text"
+						},
+						{
+							"key": "mode",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "url",
+							"value": "{{bot_url}}",
+							"description": "Environment where the bot will play",
+							"type": "text"
+						},
+						{
+							"key": "move_strategy",
+							"value": "Random",
+							"description": "Must be an existing strategy",
+							"type": "text"
+						},
+						{
+							"key": "cast_strategy",
+							"value": "Random",
+							"description": "Must be an existing strategy",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/bot",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot"
+					]
+				},
+				"description": "### Create Bot\n\nCreates a new bot with the specified configuration.\n\n#### Example Response\n\n**Code: 201**\n\n``` json\n{\n    \"message\": \"Bot added successfully!\",\n    \"bot\": {\n        \"user_id\": \"2\",\n        \"ckey\": \"12345\",\n        \"mode\": \"0\",\n        \"url\": \"https://game.codyfight.com\",\n        \"move_strategy\": \"Random\",\n        \"cast_strategy\": \"Random\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "bot",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}"
+					]
+				},
+				"description": "### Get Bot\n\nRetrieves a bot by its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot retrieved successfully!\",\n    \"bot\": {\n        \"user_id\": 2,\n        \"ckey\": \"12345\",\n        \"mode\": 0,\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"Random\",\n        \"cast_strategy\": \"Random\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "bots",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bots?player_id={{player_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bots"
+					],
+					"query": [
+						{
+							"key": "player_id",
+							"value": "{{player_id}}"
+						}
+					]
+				},
+				"description": "### Get All Bots\n\nRetrieves all bots associated with a user. The `user_id` must be provided as a query parameter.\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bots retrieved successfully!\",\n    \"bots\": [\n        {\n            \"user_id\": 1,\n            \"ckey\": \"123\",\n            \"mode\": 0,\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"move_strategy\": \"Random\",\n            \"cast_strategy\": \"Random\"\n        },\n        {\n            \"user_id\": 1,\n            \"ckey\": \"345\",\n            \"mode\": 0,\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"move_strategy\": \"Random\",\n            \"cast_strategy\": \"Random\"\n        }\n    ]\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "bot",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "user_id",
+							"value": "{{player_id}}",
+							"type": "text"
+						},
+						{
+							"key": "mode",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "url",
+							"value": "{{bot_url}}",
+							"type": "text"
+						},
+						{
+							"key": "move_strategy",
+							"value": "Idle",
+							"type": "text"
+						},
+						{
+							"key": "cast_strategy",
+							"value": "Random",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}"
+					]
+				},
+				"description": "### Update Bot\n\nUpdates an existing bot's configuration using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot updated successfully!\",\n    \"bot\": {\n        \"ckey\": \"1234\",\n        \"user_id\": \"1\",\n        \"mode\": \"0\",\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"Random\",\n        \"cast_strategy\": \"Random\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "bot",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}"
+					]
+				},
+				"description": "### Delete Bot\n\nDeletes a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot deleted successfully!\",\n    \"bot\": {\n        \"user_id\": 1,\n        \"ckey\": \"1234\",\n        \"mode\": 0,\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"Random\",\n        \"cast_strategy\": \"Random\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}/run",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}",
+						"run"
+					]
+				},
+				"description": "### Run Bot\n\nStarts a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot started successfully!\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": true,\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {}\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "stop",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}/stop",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}",
+						"stop"
+					]
+				},
+				"description": "### Stop Bot\n\nStops a running bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot stopped successfully!\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": false,\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {}\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bot/{{ckey}}/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bot",
+						"{{ckey}}",
+						"status"
+					]
+				},
+				"description": "### Get Bot Status\n\nRetrieves the current status of a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot is running.\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": true, // true if bot is running, otherwise false\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {\n            \"status\": 1,\n            \"mode\": 0,\n            \"opponent\": null\n        }\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "options",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/bots/options",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bots",
+						"options"
+					]
+				},
+				"description": "### Get Bot Configuration Options\n\nRetrieves available game modes, move strategies, and cast strategies for configuring bots.\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"gameModeOptions\": [\n        { \"label\": \"Sandbox\", \"value\": 0 },\n        { \"label\": \"Casual\", \"value\": 2 },\n        { \"label\": \"Ranked\", \"value\": 3 }\n    ],\n    \"moveStrategyOptions\": [\n        { \"label\": \"Idle\", \"value\": \"Idle\" },\n        { \"label\": \"Random\", \"value\": \"Random\" },\n        { \"label\": \"Exit\", \"value\": \"Exit\" },\n        { \"label\": \"Aggressive\", \"value\": \"Aggressive\" },\n        { \"label\": \"Dynamic\", \"value\": \"Dynamic\" }\n    ],\n    \"castStrategyOptions\": [\n        { \"label\": \"None\", \"value\": \"None\" },\n        { \"label\": \"Random\", \"value\": \"Random\" }\n    ]\n}\n\n ```"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "jwt",
+		"jwt": [
+			{
+				"key": "secret",
+				"value": "{{secret}}",
+				"type": "string"
+			},
+			{
+				"key": "algorithm",
+				"value": "HS256",
+				"type": "string"
+			},
+			{
+				"key": "isSecretBase64Encoded",
+				"value": false,
+				"type": "boolean"
+			},
+			{
+				"key": "payload",
+				"value": "{}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "queryParamKey",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "header",
+				"value": "{}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
