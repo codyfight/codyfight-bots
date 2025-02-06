@@ -1,6 +1,7 @@
 import { ICBotRepository } from '../../db/repository/c-bot-repository.interface.js'
 import CBot from './c-bot.js'
 import { createCBotRepository } from '../../db/repository/create-c-bot-repository.js'
+import { LOCAL_PLAYER_ID } from '../../utils/constants.js'
 
 
 class CBotFactory {
@@ -10,8 +11,8 @@ class CBotFactory {
     this.botRepository = createCBotRepository();
   }
 
-  public async createAllCBots(playerId: number): Promise<CBot[]> {
-    const botConfigs = await this.botRepository.getBots(playerId);
+  public async createAllCBots(): Promise<CBot[]> {
+    const botConfigs = await this.botRepository.getBots(LOCAL_PLAYER_ID);
 
     if (!botConfigs || botConfigs.length === 0) {
       throw new Error('No bot configurations found in the repository.');

@@ -9,6 +9,13 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+const directory = process.env.NODE_ENV === "development"
+  ? "src/client/public"
+  : "dist/client/public";
+
+app.use(express.static(path.resolve(directory)));
+
 app.use(express.static(path.resolve('src/client/public')))
 
 app.use(routes)

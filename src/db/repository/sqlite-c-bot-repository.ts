@@ -3,7 +3,6 @@ import sqlite3 from 'sqlite3'
 import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import { getEnvVar } from '../../utils/utils.js'
-import LOGGER from '../../utils/logger.js'
 import ApiError from '../../server/api-error.js'
 
 export class SqliteCBotRepository implements ICBotRepository {
@@ -11,7 +10,6 @@ export class SqliteCBotRepository implements ICBotRepository {
 
   constructor() {
     this.dbPath = path.resolve(process.cwd(), getEnvVar('SQLITE_DB_PATH'))
-    LOGGER.debug(`Database path: ${this.dbPath}`)
   }
 
   /**

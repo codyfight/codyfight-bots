@@ -17,9 +17,8 @@ class CBotManager {
    * Intended for local use only
    */
   public async runAll(): Promise<void> {
-    Logger.info('Running All Bots...')
-    const playerId = 1 // TODO - magic player id
-    const cbots: CBot[] = await this.botFactory.createAllCBots(playerId)
+
+    const cbots: CBot[] = await this.botFactory.createAllCBots()
 
     for (const bot of cbots) {
       try {

@@ -1,9 +1,17 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { getEnvVar } from '../utils/utils.js'
 
 const SECRET_KEY = process.env.API_SECRET || 'development';
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
+
+  const environment = getEnvVar('NODE_ENV')
+
+  if(environment === 'development'){
+    return next()
+  }
+  
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith('Bearer ')) {

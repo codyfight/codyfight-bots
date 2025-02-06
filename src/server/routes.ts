@@ -47,6 +47,7 @@ router.get('/bots',
   asyncHandler(async (req: Request, res: Response) => {
 
     const player_id = parseInt(req.query.player_id as string);
+    
     if (!player_id) {
       res.status(400).json({ message: "player_id is required" });
     }
