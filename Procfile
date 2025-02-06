@@ -1,2 +1,2 @@
-web: npm run start:config
-worker: npm run start:run-bots
+web: npm run start:server
+worker: npm run start:bot-runner
