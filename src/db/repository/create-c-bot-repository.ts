@@ -21,7 +21,7 @@ export function createCBotRepository(): ICBotRepository {
   const dbDialect = getEnvVar('DB_DIALECT')?.toLowerCase() || 'sqlite';
 
   switch (dbDialect) {
-    case 'postgres':
+    case 'postgresql':
       return new PostgresCBotRepository();
 
     case 'sqlite':
