@@ -28,9 +28,11 @@ import Logger from '../../utils/logger.js'
  */
 
 class CBot {
-  private readonly ckey: string
+  public readonly ckey: string
   private readonly mode: GameMode
   private readonly url: string
+
+  private active = false
 
   private game!: GameState
 
@@ -56,10 +58,11 @@ class CBot {
   }
 
   public async run() {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    this.active = true
 
-      const status = this.getStatus()
+    while (this.active) {
+
+      const status = this.getGameStatus()
 
       switch (status) {
         case GameStatus.Empty:
@@ -79,21 +82,45 @@ class CBot {
           break
       }
     }
+
+    await this.surrender()
   }
 
-  public getStatus(): GameStatus {
-    return this.game ? this.game.getStatus() : GameStatus.Empty
+  public stop(){
+    this.active = false
+  }
+
+  public isActive() : boolean{
+    return this.active
+  }
+
+  public getStatus(): object {
+    return {
+      bot: this.toJSON(),
+      game: this.game?.toJSON() || {}
+    };
   }
 
   public toString(): string {
-    return `
-    CBot {
-      ckey: "${this.ckey}",
-      mode: "${GameMode[this.mode]}",
-      url: "${this.url}",
-      moveStrategy: "${this.moveStrategy.constructor.name}",
-      castStrategy: "${this.castStrategy.constructor.name}",
-    }`
+    return `CBot {
+    ckey: "${this.ckey}",
+    active: ${this.active},
+    mode: "${GameMode[this.mode]}",
+    url: "${this.url}",
+    moveStrategy: "${this.moveStrategy.constructor.name}",
+    castStrategy: "${this.castStrategy.constructor.name}" 
+    }`;
+  }
+
+  public toJSON(): object {
+    return {
+      ckey: this.ckey,
+      active: this.active,
+      mode: GameMode[this.mode],
+      url: this.url,
+      moveStrategy: this.moveStrategy.constructor.name,
+      castStrategy: this.castStrategy.constructor.name,
+    };
   }
 
   private async play() {
@@ -127,7 +154,7 @@ class CBot {
   }
 
   private async init() {
-    Logger.debug(`${this.ckey}, ${this.getStatus()}, init()`)
+    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, init()`)
     const initGameState = async () => this.gameAPI.init(this.ckey, this.mode);
     const gameStateData = await safeApiCall(initGameState);
 
@@ -138,7 +165,7 @@ class CBot {
   }
 
   private async check(): Promise<void> {
-    Logger.debug(`${this.ckey}, ${this.getStatus()}, check()`)
+    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, check()`)
     const checkGameState = async () => this.gameAPI.check(this.ckey)
     const gameStateData = await safeApiCall(checkGameState)
 
@@ -148,7 +175,7 @@ class CBot {
   }
 
   private async cast(skill: Skill, target: Position) {
-    Logger.debug(`${this.ckey}, ${this.getStatus()}, cast()`)
+    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, cast()`)
     const castSkill = async () => this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
     const gameStateData = await safeApiCall(castSkill)
 
@@ -158,13 +185,27 @@ class CBot {
   }
 
   private async move(position: Position) {
-    Logger.debug(`${this.ckey}, ${this.getStatus()}, move()`)
+    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, move()`)
     const moveAgent = async () =>  this.gameAPI.move(this.ckey, position.x, position.y)
     const gameStateData = await safeApiCall(moveAgent)
 
     if (gameStateData) {
       this.game.update(gameStateData)
     }
+  }
+
+  private async surrender() {
+    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, surrender()`)
+    const surrender = async () => this.gameAPI.surrender(this.ckey)
+    const gameStateData = await safeApiCall(surrender)
+
+    if (gameStateData) {
+      this.game.update(gameStateData)
+    }
+  }
+
+  private getGameStatus(): GameStatus {
+    return this.game ? this.game.getStatus() : GameStatus.Empty
   }
 }
 

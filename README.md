@@ -111,17 +111,55 @@ DB_DIALECT=sqlite
 
 ---
 
-## **Scripts**
+## **Running the Bots**
 
-Below are the **relevant commands**:
+There are **two ways** to run the bots:
 
-- **`npm run dev:config`**: Starts the **configuration server** in dev mode.
-- **`npm run dev:run-bots`**: Starts the **bot runner** in dev mode.
-- **`npm run start:config`**: Runs the **configuration server** from the compiled `dist` folder.
-- **`npm run start:run-bots`**: Runs the **bot runner** from the compiled `dist` folder.
-- **`npm run build`**: Builds the project for production, including server and client assets.
+### Running Directly with NPM (Configuration Page)
+The simplest way to start and manage bots is by using npm scripts. This will launch a **configuration page** where you can add, remove, and manage bots.
+
+#### **Start the Configuration Server**
+```bash
+npm run dev:server
+```
+- This starts an Express server locally.
+- The **config page** will be available at `http://localhost:3000/`, where you can manage bots.
+
+#### **Run All Configured Bots**
+```bash
+npm run dev:bot-runner
+```
+- This starts all bots that have been added via the config page.
 
 ---
+
+### Running via API Requests
+For more granular control, you can use the provided API. This allows you to **start, stop, and manage bots individually** through HTTP requests.
+
+#### **Start the API Server**
+```bash
+npm run dev:server
+```
+- This launches the Express API on `http://localhost:3000`.
+
+#### **Control Bots via API**
+- You can interact with the API to create, update, delete, or start/stop individual bots.
+- A **Postman collection** with full API details can be found in:
+  ```
+  src/server/codyfight_bots.postman_collection.json
+  ```
+
+---
+
+### **Scripts Summary**
+| Command                 | Description |
+|-------------------------|------------|
+| `npm run dev:server`    | Start the server with a configuration page (localhost:3000). |
+| `npm run dev:bot-runner`| Start all configured bots. |
+| `npm run start:server`  | Start the **compiled** server (for production). |
+| `npm run start:bot-runner` | Start all bots from the compiled build. |
+| `npm run build`         | Build the project for production. |
+
 
 ## **Development**
 
@@ -167,7 +205,7 @@ Below are the **relevant commands**:
 ## **Extending the Database Layer**
 
 To add support for a new database type (e.g., MongoDB):
-- See [`src/server/db/repository/custom-c-bot-repository.ts`](./src/server/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
+- See [`src/server/db/repository/custom-c-bot-repository.ts`](src/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
 
 ---
 
@@ -190,4 +228,3 @@ You can extend or override the bot’s **move** and **cast** strategies by imple
 ## **License**
 
 This project is open-sourced under the [MIT License](LICENSE). Contributions are welcome!
-

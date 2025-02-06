@@ -2,20 +2,33 @@ import 'dotenv/config'
 import path from 'path'
 import routes from './routes.js'
 
-import express, { Response } from 'express'
+import express from 'express'
+import ApiError from './api-error.js'
 
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+const directory = process.env.NODE_ENV === "development"
+  ? "src/client/public"
+  : "dist/client/public";
+
+app.use(express.static(path.resolve(directory)));
+
 app.use(express.static(path.resolve('src/client/public')))
 
 app.use(routes)
 
-app.use((err: any, res: Response) => {
-  console.error(err.stack)
-  res.status(500).json({ error: err.message || 'An unknown error occurred' })
-})
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err.stack);
+
+  if (err instanceof ApiError) {
+    return res.status(err.status).json({ error: err.message, details: err.details });
+  }
+
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
+});
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {

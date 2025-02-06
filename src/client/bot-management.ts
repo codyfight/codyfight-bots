@@ -2,76 +2,87 @@ let dropdownOptions: {
   gameModeOptions: { label: string; value: number }[];
   moveStrategyOptions: { label: string; value: string }[];
   castStrategyOptions: { label: string; value: string }[];
-} = { gameModeOptions: [], moveStrategyOptions: [], castStrategyOptions: []};
+} = { gameModeOptions: [], moveStrategyOptions: [], castStrategyOptions: [] }
 
 async function fetchDropdownOptions(): Promise<void> {
-  const response = await fetch("/dropdown-options");
-  dropdownOptions = await response.json();
-  populateDropdown("mode", dropdownOptions.gameModeOptions);
-  populateDropdown("move_strategy", dropdownOptions.moveStrategyOptions);
-  populateDropdown("cast_strategy", dropdownOptions.castStrategyOptions);
+  const response = await fetch('/bots/options')
+  dropdownOptions = await response.json()
+  populateDropdown('mode', dropdownOptions.gameModeOptions)
+  populateDropdown('move_strategy', dropdownOptions.moveStrategyOptions)
+  populateDropdown('cast_strategy', dropdownOptions.castStrategyOptions)
 }
 
-function populateDropdown(name: string, options: { label: string; value: number | string } [] ): void {
-  const select = document.querySelector(`select[name="${name}"]`) as HTMLSelectElement;
+function populateDropdown(name: string, options: { label: string; value: number | string } []): void {
+  const select = document.querySelector(`select[name="${name}"]`) as HTMLSelectElement
 
   select.innerHTML = options
     .map((option) => `<option value="${option.value}">${option.label}</option>`)
-    .join("");
+    .join('')
 }
 
 async function fetchBots(): Promise<void> {
-  const response = await fetch("/bots");
-  const bots = await response.json();
+  try {
+    const response = await fetch(`/bots?player_id=1`)
 
-  const table = document.querySelector("#botTable tbody") as HTMLTableSectionElement;
-  table.innerHTML = "";
+    if (!response.ok) {
+      throw new Error(`Failed to fetch bots: ${response.statusText}`)
+    }
 
-  bots.forEach((bot: any) => {
-    const modeLabel = dropdownOptions.gameModeOptions.find((option) => option.value === bot.mode)?.label || bot.mode;
-    const moveStrategyLabel = bot.move_strategy;
-    const castStrategyLabel = bot.cast_strategy;
+    const data = await response.json()
+    const bots = data.bots
 
-    const row = document.createElement("tr");
+    const table = document.querySelector('#botTable tbody') as HTMLTableSectionElement
+    table.innerHTML = ''
 
-    row.innerHTML = `
-    <td>${bot.ckey}</td>
-    <td>${modeLabel}</td>
-    <td>${bot.url}</td>
-    <td>${moveStrategyLabel}</td>
-    <td>${castStrategyLabel}</td>
-    <td>
-      <button class="btn btn-danger btn-sm" onclick="deleteBot('${bot.ckey}')">
-          Delete
-      </button>
-    </td>`;
+    bots.forEach((bot: any) => {
+      const modeLabel = dropdownOptions.gameModeOptions.find((option) => option.value === bot.mode)?.label || bot.mode
+      const moveStrategyLabel = bot.move_strategy
+      const castStrategyLabel = bot.cast_strategy
 
-    table.appendChild(row);
-  });
+      const row = document.createElement('tr')
+
+      row.innerHTML = `
+        <td>${bot.ckey}</td>
+        <td>${modeLabel}</td>
+        <td>${bot.url}</td>
+        <td>${moveStrategyLabel}</td>
+        <td>${castStrategyLabel}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="deleteBot('${bot.ckey}')">
+            Delete
+          </button>
+        </td>`
+
+      table.appendChild(row)
+    })
+  } catch (error) {
+    console.error('Error fetching bots:', error)
+  }
 }
 
 async function addBot(event: Event): Promise<void> {
-  event.preventDefault();
-  const form = event.target as HTMLFormElement;
-  const formData = new FormData(form);
-  const data: any = Object.fromEntries(formData.entries());
+  event.preventDefault()
+  const form = event.target as HTMLFormElement
+  const formData = new FormData(form)
+  const data: any = Object.fromEntries(formData.entries())
+  data.player_id = 1
 
-  await fetch("/bots", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  await fetch('/bot', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
 
-  form.reset();
-  await fetchBots();
+  form.reset()
+  await fetchBots()
 }
 
 async function deleteBot(ckey: string): Promise<void> {
-  await fetch(`/bots/${ckey}`, { method: "DELETE" });
-  await fetchBots();
+  await fetch(`/bot/${ckey}`, { method: 'DELETE' })
+  await fetchBots()
 }
 
 window.onload = async (): Promise<void> => {
-  await fetchDropdownOptions();
-  await fetchBots();
-};
+  await fetchDropdownOptions()
+  await fetchBots()
+}
