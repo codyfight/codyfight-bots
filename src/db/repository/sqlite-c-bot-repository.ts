@@ -10,7 +10,7 @@ export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
 
   constructor() {
-    this.dbPath = path.resolve(process.cwd(), getEnvVar('DB_PATH'))
+    this.dbPath = path.resolve(process.cwd(), getEnvVar('SQLITE_DB_PATH'))
     LOGGER.debug(`Database path: ${this.dbPath}`)
   }
 

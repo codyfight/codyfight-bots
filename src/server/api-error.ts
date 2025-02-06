@@ -9,6 +9,15 @@ class ApiError extends Error {
     this.details = details;
     Object.setPrototypeOf(this, new.target.prototype);
   }
+
+  public static from(err: unknown, message = 'An unknown error occurred', status = 500 ): ApiError {
+
+    if (err instanceof ApiError) {
+      return err;
+    }
+
+    return new ApiError(message, status, err);
+  }
 }
 
 export default ApiError;

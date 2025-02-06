@@ -9,7 +9,7 @@ export class PostgresCBotRepository implements ICBotRepository {
   private readonly client: any;
 
   constructor() {
-    const connectionString = getEnvVar('DATABASE_URL');
+    const connectionString = getEnvVar('POSTGRES_URL');
     this.client = new Client({
       connectionString,
       ssl: { rejectUnauthorized: false },
