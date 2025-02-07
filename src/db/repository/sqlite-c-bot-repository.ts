@@ -4,6 +4,7 @@ import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
+import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
@@ -17,11 +18,10 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (player_id, ckey, mode, url, move_strategy, cast_strategy)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO bots (ckey, mode, url, move_strategy, cast_strategy)
+      VALUES (?, ?, ?, ?, ?)
     `
     const params = [
-      bot.player_id,
       bot.ckey,
       bot.mode,
       bot.url,
@@ -50,10 +50,10 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getBots(playerId: number): Promise<ICBotConfig[]> {
-    const query = `SELECT * FROM bots WHERE player_id = ?`
+  public async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+    const query = `SELECT * FROM bots`
 
-    const rows = await this.runSqlAll(query, [playerId])
+    const rows = await this.runSqlAll(query)
     return rows.map(row => this.mapRow(row))
   }
 
@@ -65,7 +65,6 @@ export class SqliteCBotRepository implements ICBotRepository {
     const query = `
     UPDATE bots
     SET 
-        player_id = ?,
         mode = ?,
         url = ?,
         move_strategy = ?,
@@ -74,7 +73,6 @@ export class SqliteCBotRepository implements ICBotRepository {
   `;
 
     const params = [
-      bot.player_id,
       bot.mode,
       bot.url,
       bot.move_strategy,
@@ -103,7 +101,6 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   private mapRow(row: any): ICBotConfig {
     return {
-      player_id: row.player_id,
       ckey: row.ckey,
       mode: row.mode,
       url: row.url,

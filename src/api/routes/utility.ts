@@ -4,11 +4,11 @@ import { moveStrategyOptions } from '../../c-bots/strategies/move/move-strategy.
 import { castStrategyOptions } from '../../c-bots/strategies/cast/cast-strategy.type.js'
 
 
-const router = Router();
+const router = Router()
 
 // Get options for dropdowns
 router.get('/bots/options', (_req: Request, res: Response) => {
-  res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions });
-});
+  res.json({ gameModeOptions, moveStrategyOptions, castStrategyOptions })
+})
 
-export default router;
+export default router

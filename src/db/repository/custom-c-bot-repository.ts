@@ -1,5 +1,6 @@
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
 
 /**
  * Example of a custom implementation of the ICBotRepository interface.
@@ -43,7 +44,7 @@ class CustomCBotRepository implements ICBotRepository {
    *
    * @returns A promise that resolves with an array of all bot configurations.
    */
-  getBots(): Promise<ICBotConfig[]> {
+  getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
     // Implement logic to fetch all bot records from your custom database.
     return Promise.resolve([]) // Replace with actual logic.
   }

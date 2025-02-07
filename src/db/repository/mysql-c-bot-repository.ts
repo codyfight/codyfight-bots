@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise'
 import config from '../../config/env.js'
 import Logger from '../../utils/logger.js'
 import ApiError from '../../errors/api-error.js'
+import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
 
 class MysqlCBotRepository implements ICBotRepository {
 
@@ -84,7 +85,14 @@ class MysqlCBotRepository implements ICBotRepository {
     }
   }
 
-  async getBots(playerId: number): Promise<ICBotConfig[]> {
+  async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+
+    const playerId = parseInt(filter.player_id as string);
+
+    if (!playerId) {
+      throw new ApiError('player_id is required', 500);
+    }
+
     const query = `SELECT * FROM bots WHERE player_id = ?`
 
     try {
@@ -95,7 +103,7 @@ class MysqlCBotRepository implements ICBotRepository {
       return rows as ICBotConfig[]
     } catch (err) {
       Logger.error('Error retrieving bots:', err)
-      throw new ApiError('Failed to retrieve bots', 500, err);
+      throw ApiError.from(err, 'Failed to retrieve bots');
     }
   }
 

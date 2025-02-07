@@ -16,7 +16,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   const token = header.split(' ')[1]
 
-  jwt.verify(token,  config.API_SECRET, (err, decoded) => {
+  jwt.verify(token, config.API_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ error: 'Invalid token.' })
     }
