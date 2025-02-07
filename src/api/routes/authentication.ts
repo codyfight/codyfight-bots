@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import config from '../../config/env.js'
 
-const SECRET_KEY = process.env.API_SECRET || 'development'
-
 export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   if (config.NODE_ENV === 'development') {
@@ -18,7 +16,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   const token = header.split(' ')[1]
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+  jwt.verify(token,  config.API_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ error: 'Invalid token.' })
     }
