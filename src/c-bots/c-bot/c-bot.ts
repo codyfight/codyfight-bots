@@ -5,11 +5,13 @@ import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-f
 import { safeApiCall } from '../../utils/utils.js'
 import Skill from '../../game/skills/skill.js'
 import Position from '../../game/map/position.js'
-import ICBotConfig from './c-bot-config.interface.js'
+import { ICBotConfig, ICBotStatus } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import { createGameAPI } from '../api/game-api-factory.js'
 import Logger from '../../utils/logger.js'
+import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
+import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -94,7 +96,7 @@ class CBot {
     return this.active
   }
 
-  public getStatus(): object {
+  public getStatus(): ICBotStatus {
     return {
       bot: this.toJSON(),
       game: this.game?.toJSON() || {}
@@ -102,26 +104,20 @@ class CBot {
   }
 
   public toString(): string {
-    return `CBot {
-    ckey: "${this.ckey}",
-    active: ${this.active},
-    mode: "${GameMode[this.mode]}",
-    url: "${this.url}",
-    moveStrategy: "${this.moveStrategy.constructor.name}",
-    castStrategy: "${this.castStrategy.constructor.name}" 
-    }`;
+    return JSON.stringify(this.toJSON(), null, 2);
   }
 
-  public toJSON(): object {
+  public toJSON(): ICBotConfig {
     return {
       ckey: this.ckey,
       active: this.active,
-      mode: GameMode[this.mode],
+      mode: this.mode,
       url: this.url,
-      moveStrategy: this.moveStrategy.constructor.name,
-      castStrategy: this.castStrategy.constructor.name,
+      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
+      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
     };
   }
+
 
   private async play() {
     await this.check()

@@ -1,10 +1,10 @@
 import path from 'node:path'
 import sqlite3 from 'sqlite3'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { ICBotRepository } from './c-bot-repository.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
-import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
+
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string

@@ -1,6 +1,5 @@
-import { ICBotRepository } from './c-bot-repository.interface.js'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 
 /**
  * Example of a custom implementation of the ICBotRepository interface.

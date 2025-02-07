@@ -3,6 +3,7 @@ import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { getWaitTime, wait } from '../utils/utils.js'
 import ApiError from '../errors/api-error.js'
+import { ICBotStatus } from './c-bot/c-bot-config.interface.js'
 
 class CBotManager {
   private botFactory: CBotFactory
@@ -53,14 +54,12 @@ class CBotManager {
     Logger.info(`Bot ${ckey} stopped`)
   }
 
-  /**
-   * Returns the status of a bot, weather it's running or not
-   * TODO - tidy this up, returning a tuple here is not the best implementation
-   */
-  public async getBotStatus(ckey: string): Promise<{ status: object; active: boolean }> {
+
+  public async getBotStatus(ckey: string): Promise<ICBotStatus> {
     const botInstance = this.activeBots.get(ckey) ?? await this.botFactory.createBot(ckey);
-    return { status: botInstance.getStatus(), active: botInstance.isActive() };
+    return botInstance.getStatus();
   }
+
 
   /**
    * Registers the bot in activeBots, starts its infinite loop.

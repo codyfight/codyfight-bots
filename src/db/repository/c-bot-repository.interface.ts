@@ -1,5 +1,8 @@
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+
+export interface IBotFilter {
+  player_id?: string;
+}
 
 export interface ICBotRepository {
   addBot(bot: ICBotConfig): Promise<void>

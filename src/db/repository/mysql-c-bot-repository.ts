@@ -1,10 +1,10 @@
-import { ICBotRepository } from './c-bot-repository.interface.js'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import mysql from 'mysql2/promise'
 import config from '../../config/env.js'
 import Logger from '../../utils/logger.js'
 import ApiError from '../../errors/api-error.js'
-import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
+
 
 class MysqlCBotRepository implements ICBotRepository {
 

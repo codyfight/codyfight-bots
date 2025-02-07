@@ -1,9 +1,9 @@
 import pkg from 'pg'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { ICBotRepository } from './c-bot-repository.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
 import config from '../../config/env.js'
-import { IBotFilter } from '../../api/interfaces/bot-api.interface.js'
+
 
 const { Client } = pkg;
 
