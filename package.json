@@ -18,7 +18,7 @@
     "copy:client": "cp -R src/client/public dist/client/public",
     "build": "npm run clean && npm run build:server && npm run build:client && npm run copy:client",
 
-    "dev:server": "node --loader ts-node/esm --watch src/server/server.ts",
+    "dev:server": "node --loader ts-node/esm --watch src/api/server.ts",
     "dev:bot-runner": "node --loader ts-node/esm --watch src/c-bots/c-bot-runner.ts",
     "dev:client": "tsc -p tsconfig.client.json --watch",
 

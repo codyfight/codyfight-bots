@@ -4,7 +4,7 @@ import GameAgentManager from '../agents/game-agent-manager.js'
 import GameMap from '../map/game-map.js'
 import PlayerAgent from '../agents/player-agent.js'
 import GameAgent from '../agents/game-agent.js'
-import GameError from '../utils/game-error.js'
+import GameError from '../../errors/game-error.js'
 
 /**
  * The GameState class represents the current state of the game and provides methods to update it.

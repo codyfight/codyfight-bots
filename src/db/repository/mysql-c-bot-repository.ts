@@ -1,9 +1,9 @@
 import { ICBotRepository } from './c-bot-repository.interface.js'
 import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import mysql from 'mysql2/promise'
-import { getEnvVar } from '../../utils/utils.js'
+import config from '../../config/env.js'
 import Logger from '../../utils/logger.js'
-import ApiError from '../../server/api-error.js'
+import ApiError from '../../errors/api-error.js'
 
 class MysqlCBotRepository implements ICBotRepository {
 
@@ -11,11 +11,11 @@ class MysqlCBotRepository implements ICBotRepository {
 
   constructor() {
 
-    const host = getEnvVar("MYSQL_HOST")
-    const user = getEnvVar("MYSQL_USER")
-    const password = getEnvVar("MYSQL_PASSWORD")
-    const database = getEnvVar("MYSQL_DB")
-    const connectionLimit = parseInt(getEnvVar("MYSQL_CONN_LIMIT"))
+    const host = config.MYSQL.HOST
+    const user = config.MYSQL.USER
+    const password = config.MYSQL.PASSWORD
+    const database = config.MYSQL.DB
+    const connectionLimit = config.MYSQL.CONNECTION_LIMIT
 
     this.pool = mysql.createPool({
       host: host,

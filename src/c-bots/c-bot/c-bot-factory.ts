@@ -1,7 +1,7 @@
 import { ICBotRepository } from '../../db/repository/c-bot-repository.interface.js'
 import CBot from './c-bot.js'
 import { createCBotRepository } from '../../db/repository/create-c-bot-repository.js'
-import { LOCAL_PLAYER_ID } from '../../utils/constants.js'
+import { LOCAL_PLAYER_ID } from '../../config/constants.js'
 
 
 class CBotFactory {

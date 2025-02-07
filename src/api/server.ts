@@ -4,14 +4,12 @@ import routes from './routes/index.js'
 
 import express from 'express'
 import Logger from '../utils/logger.js'
-import { getEnvVar } from '../utils/utils.js'
+import config from '../config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 
-const environment = getEnvVar('NODE_ENV')
-const port = getEnvVar('SERVER_PORT')
-const logLevel = +getEnvVar('LOG_LEVEL')
+const environment = config.NODE_ENV
+const port = config.SERVER_PORT
 
-Logger.setLogLevel(logLevel)
 const app = express()
 
 app.use(express.json())

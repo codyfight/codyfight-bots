@@ -2,14 +2,14 @@ import path from 'node:path'
 import sqlite3 from 'sqlite3'
 import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
-import { getEnvVar } from '../../utils/utils.js'
-import ApiError from '../../server/api-error.js'
+import config from '../../config/env.js'
+import ApiError from '../../errors/api-error.js'
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
 
   constructor() {
-    this.dbPath = path.resolve(process.cwd(), getEnvVar('SQLITE_DB_PATH'))
+    this.dbPath = path.resolve(process.cwd(), config.SQLITE_DB_PATH)
   }
 
   /**

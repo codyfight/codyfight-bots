@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { getEnvVar } from '../../utils/utils.js'
+import config from '../../config/env.js'
 
 const SECRET_KEY = process.env.API_SECRET || 'development'
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
 
-  if (getEnvVar('NODE_ENV') === 'development') {
+  if (config.NODE_ENV === 'development') {
     return next()
   }
 

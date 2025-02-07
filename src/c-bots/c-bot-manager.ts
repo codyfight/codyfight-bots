@@ -2,7 +2,7 @@ import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { getWaitTime, wait } from '../utils/utils.js'
-import ApiError from '../server/api-error.js'
+import ApiError from '../errors/api-error.js'
 
 class CBotManager {
   private botFactory: CBotFactory
