@@ -1,6 +1,9 @@
 import sqlite3 from 'sqlite3'
+import path from 'node:path'
 
-const db = new sqlite3.Database('../../bots.db')
+const dbPath = path.resolve(process.cwd(), 'src/db/bots.db');
+
+const db = new sqlite3.Database(dbPath)
 
 db.serialize(() => {
   db.run(`
