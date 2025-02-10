@@ -1,3 +1,5 @@
+import config from '../config/env.js'
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -6,7 +8,7 @@ export enum LogLevel {
 }
 
 class Logger {
-  private static level: LogLevel = LogLevel.INFO
+  private static level: LogLevel = config.LOG_LEVEL
 
   public static setLogLevel(level: LogLevel): void {
     Logger.level = level

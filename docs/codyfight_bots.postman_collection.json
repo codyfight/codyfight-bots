@@ -16,8 +16,8 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "player_id",
-							"value": "{{player_id}}",
+							"key": "user_id",
+							"value": "{{user_id}}",
 							"type": "text"
 						},
 						{
@@ -88,7 +88,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/bots?player_id={{player_id}}",
+					"raw": "{{base_url}}/bots?user_id={{user_id}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -97,8 +97,9 @@
 					],
 					"query": [
 						{
-							"key": "player_id",
-							"value": "{{player_id}}"
+							"key": "user_id",
+							"value": "{{user_id}}",
+							"description": "The user associated with the bot"
 						}
 					]
 				},
@@ -116,7 +117,7 @@
 					"urlencoded": [
 						{
 							"key": "user_id",
-							"value": "{{player_id}}",
+							"value": "{{user_id}}",
 							"type": "text"
 						},
 						{

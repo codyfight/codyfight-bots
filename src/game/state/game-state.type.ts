@@ -12,6 +12,11 @@ export interface IGameState {
   special_agents: ISpecialAgent[] | []
 }
 
+export interface IGameStatus {
+  status: GameStatus;
+  mode: GameMode;
+}
+
 export enum GameStatus {
   Terminated = -2,
   Empty = -1,

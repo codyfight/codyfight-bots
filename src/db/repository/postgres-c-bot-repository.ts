@@ -1,8 +1,9 @@
 import pkg from 'pg'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { ICBotRepository } from './c-bot-repository.interface.js'
-import { getEnvVar } from '../../utils/utils.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
+import config from '../../config/env.js'
+
 
 const { Client } = pkg;
 
@@ -10,7 +11,7 @@ export class PostgresCBotRepository implements ICBotRepository {
   private readonly client: any;
 
   constructor() {
-    const connectionString = getEnvVar('POSTGRES_URL');
+    const connectionString = config.POSTGRES_URL
     this.client = new Client({
       connectionString,
       ssl: { rejectUnauthorized: false },
@@ -55,7 +56,7 @@ export class PostgresCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getBots(): Promise<ICBotConfig[]> {
+  public async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
     const result = await this.client.query(`SELECT * FROM bots`);
     return result.rows.map(this.mapRow);
   }

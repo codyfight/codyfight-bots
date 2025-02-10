@@ -1,7 +1,8 @@
 import sqlite3 from 'sqlite3'
-import { getEnvVar } from '../../../utils/utils.js'
+import config from '../../../config/env.js'
 
-const db = new sqlite3.Database(getEnvVar('SQLITE_DB_PATH'))
+
+const db = new sqlite3.Database(config.SQLITE_DB_PATH)
 
 const botsToInsert = [
   {

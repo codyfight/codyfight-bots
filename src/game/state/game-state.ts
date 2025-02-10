@@ -1,10 +1,10 @@
-import { GameMode, GameStatus, IGameState } from './game-state.type.js'
+import { GameMode, GameStatus, IGameState, IGameStatus } from './game-state.type.js'
 import IUpdatable from '../interfaces/updatable.interface.js'
 import GameAgentManager from '../agents/game-agent-manager.js'
 import GameMap from '../map/game-map.js'
 import PlayerAgent from '../agents/player-agent.js'
 import GameAgent from '../agents/game-agent.js'
-import GameError from '../utils/game-error.js'
+import GameError from '../../errors/game-error.js'
 
 /**
  * The GameState class represents the current state of the game and provides methods to update it.
@@ -86,18 +86,13 @@ class GameState implements IUpdatable {
   }
 
   public toString(): string {
-    return `GameState {
-    status: "${this.status}",
-    mode: "${this.mode}",
-    opponent: "${this.getOpponent().name}"
-    }`;
+    return JSON.stringify(this.toJSON(), null, 2);
   }
 
-  public toJSON(): object {
+  public toJSON(): IGameStatus {
     return {
       status: this.status,
       mode: this.mode,
-      opponent: this.getOpponent().name,
     };
   }
 }

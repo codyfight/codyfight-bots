@@ -1,9 +1,10 @@
-import { ICBotRepository } from './c-bot-repository.interface.js'
-import ICBotConfig from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import mysql from 'mysql2/promise'
-import { getEnvVar } from '../../utils/utils.js'
+import config from '../../config/env.js'
 import Logger from '../../utils/logger.js'
-import ApiError from '../../server/api-error.js'
+import ApiError from '../../errors/api-error.js'
+
 
 class MysqlCBotRepository implements ICBotRepository {
 
@@ -11,11 +12,11 @@ class MysqlCBotRepository implements ICBotRepository {
 
   constructor() {
 
-    const host = getEnvVar("MYSQL_HOST")
-    const user = getEnvVar("MYSQL_USER")
-    const password = getEnvVar("MYSQL_PASSWORD")
-    const database = getEnvVar("MYSQL_DB")
-    const connectionLimit = parseInt(getEnvVar("MYSQL_CONN_LIMIT"))
+    const host = config.MYSQL.HOST
+    const user = config.MYSQL.USER
+    const password = config.MYSQL.PASSWORD
+    const database = config.MYSQL.DB
+    const connectionLimit = config.MYSQL.CONNECTION_LIMIT
 
     this.pool = mysql.createPool({
       host: host,
@@ -84,7 +85,14 @@ class MysqlCBotRepository implements ICBotRepository {
     }
   }
 
-  async getBots(playerId: number): Promise<ICBotConfig[]> {
+  async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+
+    const playerId = parseInt(filter.player_id as string);
+
+    if (!playerId) {
+      throw new ApiError('player_id is required', 500);
+    }
+
     const query = `SELECT * FROM bots WHERE player_id = ?`
 
     try {
@@ -95,7 +103,7 @@ class MysqlCBotRepository implements ICBotRepository {
       return rows as ICBotConfig[]
     } catch (err) {
       Logger.error('Error retrieving bots:', err)
-      throw new ApiError('Failed to retrieve bots', 500, err);
+      throw ApiError.from(err, 'Failed to retrieve bots');
     }
   }
 

@@ -1,7 +1,7 @@
 import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
 import TileEffectResolver from '../map/tile/effects/tile-effect-resolver.js'
-import GameError from '../utils/game-error.js'
+import GameError from '../../errors/game-error.js'
 
 class BFSPathFinder {
   constructor(

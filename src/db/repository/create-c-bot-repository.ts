@@ -1,8 +1,8 @@
 import { SqliteCBotRepository } from './sqlite-c-bot-repository.js'
 import { PostgresCBotRepository } from './postgres-c-bot-repository.js'
 import { ICBotRepository } from './c-bot-repository.interface.js'
-import { getEnvVar } from '../../utils/utils.js'
 import MysqlCBotRepository from './mysql-c-bot-repository.js'
+import config from '../../config/env.js'
 
 /**
  * Factory function to create a `CBotRepository` based on the configured database dialect.
@@ -18,7 +18,7 @@ import MysqlCBotRepository from './mysql-c-bot-repository.js'
  * @returns {ICBotRepository} An instance of the appropriate `CBotRepository` implementation.
  */
 export function createCBotRepository(): ICBotRepository {
-  const dbDialect = getEnvVar('DB_DIALECT')?.toLowerCase() || 'sqlite';
+  const dbDialect = config.DB_DIALECT
 
   switch (dbDialect) {
     case 'postgresql':
