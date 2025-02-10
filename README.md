@@ -4,6 +4,56 @@ A **TypeScript**, **Express**, and **Node.js** project that allows developers to
 
 ---
 
+## **Quick Start**
+
+To get up and running quickly, follow these steps:
+
+### **1. Install Prerequisites**
+Ensure you have the correct versions of the required dependencies installed:
+
+- **Node.js**: `>= 23.3.0`
+- **NPM**: `10.9.1` or later
+
+### **2. Clone the Repository and Navigate to the Project**
+```bash
+git clone https://github.com/codyfight/codyfight-bots.git
+cd codyfight-bots
+```
+
+### **3. Set Up Environment Variables**
+*The default settings should work out of the box, but you can adjust configurations in .env if needed.*
+
+Copy the `.env.template` file to `.env`:
+```bash
+cp .env.template .env
+```
+
+
+### **4. Install Dependencies**
+```bash
+npm install
+```
+
+### **5. Build the Project**
+```bash
+npm run build
+```
+
+### **6. Start the Server**
+```bash
+npm run start:server
+```
+- The configuration page will be available at [http://localhost:3000](http://localhost:3000)
+- Use this page to configure and manage your bots.
+
+### **7. Run the Bots**
+```bash
+npm run start:bot-runner
+```
+- This will start all bots that have been configured.
+
+---
+
 ## **Table of Contents**
 
 1. [Features](#features)
@@ -74,7 +124,7 @@ Create a `.env` file at the root of your project and add the necessary variables
 NODE_ENV=development
 
 # SQLite (default)
-DB_PATH=./src/server/db/bots.db
+DB_PATH=./src/db/bots.db
 DB_DIALECT=sqlite
 ```
 
@@ -87,10 +137,10 @@ DB_DIALECT=sqlite
    Run the following scripts to initialize and seed an SQLite database:
    ```bash
    # Create tables
-   node --loader ts-node/esm src/server/db/scripts/sqllite/create-db.ts
+   node --loader ts-node/esm src/db/scripts/sqllite/create-db.ts
 
    # Seed database with some dummy records
-   node --loader ts-node/esm src/server/db/scripts/sqllite/seed-db.ts
+   node --loader ts-node/esm src/db/scripts/sqllite/seed-db.ts
    ```
 
 2. **Confirm `.env`**:  
@@ -205,7 +255,7 @@ npm run dev:server
 ## **Extending the Database Layer**
 
 To add support for a new database type (e.g., MongoDB):
-- See [`src/server/db/repository/custom-c-bot-repository.ts`](src/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
+- See [`src/db/repository/custom-c-bot-repository.ts`](src/db/repository/custom-c-bot-repository.ts) for an example implementation of a custom database repository.
 
 ---
 
