@@ -26,4 +26,5 @@ app.use(errorHandler)
 
 app.listen(port, () => {
   Logger.info(`Server starting in ${environment} mode on port ${port}`);
+  Logger.info(`http://localhost:${port}`);
 })
