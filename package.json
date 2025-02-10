@@ -15,7 +15,7 @@
     "clean": "rm -rf dist",
     "build:server": "tsc",
     "build:client": "tsc -p tsconfig.client.json",
-    "copy:client": "cp -R src/client/public/* dist/client/public",
+    "copy:client": "cp -R src/client/public dist/client",
     "build": "npm run clean && npm run build:server && npm run build:client && npm run copy:client",
 
     "dev:server": "node --loader ts-node/esm --watch src/api/server.ts",
