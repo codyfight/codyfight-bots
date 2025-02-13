@@ -26,16 +26,16 @@ export enum GameStatus {
 }
 
 export enum GameMode {
-  Sandbox = 0,
+  Sandbox = 0, // dev only
   FriendlyDuel = 1,
   Casual = 2,
   Ranked = 3,
-  FactionWars = 4,
-  Blitz = 5,
-  Tournament = 6,
-  Bbl = 7,
-  Onboarding = 8,
-  Testing = 127
+  FactionWars = 4, // dev only
+  Blitz = 5, // dev only
+  Tournament = 6, // dev only
+  Bbl = 7, // dev only
+  Onboarding = 8, // dev only
+  Testing = 127 // dev only
 }
 
 export interface IState {
@@ -74,6 +74,25 @@ enum VerdictStatement {
 }
 
 // Options for dropdown
-export const gameModeOptions = Object.entries(GameMode)
-  .filter(([key, value]) => typeof value === 'number')
-  .map(([key, value]) => ({ label: key, value: value }))
+export function getFilteredGameModes(isDev: boolean) {
+  return Object.entries(GameMode)
+    .filter(([key, value]) => typeof value === 'number')
+    .filter(([key, value]) => {
+      // If user is not dev, exclude dev-only game modes
+      if (!isDev) {
+        // Dev-only modes
+        const devOnlyModes = [
+          GameMode.Sandbox,
+          GameMode.FactionWars,
+          GameMode.Blitz,
+          GameMode.Tournament,
+          GameMode.Bbl,
+          GameMode.Onboarding,
+          GameMode.Testing
+        ];
+        return !devOnlyModes.includes(value as GameMode);
+      }
+      return true;
+    })
+    .map(([key, value]) => ({ label: key, value: value }));
+}

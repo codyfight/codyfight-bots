@@ -12,6 +12,8 @@ import { createGameAPI } from '../api/game-api-factory.js'
 import Logger from '../../utils/logger.js'
 import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
+import config from '../../config/env.js'
+
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -32,7 +34,7 @@ import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 class CBot {
   public readonly ckey: string
   private readonly mode: GameMode
-  private readonly url: string
+  private readonly environment: string
 
   private active = false
 
@@ -46,14 +48,15 @@ class CBot {
   constructor({
     ckey,
     mode,
-    url,
+    environment,
     move_strategy,
     cast_strategy
   }: ICBotConfig) {
     this.ckey = ckey
     this.mode = mode
-    this.url = url
-    this.gameAPI = createGameAPI(url)
+    this.environment = environment
+
+    this.gameAPI = createGameAPI(environment == "production" ? config.PROD_API_URL : config.DEV_API_URL)
 
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
@@ -112,7 +115,7 @@ class CBot {
       ckey: this.ckey,
       active: this.active,
       mode: this.mode,
-      url: this.url,
+      environment: this.environment,
       move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
       cast_strategy: this.castStrategy.constructor.name as CastStrategyType
     };

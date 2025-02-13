@@ -2,7 +2,7 @@ CREATE TABLE bots (
     player_id BIGINT UNSIGNED NOT NULL,
     ckey VARCHAR(255) PRIMARY KEY,
     mode INT NOT NULL,
-    url VARCHAR(500) NOT NULL,
+    environment VARCHAR(50) NOT NULL DEFAULT 'production',
     move_strategy VARCHAR(50) NOT NULL,
     cast_strategy VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

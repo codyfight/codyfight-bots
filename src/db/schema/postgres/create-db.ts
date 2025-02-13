@@ -1,11 +1,11 @@
 import pkg from 'pg'
+import config from '../../../config/env.js'
 
 const { Client } = pkg
 
 const client = new Client({
   connectionString:
-    process.env.DATABASE_URL ??
-    'postgresql://username:password@localhost:5432/codyfight_bots',
+    config.POSTGRES_URL,
   ssl: {
     rejectUnauthorized: false
   }
@@ -18,7 +18,7 @@ try {
     CREATE TABLE IF NOT EXISTS bots (
       ckey TEXT PRIMARY KEY,
       mode INTEGER NOT NULL,
-      url TEXT NOT NULL,
+      environment TEXT NOT NULL DEFAULT 'production',
       move_strategy TEXT NOT NULL,
       cast_strategy TEXT NOT NULL
     );

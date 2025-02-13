@@ -22,7 +22,8 @@
 
   <div class="card p-4 w-100" style="max-width: 1200px;">
     <form onsubmit="addBot(event)" class="row g-3 align-items-center mb-4">
-      <div class="col-md-4">
+
+      <div class="col-md-6">
         <label for="ckey" class="form-label mb-0">CKey</label>
         <input
           type="text"
@@ -33,32 +34,35 @@
           required
         />
       </div>
-      <div class="col-md-4">
+
+      <div class="col-md-6">
         <label for="mode" class="form-label mb-0">Mode</label>
         <select name="mode" id="mode" class="form-select" required></select>
       </div>
-      <div class="col-md-4">
-        <label for="url" class="form-label mb-0">URL</label>
-        <input
-          type="url"
-          class="form-control"
-          name="url"
-          id="url"
-          placeholder="URL"
-          required
-        />
-      </div>
-      <div class="col-md-4 ">
+
+      <div class="col-md-6 ">
         <label for="move_strategy" class="form-label mb-0">Move Strategy</label>
         <select name="move_strategy" id="move_strategy" class="form-select" required></select>
       </div>
-      <div class="col-md-4">
+
+      <div class="col-md-6">
         <label for="cast_strategy" class="form-label mb-0">Cast Strategy</label>
         <select name="cast_strategy" id="cast_strategy" class="form-select" required></select>
       </div>
-      <div class="col-md-4 d-grid gap-2 mx-auto">
+
+      <div class="col-md-6 developer-option">
+        <label for="environment" class="form-label mb-0">Environment</label>
+        <select name="environment" id="environment" class="form-select" required>
+          <option value="development">Development</option>
+          <option selected="selected"  value="production">Production</option>
+          <option value="local">Local</option>
+        </select>
+      </div>
+
+      <div class="col-md-6 d-grid gap-2 mx-auto">
         <button type="submit" class="btn btn-success py-2 mt-4">Add Bot</button>
       </div>
+
     </form>
 
     <div class="table-responsive">
@@ -67,9 +71,9 @@
         <tr>
           <th scope="col">CKey</th>
           <th scope="col">Mode</th>
-          <th scope="col">URL</th>
           <th scope="col">Move Strategy</th>
           <th scope="col">Cast Strategy</th>
+          <th class="developer-option" scope="col">Environment</th>
           <th scope="col">Actions</th>
         </tr>
         </thead>

@@ -30,9 +30,9 @@ export class PostgresCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     await this.client.query(
-      `INSERT INTO bots (ckey, mode, url, move_strategy, cast_strategy)
+      `INSERT INTO bots (ckey, mode, environment, move_strategy, cast_strategy)
        VALUES ($1, $2, $3, $4, $5)`,
-      [bot.ckey, bot.mode, bot.url, bot.move_strategy, bot.cast_strategy]
+      [bot.ckey, bot.mode, bot.environment, bot.move_strategy, bot.cast_strategy]
     );
   }
 
@@ -69,11 +69,11 @@ export class PostgresCBotRepository implements ICBotRepository {
     const result = await this.client.query(
       `UPDATE bots
        SET mode = $1,
-           url = $2,
+           environment = $2,
            move_strategy = $3,
            cast_strategy = $4
        WHERE ckey = $5`,
-      [bot.mode, bot.url, bot.move_strategy, bot.cast_strategy, ckey]
+      [bot.mode, bot.environment, bot.move_strategy, bot.cast_strategy, ckey]
     );
     
     if (result.rowCount === 0) {
@@ -95,7 +95,7 @@ export class PostgresCBotRepository implements ICBotRepository {
     return {
       ckey: row.ckey,
       mode: row.mode,
-      url: row.url,
+      environment: row.environment,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy,
     };

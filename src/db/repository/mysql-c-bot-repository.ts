@@ -30,14 +30,14 @@ class MysqlCBotRepository implements ICBotRepository {
   async addBot(bot: ICBotConfig): Promise<void> {
 
     const query = `
-      INSERT INTO bots (player_id, ckey, mode, url, move_strategy, cast_strategy)
+      INSERT INTO bots (player_id, ckey, mode, environment, move_strategy, cast_strategy)
       VALUES (?, ?, ?, ?, ?, ?)`
 
     const params = [
       bot.player_id,
       bot.ckey,
       bot.mode,
-      bot.url,
+      bot.environment,
       bot.move_strategy,
       bot.cast_strategy
     ]
@@ -110,13 +110,13 @@ class MysqlCBotRepository implements ICBotRepository {
   async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
     const query = `
     UPDATE bots 
-    SET mode = ?, url = ?, move_strategy = ?, cast_strategy = ?
+    SET mode = ?, environment = ?, move_strategy = ?, cast_strategy = ?
     WHERE ckey = ?
   `
 
     const params = [
       bot.mode,
-      bot.url,
+      bot.environment,
       bot.move_strategy,
       bot.cast_strategy,
       ckey
