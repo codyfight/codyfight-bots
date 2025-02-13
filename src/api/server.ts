@@ -8,7 +8,7 @@ import config from '../config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 
 const environment = config.NODE_ENV
-const port = config.SERVER_PORT
+const port = process.env.PORT || config.SERVER_PORT || 3000;
 
 const app = express()
 

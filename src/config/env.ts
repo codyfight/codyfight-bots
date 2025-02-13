@@ -21,9 +21,6 @@ const config = {
   /** Environment mode (development, production, staging) */
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
 
-  /** USER for codyfight configuration (developer, user) */
-  USER: getEnvVar('USER', 'user'),
-
   /** URL for production environment where requests will be sent */
   PROD_API_URL: getEnvVar('PROD_API_URL', 'https://game.codyfight.com'),
 
