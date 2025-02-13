@@ -12,7 +12,7 @@ To get up and running quickly, follow these steps:
 Ensure you have the correct versions of the required dependencies installed:
 
 - **Node.js**: `>= 23.3.0`
-- **NPM**: `10.9.1` or later
+- **NPM**: `10.9.0` or later
 
 ### **2. Clone the Repository and Navigate to the Project**
 ```bash
