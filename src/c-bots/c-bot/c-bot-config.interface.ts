@@ -14,5 +14,5 @@ export interface ICBotConfig {
 
 export interface ICBotStatus {
   bot: ICBotConfig;
-  game: IGameStatus;
+  game: IGameStatus | object;
 }

@@ -8,6 +8,7 @@ import { ICBotStatus } from './c-bot/c-bot-config.interface.js'
 class CBotManager {
   private botFactory: CBotFactory
   private activeBots = new Map<string, CBot>()
+  private runningBotPromises = new Map<string, Promise<void>>();
 
   constructor() {
     this.botFactory = new CBotFactory()
@@ -43,15 +44,33 @@ class CBotManager {
    * Stops am active bot instance, and removes it from the running bots
    */
   public stopBot(ckey: string) {
-    const bot = this.activeBots.get(ckey)
+    const bot = this.activeBots.get(ckey);
 
     if (!bot) {
       throw new ApiError(`Unable to stop bot with ckey ${ckey}, it is not currently running.`, 404);
     }
 
-    bot.stop()
-    this.activeBots.delete(ckey)
-    Logger.info(`Bot ${ckey} stopped`)
+    bot.stop(); // ends the loop eventually
+    this.activeBots.delete(ckey); // optional to remove it from the map now
+    this.runningBotPromises.delete(ckey);
+    Logger.info(`Bot ${ckey} stopped`);
+  }
+
+  /**
+   * Stops all bots by setting their active flag to false,
+   * Then awaits all run() loops to end.
+   */
+  public async stopAll(): Promise<void> {
+
+    for (const bot of this.activeBots.values()) {
+      bot.stop();
+    }
+
+    await Promise.all([...this.runningBotPromises.values()]);
+
+    this.activeBots.clear();
+    this.runningBotPromises.clear();
+    Logger.info('All bots have been stopped.');
   }
 
 
@@ -60,24 +79,25 @@ class CBotManager {
     return botInstance.getStatus();
   }
 
-
   /**
    * Registers the bot in activeBots, starts its infinite loop.
    */
   private registerAndStartBot(bot: CBot): void {
-    if (this.activeBots.has(bot.ckey)) {
+    if (this.activeBots.has(bot.ckey())) {
       throw new ApiError(`Bot ${bot.ckey} is already running.`, 409)
     }
 
-    this.activeBots.set(bot.ckey, bot)
+    this.activeBots.set(bot.ckey(), bot)
 
-    // Start in the background; remove on crash
-    this.runBot(bot).catch(err => {
-      Logger.error(`Bot "${bot.ckey}" crashed unexpectedly:`, err)
-      this.activeBots.delete(bot.ckey)
-    })
+    const runPromise = this.runBot(bot).catch(err => {
+      Logger.error(`Bot "${bot.ckey()}" crashed unexpectedly:`, err);
+      this.activeBots.delete(bot.ckey());
+      this.runningBotPromises.delete(bot.ckey());
+    });
 
-    Logger.info(`Bot "${bot.ckey}" started`)
+    this.runningBotPromises.set(bot.ckey(), runPromise);
+
+    Logger.info(`Bot "${bot.ckey()}" started`)
   }
 
   /** Runs a single bot in an infinite loop with error handling & retry. */
