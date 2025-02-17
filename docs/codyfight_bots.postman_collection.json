@@ -16,8 +16,8 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "user_id",
-							"value": "{{user_id}}",
+							"key": "player_id",
+							"value": "{{player_id}}",
 							"type": "text"
 						},
 						{
@@ -31,21 +31,21 @@
 							"type": "text"
 						},
 						{
-							"key": "url",
-							"value": "{{bot_url}}",
-							"description": "Environment where the bot will play",
+							"key": "environment",
+							"value": "{{environment}}",
+							"description": "Enviorment where the bot will play (development, production)",
 							"type": "text"
 						},
 						{
 							"key": "move_strategy",
 							"value": "Random",
-							"description": "Must be an existing strategy",
+							"description": "Must be an exsisting strategy",
 							"type": "text"
 						},
 						{
 							"key": "cast_strategy",
 							"value": "Random",
-							"description": "Must be an existing strategy",
+							"description": "Must be an exsisting strategy",
 							"type": "text"
 						}
 					]
@@ -88,7 +88,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/bots?user_id={{user_id}}",
+					"raw": "{{base_url}}/bots?player_id={{player_id}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -97,9 +97,8 @@
 					],
 					"query": [
 						{
-							"key": "user_id",
-							"value": "{{user_id}}",
-							"description": "The user associated with the bot"
+							"key": "player_id",
+							"value": "{{player_id}}"
 						}
 					]
 				},
@@ -117,7 +116,7 @@
 					"urlencoded": [
 						{
 							"key": "user_id",
-							"value": "{{user_id}}",
+							"value": "{{player_id}}",
 							"type": "text"
 						},
 						{
@@ -138,6 +137,11 @@
 						{
 							"key": "cast_strategy",
 							"value": "Random",
+							"type": "text"
+						},
+						{
+							"key": "environment",
+							"value": "development",
 							"type": "text"
 						}
 					]
@@ -195,7 +199,7 @@
 						"run"
 					]
 				},
-				"description": "### Run Bot\n\nStarts a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot started successfully!\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": true,\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {}\n    }\n}\n\n ```"
+				"description": "### Run Bot\n\nStarts a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot started successfully!\",\n    \"bot\": {\n        \"ckey\": \"1234\",\n        \"active\": false,\n        \"mode\": 0,\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"RandomMoveStrategy\",\n        \"cast_strategy\": \"RandomCastStrategy\"\n    },\n    \"game\": {}\n}\n\n ```"
 			},
 			"response": []
 		},
@@ -205,7 +209,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/bot/{{ckey}}/stop",
+					"raw": "{{base_url}}/bot/{{ckey}}/stop?method=finish",
 					"host": [
 						"{{base_url}}"
 					],
@@ -213,9 +217,15 @@
 						"bot",
 						"{{ckey}}",
 						"stop"
+					],
+					"query": [
+						{
+							"key": "method",
+							"value": "finish"
+						}
 					]
 				},
-				"description": "### Stop Bot\n\nStops a running bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot stopped successfully!\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": false,\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {}\n    }\n}\n\n ```"
+				"description": "### Stop Bot\n\nStops a running bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot stopped successfully!\",\n    \"bot\": {\n        \"ckey\": \"1234\",\n        \"active\": false,\n        \"mode\": 0,\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"RandomMoveStrategy\",\n        \"cast_strategy\": \"RandomCastStrategy\"\n    },\n    \"game\": {}\n}\n\n ```"
 			},
 			"response": []
 		},
@@ -235,7 +245,7 @@
 						"status"
 					]
 				},
-				"description": "### Get Bot Status\n\nRetrieves the current status of a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot is running.\",\n    \"status\": {\n        \"bot\": {\n            \"ckey\": \"1234\",\n            \"active\": true, // true if bot is running, otherwise false\n            \"mode\": \"Sandbox\",\n            \"url\": \"https://game-dev.codyfight.com\",\n            \"moveStrategy\": \"RandomMoveStrategy\",\n            \"castStrategy\": \"RandomCastStrategy\"\n        },\n        \"game\": {\n            \"status\": 1,\n            \"mode\": 0,\n            \"opponent\": null\n        }\n    }\n}\n\n ```"
+				"description": "### Get Bot Status\n\nRetrieves the current status of a bot using its unique key (`ckey`).\n\n#### Example Response\n\n**Code: 200**\n\n``` json\n{\n    \"message\": \"Bot is stopped.\",\n    \"bot\": {\n        \"ckey\": \"1234\",\n        \"active\": false,\n        \"mode\": 0,\n        \"url\": \"https://game-dev.codyfight.com\",\n        \"move_strategy\": \"RandomMoveStrategy\",\n        \"cast_strategy\": \"RandomCastStrategy\"\n    },\n    \"game\": {}\n}\n\n ```"
 			},
 			"response": []
 		},
