@@ -9,7 +9,6 @@ const router = Router()
 // Get options for dropdowns
 router.get('/bots/options', (req: Request, res: Response) => {
   // Retrieve the user from query parameters (e.g., ?user=dev)
-  // or from req.params depending on your routing setup
   const { user } = req.query;
   const isDev = user === 'dev';
 

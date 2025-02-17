@@ -25,9 +25,17 @@ export enum GameStatus {
   Ended = 2
 }
 
+export enum BotStatus{
+  Initialising = "Initialising",
+  Playing = "Playing",
+  Finishing = "Finishing",
+  Surrendering = "Surrendering",
+  Finished = "Finished"
+}
+
 export enum GameMode {
-  Sandbox = 0, // dev only
-  FriendlyDuel = 1,
+  Sandbox = 0,
+  FriendlyDuel = 1, // dev only
   Casual = 2,
   Ranked = 3,
   FactionWars = 4, // dev only
@@ -82,7 +90,7 @@ export function getFilteredGameModes(isDev: boolean) {
       if (!isDev) {
         // Dev-only modes
         const devOnlyModes = [
-          GameMode.Sandbox,
+          GameMode.FriendlyDuel,
           GameMode.FactionWars,
           GameMode.Blitz,
           GameMode.Tournament,

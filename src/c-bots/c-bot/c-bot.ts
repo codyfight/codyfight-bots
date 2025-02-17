@@ -1,18 +1,11 @@
-import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
-import GameState from '../../game/state/game-state.js'
-import { IGameAPI } from '../api/game-api.interface.js'
+import { BotStatus, GameStatus } from '../../game/state/game-state.type.js'
 import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
-import { safeApiCall } from '../../utils/utils.js'
-import Skill from '../../game/skills/skill.js'
-import Position from '../../game/map/position.js'
-import { ICBotConfig, ICBotStatus } from './c-bot-config.interface.js'
+import { ICBotConfig, ICBotInfo } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
-import { createGameAPI } from '../api/game-api-factory.js'
-import Logger from '../../utils/logger.js'
 import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
-import config from '../../config/env.js'
+import GameClient from '../api/game-client.js'
 
 
 /**
@@ -32,179 +25,145 @@ import config from '../../config/env.js'
  */
 
 class CBot {
-  public readonly ckey: string
-  private readonly mode: GameMode
-  private readonly environment: string
 
-  private active = false
-
-  private game!: GameState
-
-  private gameAPI: IGameAPI
-
+  private status: BotStatus
+  private gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
-  constructor({
-    ckey,
-    mode,
-    environment,
-    move_strategy,
-    cast_strategy
-  }: ICBotConfig) {
-    this.ckey = ckey
-    this.mode = mode
-    this.environment = environment
-
-    this.gameAPI = createGameAPI(environment == "production" ? config.PROD_API_URL : config.DEV_API_URL)
-
+  constructor({ ckey, mode, environment, move_strategy, cast_strategy }: ICBotConfig) {
+    this.status = BotStatus.Initialising
+    this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
   }
 
+  public ckey(): string {
+    return this.gameClient.ckey
+  }
+
+  public getStatus(): BotStatus {
+    return this.status
+  }
+
+  public setStatus(status : BotStatus) {
+    this.status = status
+  }
+
+  public isPlaying(): boolean {
+    return this.status != BotStatus.Finished
+  }
+
+  public getInfo(): ICBotInfo {
+    return {
+      bot: this.toJSON(),
+      game: this.gameClient?.state?.toJSON() || {}
+    }
+  }
+
+  public toString(): string {
+    return JSON.stringify(this.toJSON(), null, 2)
+  }
+
+  public toJSON(): ICBotConfig {
+    return {
+      ckey: this.gameClient.ckey,
+      status: this.status,
+      mode: this.gameClient.mode,
+      environment: this.gameClient.environment,
+      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
+      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
+    }
+  }
+
   public async run() {
-    this.active = true
 
-    while (this.active) {
+    while (this.isPlaying()) {
 
-      const status = this.getGameStatus()
-
-      switch (status) {
+      switch (this.gameClient.status()) {
         case GameStatus.Empty:
           await this.init()
           break
         case GameStatus.Registering:
-          await this.check()
+          await this.gameClient.check()
           break
         case GameStatus.Playing:
           await this.play()
           break
         case GameStatus.Ended:
-          await this.init()
+          await this.handleRestart()
           break
         default:
-          await this.check()
+          await this.gameClient.check()
           break
       }
-    }
 
-    await this.surrender()
-  }
-
-  public stop(){
-    this.active = false
-  }
-
-  public isActive() : boolean{
-    return this.active
-  }
-
-  public getStatus(): ICBotStatus {
-    return {
-      bot: this.toJSON(),
-      game: this.game?.toJSON() || {}
-    };
-  }
-
-  public toString(): string {
-    return JSON.stringify(this.toJSON(), null, 2);
-  }
-
-  public toJSON(): ICBotConfig {
-    return {
-      ckey: this.ckey,
-      active: this.active,
-      mode: this.mode,
-      environment: this.environment,
-      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
-      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
-    };
-  }
-
-
-  private async play() {
-    await this.check()
-
-    if (this.game.isPlayerTurn()) {
-      await this.castSkills()
-    }
-
-    if (this.game.isPlayerTurn()) {
-      await this.performMove()
+      await this.handleBotStatus()
     }
   }
 
-  private async castSkills() {
-    const nextCast = this.castStrategy.determineCast(this.game)
+  private async handleBotStatus() : Promise<void> {
 
-    if (!nextCast) return
+    switch(this.status){
+      case BotStatus.Surrendering:
+        await this.gameClient.surrender()
+        this.status = BotStatus.Finishing
+        break
+      case BotStatus.Initialising:
+      case BotStatus.Playing:
+      case BotStatus.Finishing:
+      case BotStatus.Finished:
+      default:
+        // do nothing
+        break
+    }
 
-    const [skill, target] = nextCast
-
-    await this.cast(skill, target)
   }
 
-  private async performMove() {
-    const nextMove = this.moveStrategy.determineMove()
+  private async handleRestart(): Promise<void>{
+    if(this.status === BotStatus.Playing){
+      await this.init()
+      return
+    }
 
-    if (!nextMove) return
-
-    await this.move(nextMove)
+    this.status = BotStatus.Finished
   }
 
   private async init() {
-    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, init()`)
-    const initGameState = async () => this.gameAPI.init(this.ckey, this.mode);
-    const gameStateData = await safeApiCall(initGameState);
+    await this.gameClient.init()
+    const state = this.gameClient.state
 
-    if (gameStateData) {
-      this.game = new GameState(gameStateData)
-      this.moveStrategy.init(this.game)
+    if (state) {
+      this.moveStrategy.init(state)
+      this.status = BotStatus.Playing
     }
   }
 
-  private async check(): Promise<void> {
-    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, check()`)
-    const checkGameState = async () => this.gameAPI.check(this.ckey)
-    const gameStateData = await safeApiCall(checkGameState)
-
-    if (gameStateData) {
-      this.game.update(gameStateData)
-    }
+  private async play() {
+    await this.gameClient.check()
+    await this.castSkills()
+    await this.performMove()
   }
 
-  private async cast(skill: Skill, target: Position) {
-    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, cast()`)
-    const castSkill = async () => this.gameAPI.cast(this.ckey, skill.id, target.x, target.y)
-    const gameStateData = await safeApiCall(castSkill)
+  private async castSkills() {
+    const state = this.gameClient.state
+    if (!state || !state.isPlayerTurn()) return
 
-    if (gameStateData) {
-      this.game.update(gameStateData)
-    }
+    const nextCast = this.castStrategy.determineCast(state)
+    if (!nextCast) return
+
+    const [skill, target] = nextCast
+    await this.gameClient.cast(skill.id, target)
   }
 
-  private async move(position: Position) {
-    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, move()`)
-    const moveAgent = async () =>  this.gameAPI.move(this.ckey, position.x, position.y)
-    const gameStateData = await safeApiCall(moveAgent)
+  private async performMove() {
+    const state = this.gameClient.state
+    if (!state || !state.isPlayerTurn()) return
 
-    if (gameStateData) {
-      this.game.update(gameStateData)
-    }
-  }
+    const nextMove = this.moveStrategy.determineMove()
+    if (!nextMove) return
 
-  private async surrender() {
-    Logger.debug(`${this.ckey}, ${this.getGameStatus()}, surrender()`)
-    const surrender = async () => this.gameAPI.surrender(this.ckey)
-    const gameStateData = await safeApiCall(surrender)
-
-    if (gameStateData) {
-      this.game.update(gameStateData)
-    }
-  }
-
-  private getGameStatus(): GameStatus {
-    return this.game ? this.game.getStatus() : GameStatus.Empty
+    await this.gameClient.move(nextMove)
   }
 }
 
