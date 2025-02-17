@@ -6,6 +6,8 @@ import express from 'express'
 import Logger from '../utils/logger.js'
 import config from '../config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { basicAuthMiddleware } from './middleware/authentication.js'
+
 
 const environment = config.NODE_ENV
 const port = process.env.PORT || config.SERVER_PORT || 3000;
@@ -18,6 +20,12 @@ app.use(express.urlencoded({ extended: true }))
 const directory = environment === "development"
   ? "src/client/public"
   : "dist/client/public";
+
+app.get('/', basicAuthMiddleware, (req, res) => {
+  // if checkAuth() calls next(), we serve index.html
+  res.sendFile(path.resolve(directory, 'index.html'));
+});
+
 
 app.use(express.static(path.resolve(directory)));
 

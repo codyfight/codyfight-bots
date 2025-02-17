@@ -21,6 +21,12 @@ const config = {
   /** Environment mode (development, production, staging) */
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
 
+  /** USERNAME to protect config access in production */
+  USER: getEnvVar('USER', '<USER>'),
+
+  /** PASSWORD to protect config access in production */
+  PASSWORD: getEnvVar('PASSWORD', '<PASSWORD>'),
+
   /** URL for production environment where requests will be sent */
   PROD_API_URL: getEnvVar('PROD_API_URL', 'https://game.codyfight.com'),
 

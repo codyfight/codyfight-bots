@@ -51,7 +51,7 @@ class CBot {
   }
 
   public isPlaying(): boolean {
-    return this.status != BotStatus.Finished
+    return this.status != BotStatus.Stopped
   }
 
   public getInfo(): ICBotInfo {
@@ -112,7 +112,7 @@ class CBot {
       case BotStatus.Initialising:
       case BotStatus.Playing:
       case BotStatus.Finishing:
-      case BotStatus.Finished:
+      case BotStatus.Stopped:
       default:
         // do nothing
         break
@@ -126,7 +126,7 @@ class CBot {
       return
     }
 
-    this.status = BotStatus.Finished
+    this.status = BotStatus.Stopped
   }
 
   private async init() {

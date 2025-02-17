@@ -26,11 +26,11 @@ export enum GameStatus {
 }
 
 export enum BotStatus{
+  Stopped = "Stopped",
   Initialising = "Initialising",
   Playing = "Playing",
   Finishing = "Finishing",
   Surrendering = "Surrendering",
-  Finished = "Finished"
 }
 
 export enum GameMode {
