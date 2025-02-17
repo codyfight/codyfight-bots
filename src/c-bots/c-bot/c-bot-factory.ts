@@ -11,7 +11,7 @@ class CBotFactory {
   }
 
   public async createAllCBots(): Promise<CBot[]> {
-    const botConfigs = await this.botRepository.getBots({})
+    const botConfigs = await this.botRepository.getBots({player_id: "1"})
 
     if (!botConfigs || botConfigs.length === 0) {
       throw new Error('No bot configurations found in the repository.')
