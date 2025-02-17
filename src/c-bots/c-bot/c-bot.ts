@@ -26,13 +26,12 @@ import GameClient from '../api/game-client.js'
 
 class CBot {
 
-  private status: BotStatus
+  private status: BotStatus = BotStatus.Stopped
   private gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
   constructor({ ckey, mode, environment, move_strategy, cast_strategy }: ICBotConfig) {
-    this.status = BotStatus.Initialising
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
@@ -77,7 +76,8 @@ class CBot {
   }
 
   public async run() {
-
+    this.status = BotStatus.Initialising
+  
     while (this.isPlaying()) {
 
       switch (this.gameClient.status()) {

@@ -12,13 +12,15 @@ router.post('/bot/:ckey/run', asyncHandler(async (req: Request, res: Response) =
   res.status(200).json({ message: `Bot started successfully!`, status: status});
 }))
 
-// Stop a bot
-router.post('/bot/:ckey/stop', asyncHandler(async (req: Request, res: Response) => {
-  const { ckey } = req.params
-  botManager.stopBot(ckey)
-  const status = await botManager.getBotStatus(req.params.ckey);
-  res.status(200).json({ message: 'Bot stopped successfully!', status: status})
-}))
+// Finish a bots current run and do not replay
+router.post('/bot/:ckey/stop/', asyncHandler(async (req: Request, res: Response) => {
+  const { ckey } = req.params;
+  const method = req.query.method as string ?? "finish";
+  botManager.stopBot(ckey, method)
+  const status = await botManager.getBotStatus(ckey);
+
+  res.status(200).json({ message: `Bot stopped successfully using '${method || "finish"}'!`, status });
+}));
 
 // Get bot status
 router.get('/bot/:ckey/status', asyncHandler(async (req: Request, res: Response) => {

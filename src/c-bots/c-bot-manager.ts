@@ -43,14 +43,15 @@ class CBotManager {
   /**
    * Stops am active bot instance, and removes it from the running bots
    */
-  public stopBot(ckey: string) {
+  public stopBot(ckey: string, method: string) {
     const bot = this.activeBots.get(ckey)
 
     if (!bot) {
       throw new ApiError(`Unable to stop bot with ckey ${ckey}, it is not currently running.`, 404)
     }
 
-    bot.setStatus(BotStatus.Finishing)
+    bot.setStatus((method === 'surrender') ? BotStatus.Surrendering : BotStatus.Finishing)
+
     this.activeBots.delete(ckey)
     this.runningBotPromises.delete(ckey)
     Logger.info(`Bot ${ckey} stopped`)
