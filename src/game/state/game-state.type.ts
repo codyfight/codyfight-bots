@@ -25,6 +25,14 @@ export enum GameStatus {
   Ended = 2
 }
 
+export enum BotStatus{
+  Initialising = "Initialising",
+  Playing = "Playing",
+  Finishing = "Finishing",
+  Surrendering = "Surrendering",
+  Finished = "Finished"
+}
+
 export enum GameMode {
   Sandbox = 0,
   FriendlyDuel = 1, // dev only

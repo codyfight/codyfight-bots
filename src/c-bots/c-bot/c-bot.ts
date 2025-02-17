@@ -1,6 +1,6 @@
-import { GameStatus } from '../../game/state/game-state.type.js'
+import { BotStatus, GameStatus } from '../../game/state/game-state.type.js'
 import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
-import { ICBotConfig, ICBotStatus } from './c-bot-config.interface.js'
+import { ICBotConfig, ICBotInfo } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
@@ -26,29 +26,61 @@ import GameClient from '../api/game-client.js'
 
 class CBot {
 
-  private active = false
-  private gameClient: GameClient;
+  private status: BotStatus
+  private gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
   constructor({ ckey, mode, environment, move_strategy, cast_strategy }: ICBotConfig) {
+    this.status = BotStatus.Initialising
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
   }
 
-  public ckey() : string {
+  public ckey(): string {
     return this.gameClient.ckey
   }
 
+  public getStatus(): BotStatus {
+    return this.status
+  }
+
+  public setStatus(status : BotStatus) {
+    this.status = status
+  }
+
+  public isPlaying(): boolean {
+    return this.status != BotStatus.Finished
+  }
+
+  public getInfo(): ICBotInfo {
+    return {
+      bot: this.toJSON(),
+      game: this.gameClient?.state?.toJSON() || {}
+    }
+  }
+
+  public toString(): string {
+    return JSON.stringify(this.toJSON(), null, 2)
+  }
+
+  public toJSON(): ICBotConfig {
+    return {
+      ckey: this.gameClient.ckey,
+      status: this.status,
+      mode: this.gameClient.mode,
+      environment: this.gameClient.environment,
+      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
+      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
+    }
+  }
+
   public async run() {
-    this.active = true
 
-    while (this.active) {
+    while (this.isPlaying()) {
 
-      const status = this.gameClient.status()
-
-      switch (status) {
+      switch (this.gameClient.status()) {
         case GameStatus.Empty:
           await this.init()
           break
@@ -59,52 +91,51 @@ class CBot {
           await this.play()
           break
         case GameStatus.Ended:
-          await this.init()
+          await this.handleRestart()
           break
         default:
           await this.gameClient.check()
           break
       }
+
+      await this.handleBotStatus()
+    }
+  }
+
+  private async handleBotStatus() : Promise<void> {
+
+    switch(this.status){
+      case BotStatus.Surrendering:
+        await this.gameClient.surrender()
+        this.status = BotStatus.Finishing
+        break
+      case BotStatus.Initialising:
+      case BotStatus.Playing:
+      case BotStatus.Finishing:
+      case BotStatus.Finished:
+      default:
+        // do nothing
+        break
     }
 
-    await this.gameClient.surrender()
   }
 
-  public stop(){
-    this.active = false
-  }
+  private async handleRestart(): Promise<void>{
+    if(this.status === BotStatus.Playing){
+      await this.init()
+      return
+    }
 
-  public isActive() : boolean{
-    return this.active
-  }
-
-  public getStatus(): ICBotStatus {
-    return {
-      bot: this.toJSON(),
-      game: this.gameClient?.state?.toJSON() || {}
-    };
-  }
-
-  public toString(): string {
-    return JSON.stringify(this.toJSON(), null, 2);
-  }
-
-  public toJSON(): ICBotConfig {
-    return {
-      ckey: this.gameClient.ckey,
-      active: this.active,
-      mode: this.gameClient.mode,
-      environment: this.gameClient.environment,
-      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
-      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
-    };
+    this.status = BotStatus.Finished
   }
 
   private async init() {
     await this.gameClient.init()
     const state = this.gameClient.state
+
     if (state) {
       this.moveStrategy.init(state)
+      this.status = BotStatus.Playing
     }
   }
 
@@ -134,7 +165,6 @@ class CBot {
 
     await this.gameClient.move(nextMove)
   }
-
 }
 
 export default CBot
