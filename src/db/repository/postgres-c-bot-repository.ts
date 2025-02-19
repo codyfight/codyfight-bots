@@ -4,6 +4,7 @@ import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
+import { BotStatus } from '../../game/state/game-state.type.js'
 
 
 const { Client } = pkg
@@ -137,6 +138,7 @@ export class PostgresCBotRepository implements ICBotRepository {
     return {
       ckey: row.ckey,
       mode: row.mode,
+      status: BotStatus.Stopped,
       environment: row.environment,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy

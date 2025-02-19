@@ -15,7 +15,7 @@
     "clean": "rimraf dist",
     "build:server": "tsc",
     "build:client": "tsc -p tsconfig.client.json",
-    "copy:client": "cpy \"src/client/public\" \"dist/client\" --recursive",
+    "copy:client": "cpy \"src/client/public/**/*\" \"dist/client/public\"",
     "build": "npm run clean && npm run build:server && npm run build:client && npm run copy:client && node --loader ts-node/esm src/db/schema/sqllite/create-db.ts",
 
     "dev:server": "node --loader ts-node/esm --watch src/api/server.ts",

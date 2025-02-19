@@ -17,17 +17,16 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const directory = environment === "development"
-  ? "src/client/public"
-  : "dist/client/public";
+const publicDirectory = path.resolve(
+  process.cwd(),
+  environment === "development" ? "src/client/public" : "dist/client/public"
+);
 
 app.get('/', basicAuthMiddleware, (req, res) => {
-  // if checkAuth() calls next(), we serve index.html
-  res.sendFile(path.resolve(directory, 'index.html'));
+  res.sendFile(path.join(publicDirectory, 'index.html'));
 });
 
-
-app.use(express.static(path.resolve(directory)));
+app.use(express.static(publicDirectory));
 
 app.use(routes)
 app.use(errorHandler)

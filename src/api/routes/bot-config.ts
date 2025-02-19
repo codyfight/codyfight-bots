@@ -3,6 +3,7 @@ import { createCBotRepository } from '../../db/repository/create-c-bot-repositor
 
 import { asyncHandler } from '../../utils/utils.js'
 import { jwtAuthMiddleware } from '../middleware/authentication.js'
+import botManager from '../../c-bots/c-bot-manager.js'
 
 const router = Router()
 const botRepository = createCBotRepository()
@@ -22,6 +23,13 @@ router.get('/bot/:ckey', asyncHandler(async (req: Request, res: Response) => {
 // Get All Bots
 router.get('/bots', asyncHandler(async (req: Request, res: Response) => {
   const bots = await botRepository.getBots(req.query)
+
+  // Updating status for all bots.
+  for (const bot of bots) {
+    const status = await botManager.getBotStatus(bot.ckey);
+    bot.status = status;
+  }
+
   res.status(200).json({ message: 'Bots retrieved successfully!', bots: bots })
 }))
 

@@ -3,8 +3,8 @@ import Skill from '../../../game/skills/skill.js'
 import Position from '../../../game/map/position.js'
 
 export enum CastStrategyType {
-  None = 'None',
-  Random = 'Random'
+  None = 'none',
+  Random = 'random'
 }
 
 export interface ICastStrategy {

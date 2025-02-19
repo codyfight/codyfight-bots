@@ -5,7 +5,7 @@ import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 export interface ICBotConfig {
   player_id?: number
   ckey: string
-  status?: BotStatus
+  status: BotStatus
   mode: GameMode
   environment: string
   move_strategy: MoveStrategyType

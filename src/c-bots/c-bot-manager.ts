@@ -75,8 +75,13 @@ class CBotManager {
   }
 
   public async getBotStatus(ckey: string): Promise<BotStatus> {
-    const botInstance = this.activeBots.get(ckey) ?? await this.botFactory.createBot(ckey)
-    return botInstance.getStatus()
+    const botInstance = this.activeBots.get(ckey)
+
+    if(botInstance){
+      return botInstance.getStatus()
+    }
+
+    return BotStatus.Stopped
   }
 
   /**
