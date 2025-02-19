@@ -36,12 +36,10 @@ export enum TileType {
 }
 
 export const DANGEROUS_TILES = new Set<TileType>([
-  TileType.DeathPit,
   TileType.ZapTrap,
   TileType.ProximityMine,
   TileType.BoobyTrap,
-  TileType.Craze,
-  TileType.BombTile
+  TileType.IceTrap,
 ])
 
 const POWER_TILES = new Set<TileType>([
@@ -59,9 +57,11 @@ const OBSTACLE_TILES = new Set<TileType>([
   TileType.Obstacle,
   TileType.Wall,
   TileType.LesserObstacle,
-  TileType.IceTrap,
   TileType.SentryTurret,
-  TileType.WallMarkOne
+  TileType.Craze,
+  TileType.WallMarkOne,
+  TileType.BombTile,
+  TileType.DeathPit,
 ])
 
 export const SAFE_TILES = new Set<TileType>([

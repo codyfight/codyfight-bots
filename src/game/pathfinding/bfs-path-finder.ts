@@ -84,7 +84,7 @@ class BFSPathFinder {
     const tile = this.map.getTile(position)
 
     // is it a valid safe tile?
-    if (!tile || !tile.isSafe()) {
+    if (!tile || !tile.isWalkable()) {
       return false
     }
 

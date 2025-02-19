@@ -84,7 +84,7 @@ class CBotManager {
    */
   private registerAndStartBot(bot: CBot): void {
     if (this.activeBots.has(bot.ckey())) {
-      throw new ApiError(`Bot ${bot.ckey} is already running.`, 409)
+      throw new ApiError(`Bot is already running.`, 409)
     }
 
     this.activeBots.set(bot.ckey(), bot)

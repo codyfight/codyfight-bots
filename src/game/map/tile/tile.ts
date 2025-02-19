@@ -1,5 +1,5 @@
 import Position from '../position.js'
-import { DANGEROUS_TILES, ITile, SAFE_TILES, TileType } from './tile.type.js'
+import { DANGEROUS_TILES, ITile, SAFE_TILES, TileType, WALKABLE_TILES } from './tile.type.js'
 import TileEffect from './effects/tile-effect.js'
 import { createTileEffect } from './effects/tile-effect-factory.js'
 
@@ -29,6 +29,10 @@ class Tile {
 
   public isSafe(): boolean {
     return SAFE_TILES.has(this.type)
+  }
+
+  public isWalkable(): boolean {
+    return WALKABLE_TILES.has(this.type)
   }
 
   public isDangerous(): boolean {
