@@ -4,16 +4,16 @@ import PlayerAgent from '../../../game/agents/player-agent.js'
 import GameAgent from '../../../game/agents/game-agent.js'
 import Position from '../../../game/map/position.js'
 import GameState from '../../../game/state/game-state.js'
-import {
-  filterSafeMoves,
-  randomElement
-} from '../../../game/utils/game-utils.js'
+import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.js'
 import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
+import SpecialAgent from '../../../game/agents/special-agent.js'
+import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   protected map!: GameMap
   protected bearer!: PlayerAgent
   protected opponent!: GameAgent
+  protected specialAgents!: Map<SpecialAgentType, SpecialAgent[]>
 
   protected targets: Position[] = []
 
@@ -23,6 +23,7 @@ abstract class MoveStrategy implements IMoveStrategy {
     this.map = game.getMap()
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
+    this.specialAgents = game.getSpecialAgents()
   }
 
   /**

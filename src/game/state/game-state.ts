@@ -5,6 +5,8 @@ import GameMap from '../map/game-map.js'
 import PlayerAgent from '../agents/player-agent.js'
 import GameAgent from '../agents/game-agent.js'
 import GameError from '../../errors/game-error.js'
+import SpecialAgent from '../agents/special-agent.js'
+import { SpecialAgentType } from '../agents/game-agent.type.js'
 
 /**
  * The GameState class represents the current state of the game and provides methods to update it.
@@ -75,6 +77,10 @@ class GameState implements IUpdatable {
 
   public getOpponent(): GameAgent {
     return this.gameAgentManager.getOpponent()
+  }
+
+  public getSpecialAgents() : Map<SpecialAgentType, SpecialAgent[]> {
+    return this.gameAgentManager.getSpecialAgents()
   }
 
   public getMap(): GameMap {
