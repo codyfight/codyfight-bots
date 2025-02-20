@@ -9,6 +9,7 @@ import ExitMoveStrategy from './move/exit-move-strategy.js'
 import IdleMoveStrategy from './move/idle-move-strategy.js'
 import AggressiveMoveStrategy from './move/aggressive-move-strategy.js'
 import DynamicMoveStrategy from './move/dynamic-move-strategy.js'
+import RyoMoveStrategy from './move/ryo-move-strategy.js'
 
 /**
  * Factory function to create a CastStrategy based on the given type.
@@ -39,6 +40,8 @@ export function createMoveStrategy(type: MoveStrategyType): MoveStrategy {
       return new RandomMoveStrategy();
     case MoveStrategyType.Exit:
       return new ExitMoveStrategy();
+    case MoveStrategyType.Ryo:
+      return new RyoMoveStrategy();
     case MoveStrategyType.Aggressive:
       return new AggressiveMoveStrategy();
     case MoveStrategyType.Dynamic:

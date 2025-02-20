@@ -2,12 +2,12 @@ import IUpdatable from '../interfaces/updatable.interface.js'
 import PlayerAgent from './player-agent.js'
 import GameAgent from './game-agent.js'
 import SpecialAgent from './special-agent.js'
-import { IPlayerAgent, ISpecialAgent } from './game-agent.type.js'
+import { IPlayerAgent, ISpecialAgent, SpecialAgentType } from './game-agent.type.js'
 
 class GameAgentManager implements IUpdatable {
   private readonly bearer: PlayerAgent
   private readonly opponent: GameAgent
-  private specialAgents: Map<number, SpecialAgent> = new Map()
+  private specialAgents: Map<SpecialAgentType, SpecialAgent[]> = new Map()
 
   public constructor(
     bearer: IPlayerAgent,
@@ -17,23 +17,39 @@ class GameAgentManager implements IUpdatable {
     this.bearer = new PlayerAgent(bearer)
     this.opponent = new GameAgent(opponent)
 
-    for (const agent of specialAgents) {
-      this.specialAgents.set(agent.id, new SpecialAgent(agent))
+    this.initializeSpecialAgentsMap()
+    this.setSpecialAgents(specialAgents)
+  }
+
+  private initializeSpecialAgentsMap(): void {
+    const numericKeys = Object.values(SpecialAgentType).filter(
+      (value) => typeof value === 'number'
+    ) as SpecialAgentType[]
+
+    for (const type of numericKeys) {
+      this.specialAgents.set(type, [])
     }
   }
 
-  public update(
-    bearer: IPlayerAgent,
-    opponent: IPlayerAgent,
-    specialAgents: ISpecialAgent[]
-  ): void {
+  private clearSpecialAgentsMap(): void {
+    for (const agents of this.specialAgents.values()) {
+      agents.length = 0
+    }
+  }
+
+  private setSpecialAgents(specialAgents: ISpecialAgent[]) {
+    for (const agent of specialAgents) {
+      this.specialAgents.get(agent.type)!.push(new SpecialAgent(agent))
+    }
+  }
+
+  public update(bearer: IPlayerAgent, opponent: IPlayerAgent, specialAgents: ISpecialAgent[]): void
+  {
     this.bearer.update(bearer)
     this.opponent.update(opponent)
 
-    this.specialAgents.clear()
-    for (const agent of specialAgents) {
-      this.specialAgents.set(agent.id, new SpecialAgent(agent))
-    }
+    this.clearSpecialAgentsMap()
+    this.setSpecialAgents(specialAgents)
   }
 
   public getBearer(): PlayerAgent {
@@ -44,9 +60,15 @@ class GameAgentManager implements IUpdatable {
     return this.opponent
   }
 
-  public getAgents(): GameAgent[] {
-    return [this.opponent, ...this.specialAgents.values()]
+  public getSpecialAgents(): Map<number, SpecialAgent[]> {
+    return this.specialAgents
   }
+
+  public getAgents(): GameAgent[] {
+    const allSpecialAgents = [...this.specialAgents.values()].flat()
+    return [this.opponent, ...allSpecialAgents]
+  }
+
 }
 
 export default GameAgentManager
