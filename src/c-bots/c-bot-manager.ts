@@ -88,8 +88,9 @@ class CBotManager {
    * Registers the bot in activeBots, starts its infinite loop.
    */
   private registerAndStartBot(bot: CBot): void {
+
     if (this.activeBots.has(bot.ckey())) {
-      throw new ApiError(`Bot is already running.`, 409)
+      return
     }
 
     this.activeBots.set(bot.ckey(), bot)
