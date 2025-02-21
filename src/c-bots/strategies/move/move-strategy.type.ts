@@ -5,7 +5,7 @@ export enum MoveStrategyType {
   Idle = 'idle',
   Random = 'random',
   Exit = 'exit',
-  Ryo = 'ryo ',
+  Ryo = 'ryo',
   Aggressive = 'aggressive',
   Dynamic = 'dynamic'
 }
