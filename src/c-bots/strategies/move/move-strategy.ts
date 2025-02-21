@@ -1,4 +1,4 @@
-import { IMoveStrategy } from './move-strategy.type.js'
+import { IMoveStrategy, MoveStrategyType } from './move-strategy.type.js'
 import GameMap from '../../../game/map/game-map.js'
 import PlayerAgent from '../../../game/agents/player-agent.js'
 import GameAgent from '../../../game/agents/game-agent.js'
@@ -10,6 +10,8 @@ import SpecialAgent from '../../../game/agents/special-agent.js'
 import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
+  public readonly type!: MoveStrategyType;
+
   protected map!: GameMap
   protected bearer!: PlayerAgent
   protected opponent!: GameAgent

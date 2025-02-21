@@ -30,6 +30,12 @@ class CBotFactory {
     return new CBot(config)
   }
 
+  public async updateBot(cbot: CBot): Promise<void> {
+    const botConfig = cbot.toJSON();
+    await this.botRepository.updateBot(botConfig.ckey, botConfig);
+  }
+
+
 }
 
 export default CBotFactory

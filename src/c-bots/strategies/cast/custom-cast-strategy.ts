@@ -2,6 +2,7 @@ import CastStrategy from './cast-strategy.js'
 import GameState from '../../../game/state/game-state.js'
 import Skill from '../../../game/skills/skill.js'
 import Position from '../../../game/map/position.js'
+import { CastStrategyType } from './cast-strategy.type.js'
 
 /**
  * Example CustomCastStrategy:
@@ -9,6 +10,7 @@ import Position from '../../../game/map/position.js'
  * Override `determineCast(game: GameState)` to define how this bot decides to cast skills.
  */
 class CustomCastStrategy extends CastStrategy {
+  public readonly  type = CastStrategyType.None
   /**
    * Determines which skill to cast, and on which position, for the given game state.
    * @param game The current GameState, including all agents, map, and turn info.

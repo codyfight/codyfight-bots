@@ -16,7 +16,7 @@ router.post('/bot/:ckey/run', asyncHandler(async (req: Request, res: Response) =
 router.post('/bot/:ckey/stop/', asyncHandler(async (req: Request, res: Response) => {
   const { ckey } = req.params;
   const method = req.query.method as string ?? "finish";
-  botManager.stopBot(ckey, method)
+  await botManager.stopBot(ckey, method)
   const status = await botManager.getBotStatus(ckey);
 
   res.status(200).json({ message: `Bot stopped successfully using '${method || "finish"}'!`, status });

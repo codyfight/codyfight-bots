@@ -4,7 +4,6 @@ import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
-import { BotStatus } from '../../game/state/game-state.type.js'
 
 
 const { Client } = pkg
@@ -100,10 +99,11 @@ export class PostgresCBotRepository implements ICBotRepository {
        SET player_id = $1,
            mode = $2,
            environment = $3,
-           move_strategy = $4,
-           cast_strategy = $5
-       WHERE ckey = $6`,
-      [bot.player_id, bot.mode, bot.environment, bot.move_strategy, bot.cast_strategy, ckey]
+           status = $4,
+           move_strategy = $5,
+           cast_strategy = $6
+       WHERE ckey = $7`,
+      [bot.player_id, bot.mode, bot.environment, bot.status, bot.move_strategy, bot.cast_strategy, ckey]
     )
 
     if (result.rowCount === 0) {
@@ -136,9 +136,10 @@ export class PostgresCBotRepository implements ICBotRepository {
    */
   private mapRow(row: any): ICBotConfig {
     return {
+      player_id: row.player_id,
       ckey: row.ckey,
       mode: row.mode,
-      status: BotStatus.Stopped,
+      status: row.status,
       environment: row.environment,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy

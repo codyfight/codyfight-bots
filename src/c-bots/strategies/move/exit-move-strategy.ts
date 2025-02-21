@@ -1,7 +1,10 @@
 import MoveStrategy from './move-strategy.js'
 import { TileType } from '../../../game/map/tile/tile.type.js'
+import { MoveStrategyType } from './move-strategy.type.js'
 
 class ExitMoveStrategy extends MoveStrategy {
+  public type = MoveStrategyType.Exit
+
   protected setTargets(): void {
     const position = this.bearer.getPosition()
     const type = TileType.ExitGate

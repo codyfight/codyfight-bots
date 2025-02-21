@@ -1,8 +1,10 @@
 import MoveStrategy from './move-strategy.js'
 import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import { MoveStrategyType } from './move-strategy.type.js'
 
 
 class RyoMoveStrategy extends MoveStrategy {
+  public readonly type = MoveStrategyType.Ryo
   protected setTargets(): void {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);
     if (ryoAgents && ryoAgents.length > 0) {

@@ -2,8 +2,8 @@ import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { getWaitTime, wait } from '../utils/utils.js'
-import ApiError from '../errors/api-error.js'
 import { BotStatus } from '../game/state/game-state.type.js'
+
 
 class CBotManager {
   private botFactory: CBotFactory
@@ -12,6 +12,16 @@ class CBotManager {
 
   constructor() {
     this.botFactory = new CBotFactory()
+  }
+
+  public async getBot(ckey: string): Promise<CBot> {
+    const bot = this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
+
+    if (!bot) {
+      throw new Error(`Bot with ckey ${ckey} not found.`)
+    }
+
+    return bot
   }
 
   /**
@@ -24,7 +34,7 @@ class CBotManager {
 
     for (const bot of cbots) {
       try {
-        this.registerAndStartBot(bot)
+        await this.registerAndStartBot(bot)
       } catch (error) {
         Logger.error('Error while creating or running bot:', error)
       }
@@ -35,64 +45,80 @@ class CBotManager {
    * Retrieves a single bot instance,
    * registers it with the running bots and starts a game
    */
-  public async startBot(ckey: string) {
-    const bot = await this.botFactory.createBot(ckey)
-    this.registerAndStartBot(bot)
+  public async startBot(ckey: string): Promise<void> {
+    const bot = await this.getBot(ckey)
+
+    // Check if bot is in active bots
+    if (this.activeBots.get(ckey)) {
+      Logger.info(`Bot ${ckey} already active`)
+      return
+    }
+
+    await this.registerAndStartBot(bot)
   }
 
   /**
    * Stops am active bot instance, and removes it from the running bots
    */
-  public stopBot(ckey: string, method: string) {
-    const bot = this.activeBots.get(ckey)
+  public async stopBot(ckey: string, method: string): Promise<void> {
+    try {
+      const bot = await this.getBot(ckey)
+      if (bot.getStatus() === BotStatus.Stopped) {
+        Logger.info(`Bot ${ckey} already stopped`)
+        return
+      }
 
-    if (!bot) {
-      throw new ApiError(`Unable to stop bot with ckey ${ckey}, it is not currently running.`, 404)
+      const newStatus = method === 'surrender'
+        ? BotStatus.Surrendering
+        : BotStatus.Finishing
+
+      bot.setStatus(newStatus)
+      Logger.info(`Bot ${ckey} status updated to ${newStatus}`)
+    } catch (error: unknown) {
+      Logger.error(`Failed to stop bot ${ckey}:`, error)
+      throw error
     }
-
-    bot.setStatus((method === 'surrender') ? BotStatus.Surrendering : BotStatus.Finishing)
-
-    this.activeBots.delete(ckey)
-    this.runningBotPromises.delete(ckey)
-    Logger.info(`Bot ${ckey} stopped`)
   }
+
 
   /**
    * Stops all bots by setting their active flag to false,
    * Then awaits all run() loops to end.
    */
   public async stopAll(): Promise<void> {
-
     for (const bot of this.activeBots.values()) {
       bot.setStatus(BotStatus.Finishing)
     }
 
     await Promise.all([...this.runningBotPromises.values()])
-
     this.activeBots.clear()
     this.runningBotPromises.clear()
+
     Logger.info('All bots have been stopped.')
   }
 
   public async getBotStatus(ckey: string): Promise<BotStatus> {
-    const botInstance = this.activeBots.get(ckey)
-
-    if(botInstance){
-      return botInstance.getStatus()
+    try {
+      const bot = await this.getBot(ckey)
+      return bot.getStatus()
+    } catch {
+      return BotStatus.Stopped
     }
-
-    return BotStatus.Stopped
   }
 
   /**
    * Registers the bot in activeBots, starts its infinite loop.
    */
-  private registerAndStartBot(bot: CBot): void {
-
-    if (this.activeBots.has(bot.ckey())) {
-      return
+  private async registerAndStartBot(bot: CBot): Promise<void> {
+    // Update factory on status changes
+    bot.onStatusChange = () => {
+      this.botFactory.updateBot(bot)
     }
 
+    bot.setStatus(BotStatus.Initialising)
+    await this.botFactory.updateBot(bot)
+
+    // Make sure it’s in activeBots
     this.activeBots.set(bot.ckey(), bot)
 
     const runPromise = this.runBot(bot).catch(err => {
@@ -102,7 +128,6 @@ class CBotManager {
     })
 
     this.runningBotPromises.set(bot.ckey(), runPromise)
-
     Logger.info(`Bot "${bot.ckey()}" started`)
   }
 
@@ -119,8 +144,18 @@ class CBotManager {
     }
 
     // if the bot crashes we want to retry
-    if (bot.isPlaying()) {
-      await this.runBot(bot)
+    await this.restartBot(bot)
+  }
+
+  private async restartBot(bot: CBot) {
+    const ckey = bot.ckey()
+    this.activeBots.delete(ckey)
+    this.runningBotPromises.delete(ckey)
+
+    const newBot = await this.botFactory.createBot(ckey)
+    if (newBot.isPlaying()) {
+      Logger.info(`Restarting bot ${ckey}`)
+      await this.registerAndStartBot(newBot)
     }
   }
 }

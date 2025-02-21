@@ -3,9 +3,8 @@ import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-f
 import { ICBotConfig, ICBotInfo } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
-import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
-import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 import GameClient from '../api/game-client.js'
+import Logger from '../../utils/logger.js'
 
 
 /**
@@ -26,12 +25,17 @@ import GameClient from '../api/game-client.js'
 
 class CBot {
 
-  private status: BotStatus = BotStatus.Stopped
+  private playerId: number | undefined
+  private status: BotStatus
   private gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
-  constructor({ ckey, mode, environment, move_strategy, cast_strategy }: ICBotConfig) {
+  public onStatusChange!: () => void
+
+  constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
+    this.playerId = player_id
+    this.status = status
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
@@ -46,7 +50,10 @@ class CBot {
   }
 
   public setStatus(status : BotStatus) {
+    if (status === this.status) return;
+
     this.status = status
+    this.onStatusChange();
   }
 
   public isPlaying(): boolean {
@@ -66,21 +73,22 @@ class CBot {
 
   public toJSON(): ICBotConfig {
     return {
+      player_id: this.playerId,
       ckey: this.gameClient.ckey,
       status: this.status,
       mode: this.gameClient.mode,
       environment: this.gameClient.environment,
-      move_strategy: this.moveStrategy.constructor.name as MoveStrategyType,
-      cast_strategy: this.castStrategy.constructor.name as CastStrategyType
+      move_strategy: this.moveStrategy.type,
+      cast_strategy: this.castStrategy.type
     }
   }
 
   public async run() {
-    this.status = BotStatus.Initialising
-  
-    while (this.isPlaying()) {
 
-      switch (this.gameClient.status()) {
+    while (this.isPlaying()) {
+      const gameStatus = this.gameClient.status()
+
+      switch (gameStatus) {
         case GameStatus.Empty:
           await this.init()
           break
@@ -91,43 +99,46 @@ class CBot {
           await this.play()
           break
         case GameStatus.Ended:
-          await this.handleRestart()
+          await this.handleGameEnded()
           break
         default:
           await this.gameClient.check()
           break
       }
 
-      await this.handleBotStatus()
+      await this.syncBotStatus(gameStatus)
     }
+
+    Logger.info('Completed game loop.')
   }
 
-  private async handleBotStatus() : Promise<void> {
+  private async syncBotStatus(gameStatus: GameStatus) {
+    const currentStatus = this.gameClient.status()
+    if (currentStatus == gameStatus) return
 
-    switch(this.status){
-      case BotStatus.Surrendering:
-        await this.gameClient.surrender()
-        this.status = BotStatus.Finishing
+    switch (currentStatus) {
+      case GameStatus.Empty:
+      case GameStatus.Registering:
+        this.setStatus(BotStatus.Initialising)
         break
-      case BotStatus.Initialising:
-      case BotStatus.Playing:
-      case BotStatus.Finishing:
-      case BotStatus.Stopped:
-      default:
-        // do nothing
+      case GameStatus.Playing:
+        this.setStatus(BotStatus.Playing)
         break
     }
 
-  }
-
-  private async handleRestart(): Promise<void>{
-    if(this.status === BotStatus.Playing){
-      await this.init()
-      return
+    // TODO handle this better
+    if (this.status == BotStatus.Surrendering) {
+      await this.gameClient.surrender()
     }
-
-    this.status = BotStatus.Stopped
   }
+
+  private async handleGameEnded(): Promise<void> {
+    if (this.status === BotStatus.Surrendering || this.status === BotStatus.Finishing) {
+      this.setStatus(BotStatus.Stopped)
+      Logger.info('Game competed bot stopped.')
+    }
+  }
+
 
   private async init() {
     await this.gameClient.init()
@@ -135,7 +146,6 @@ class CBot {
 
     if (state) {
       this.moveStrategy.init(state)
-      this.status = BotStatus.Playing
     }
   }
 
