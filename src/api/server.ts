@@ -7,6 +7,7 @@ import Logger from '../utils/logger.js'
 import config from '../config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { basicAuthMiddleware } from './middleware/authentication.js'
+import botManager from '../c-bots/c-bot-manager.js'
 
 
 const environment = config.NODE_ENV
@@ -35,7 +36,7 @@ app.listen(port, async () => {
   Logger.info(`Server starting in ${environment} mode on port ${port}`);
   Logger.info(`http://localhost:${port}`);
   try {
-    //await botManager.startAll(); TODO - re add method for starting all bots
+    await botManager.restartBots()
     Logger.info('All active bots have been started.');
   } catch (error) {
     Logger.error('Error starting bots:', error);

@@ -3,7 +3,6 @@
 import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
-import { getWaitTime, wait } from '../utils/utils.js'
 import { GameStatus } from '../game/state/game-state.type.js'
 import { IBotFilter, ICBotRepository } from '../db/repository/c-bot-repository.interface.js'
 import { createCBotRepository } from '../db/repository/create-c-bot-repository.js'
@@ -14,18 +13,18 @@ class CBotManager {
   private botFactory: CBotFactory
 
   private activeBots = new Map<string, CBot>()
-  private runningBotPromises = new Map<string, Promise<void>>()
 
   constructor() {
     this.botRepository = createCBotRepository()
     this.botFactory = new CBotFactory(this.botRepository)
   }
 
-  public async addBot(botData: any): Promise<void>{
+  public async addBot(botData: any): Promise<void> {
     await this.botRepository.addBot(botData)
   }
 
   public async getAllBotConfigs(filter: IBotFilter): Promise<ICBotConfig[]> {
+    // TODO - Add filtering, enforce player id from endpoint, add bot status != stopped
     return this.botRepository.getBots(filter)
   }
 
@@ -65,8 +64,14 @@ class CBotManager {
       return
     }
 
-    // Register and start
-    await this.registerAndStartBot(bot)
+    this.activeBots.set(ckey, bot)
+    await bot.start()
+  }
+
+  public async restartBot(ckey: string): Promise<void> {
+    const bot = await this.getBot(ckey)
+    bot.setActive(true)
+    await bot.run()
   }
 
   /**
@@ -88,19 +93,11 @@ class CBotManager {
    * Stops all active bots.
    */
   public async stopAll(): Promise<void> {
-    // Stop each bot
     for (const [ckey, bot] of this.activeBots.entries()) {
       await bot.stop()
-      Logger.info(`Bot ${ckey} stopped.`)
+      Logger.info(`Bot "${ckey}" stopped.`)
     }
-
-    // Wait for all run loops to finish
-    await Promise.all([...this.runningBotPromises.values()])
-
-    // Clear active maps
     this.activeBots.clear()
-    this.runningBotPromises.clear()
-
     Logger.info('All bots have been stopped.')
   }
 
@@ -110,49 +107,20 @@ class CBotManager {
   public async runAll(): Promise<void> {
     const cbots: CBot[] = await this.botFactory.createAllCBots()
     for (const bot of cbots) {
-      try {
-        await this.registerAndStartBot(bot)
-      } catch (error) {
-        Logger.error('Error while creating or running bot:', error)
+      if (!this.activeBots.has(bot.ckey())) {
+        this.activeBots.set(bot.ckey(), bot)
+        await bot.start()
+        Logger.info(`Bot "${bot.ckey()}" started in runAll().`)
       }
     }
   }
 
-  /**
-   * Places the bot in activeBots, then runs it in a loop (runBot).
-   */
-  private async registerAndStartBot(bot: CBot): Promise<void> {
-    this.activeBots.set(bot.ckey(), bot)
-
-    const runPromise = this.runBot(bot).catch((err) => {
-      Logger.error(`Bot "${bot.ckey()}" crashed unexpectedly:`, err)
-      this.activeBots.delete(bot.ckey())
-      this.runningBotPromises.delete(bot.ckey())
-    })
-
-    this.runningBotPromises.set(bot.ckey(), runPromise)
-
-    Logger.info(`Bot "${bot.ckey()}" started.`)
-  }
-
-  /**
-   * Runs a bot in an infinite loop with error handling & retry.
-   * If a bot crashes, we retry by calling runBot again.
-   */
-  private async runBot(bot: CBot): Promise<void> {
-    try {
-      Logger.info(`Running Bot: ${bot.toString()}`)
-      await bot.run()
-    } catch (error) {
-      Logger.error(`Bot (${bot.toString()}) failed:`, error)
-      const waitTime = getWaitTime(error)
-      Logger.info(`Waiting for ${waitTime} ms before retry`)
-      await wait(waitTime)
-    }
-
-    // If the bot "crashed" or finished, we attempt to run it again
-    if(this.activeBots.has(bot.ckey())) {
-      await this.runBot(bot)
+  public async restartBots(): Promise<void> {
+    const allBotConfigs = await this.getAllBotConfigs({})
+    for (const config of allBotConfigs) {
+      if (config.status !== 'stopped') {
+        await this.restartBot(config.ckey)
+      }
     }
   }
 }

@@ -5,7 +5,7 @@ import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 export interface ICBotConfig {
   player_id?: number
   ckey: string
-  status: string
+  status: BotStatus
   mode: GameMode
   environment: string
   move_strategy: MoveStrategyType
@@ -15,4 +15,11 @@ export interface ICBotConfig {
 export interface ICBotInfo {
   bot: ICBotConfig;
   game: IGameStatus | object;
+}
+
+export enum BotStatus {
+  Stopped = 'stopped',
+  Starting = 'starting',
+  Running = 'running',
+  Stopping = 'stopping',
 }

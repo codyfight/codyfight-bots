@@ -4,7 +4,6 @@ import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
-import { BotStatus } from '../../game/state/game-state.type.js'
 
 
 export class SqliteCBotRepository implements ICBotRepository {
@@ -104,7 +103,7 @@ export class SqliteCBotRepository implements ICBotRepository {
     return {
       ckey: row.ckey,
       mode: row.mode,
-      status: BotStatus.Stopped,
+      status: row.status,
       environment: row.environment,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy

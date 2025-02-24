@@ -1,10 +1,12 @@
 import CBot from '../c-bot/c-bot.js'
 import botManager from '../c-bot-manager.js'
+import Logger from '../../utils/logger.js'
+import { BotStatus } from '../c-bot/c-bot-config.interface.js'
 
 abstract class BotState {
   public constructor(protected cBot: CBot) {}
 
-  abstract status(): string
+  abstract get status(): BotStatus
 
   start(): void {
     // no-op
@@ -19,6 +21,7 @@ abstract class BotState {
   }
 
   protected async transitionTo(newState: BotState): Promise<void> {
+    Logger.info(`Bot is transitioning from state ${this.status} to ${newState.status}`)
     this.cBot.setState(newState)
     await botManager.updateBotConfig(this.cBot.ckey(), this.cBot.toJSON())
   }

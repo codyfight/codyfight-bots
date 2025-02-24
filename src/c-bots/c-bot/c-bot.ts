@@ -1,12 +1,12 @@
 import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
-import { ICBotConfig } from './c-bot-config.interface.js'
+import { BotStatus, ICBotConfig } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import GameClient from '../api/game-client.js'
-import BotStoppedState from '../state/bot-stopped-state.js'
 import BotState from '../state/bot-state.js'
 import Logger from '../../utils/logger.js'
 import { GameStatus } from '../../game/state/game-state.type.js'
+import createBotState from '../state/create-bot-state.js'
 
 
 /**
@@ -28,18 +28,17 @@ import { GameStatus } from '../../game/state/game-state.type.js'
 class CBot {
 
   private state: BotState
-  private playerId: number | undefined
+  private readonly playerId: number | undefined
 
   public readonly gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
-  public onStateChange!: () => void
-  private runningLoopActive = false
+  private isActive = false
 
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
-    this.state = new BotStoppedState(this) // TODO - Pass in state to continue from previous state
+    this.state = createBotState(this, status)
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
@@ -51,15 +50,11 @@ class CBot {
 
   public setState(newState: BotState): void {
     this.state = newState
-    if (newState === this.state) return;
-
-    this.state = newState
-    this.onStateChange();
   }
 
-  public async getStatus(): Promise<{ bot_state: string; game_state: GameStatus }> {
+  public async getStatus(): Promise<{ bot_state: BotStatus; game_state: GameStatus }> {
     return {
-      bot_state: this.state.status(),
+      bot_state: this.state.status,
       game_state: this.gameClient.status()
     }
   }
@@ -72,7 +67,7 @@ class CBot {
     return {
       player_id: this.playerId,
       ckey: this.gameClient.ckey,
-      status: this.state.status(),
+      status: this.state.status,
       mode: this.gameClient.mode,
       environment: this.gameClient.environment,
       move_strategy: this.moveStrategy.type,
@@ -80,14 +75,16 @@ class CBot {
     }
   }
 
+  public setActive(active: boolean): void {
+    this.isActive = active
+  }
+
   public async start() {
     this.state.start()
-    if (!this.runningLoopActive) {
-      this.runningLoopActive = true
-      this.run().catch((error) => {
-        Logger.error(`Bot "${this.ckey()}" crashed unexpectedly:`, error)
-      })
-    }
+    this.setActive(true)
+    this.run().catch((error) => {
+      Logger.error(`Bot "${this.ckey()}" crashed unexpectedly:`, error)
+    })
   }
 
   public async stop() {
@@ -95,10 +92,15 @@ class CBot {
   }
 
   public async run() {
-    while (this.runningLoopActive) {
-      await this.state.tick()
-      await new Promise((resolve) => setTimeout(resolve, 500))
+    while (this.isActive) {
+      try {
+        await this.state.tick()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      } catch (error) {
+        Logger.error(`Bot "${this.ckey()}" tick() error:`, error)
+      }
     }
+    Logger.info(`Bot "${this.ckey()}" main loop exited.`)
   }
 
   public async init() {

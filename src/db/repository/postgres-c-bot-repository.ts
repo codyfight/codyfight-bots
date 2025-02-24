@@ -70,24 +70,26 @@ export class PostgresCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots for a given player_id.
    */
+
+  // TODO - just adding player id for now, but the filter should be more dynamic
   public async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
-    const playerId = parseInt(filter.player_id as string)
+    const { player_id } = filter
 
-    if (!playerId) {
-      throw new ApiError('player_id is required', 500)
-    }
+    if (player_id) {
+      const playerIdNum = parseInt(player_id, 10)
+      if (isNaN(playerIdNum)) {
+        throw new ApiError('Invalid player_id provided', 500)
+      }
 
-    const query = `SELECT * FROM bots WHERE player_id = $1` // Use $1 for parameterized queries
-
-    try {
-      const result = await this.client.query(query, [playerId])
+      const query = 'SELECT * FROM bots WHERE player_id = $1'
+      const result = await this.client.query(query, [playerIdNum])
       return result.rows.map(this.mapRow)
-    } catch (err) {
-      Logger.error('Error retrieving bots:', err)
-      throw ApiError.from(err, 'Failed to retrieve bots')
+    } else {
+      const query = 'SELECT * FROM bots'
+      const result = await this.client.query(query)
+      return result.rows.map(this.mapRow)
     }
   }
-
 
   /**
    * Updates an existing bot by ckey.

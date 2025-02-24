@@ -18,7 +18,7 @@ router.post('/bot', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Re
 router.get('/bot/:ckey', asyncHandler(async (req: Request, res: Response) => {
   const bot = await botManager.getBot(req.params.ckey)
   const json = bot.toJSON()
-  res.status(200).json({ message: 'Bot retrieved successfully!', json })
+  res.status(200).json({ message: 'Bot retrieved successfully!', bot: json })
 }))
 
 // Get All Bots
