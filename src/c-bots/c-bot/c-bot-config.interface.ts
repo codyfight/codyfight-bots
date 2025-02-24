@@ -1,11 +1,11 @@
-import { BotStatus, GameMode, IGameStatus } from '../../game/state/game-state.type.js'
+import { GameMode, IGameStatus } from '../../game/state/game-state.type.js'
 import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 
 export interface ICBotConfig {
   player_id?: number
   ckey: string
-  status: BotStatus
+  status: string
   mode: GameMode
   environment: string
   move_strategy: MoveStrategyType

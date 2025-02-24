@@ -31,7 +31,13 @@ app.use(express.static(publicDirectory));
 app.use(routes)
 app.use(errorHandler)
 
-app.listen(port, () => {
+app.listen(port, async () => {
   Logger.info(`Server starting in ${environment} mode on port ${port}`);
   Logger.info(`http://localhost:${port}`);
-})
+  try {
+    //await botManager.startAll(); TODO - re add method for starting all bots
+    Logger.info('All active bots have been started.');
+  } catch (error) {
+    Logger.error('Error starting bots:', error);
+  }
+});
