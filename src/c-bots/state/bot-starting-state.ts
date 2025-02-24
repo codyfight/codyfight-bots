@@ -17,7 +17,8 @@ class BotStartingState extends BotState{
 
       case GameStatus.Ended:
       case GameStatus.Empty:
-        await this.cBot.init()
+        await this.cBot.gameClient.init()
+        this.cBot.initialise()
         break
 
       case GameStatus.Playing:

@@ -1,5 +1,3 @@
-// c-bot-manager.ts
-
 import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
@@ -40,7 +38,14 @@ class CBotManager {
    * Returns a CBot instance, either from memory (activeBots) or by creating a new one.
    */
   public async getBot(ckey: string): Promise<CBot> {
-    return this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
+    const bot = this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
+
+    bot.onStop = () => {
+      Logger.info(`Bot removed from active bots.`)
+      this.activeBots.delete(bot.ckey())
+    }
+
+    return bot
   }
 
   /**
@@ -68,11 +73,6 @@ class CBotManager {
     await bot.start()
   }
 
-  public async restartBot(ckey: string): Promise<void> {
-    const bot = await this.getBot(ckey)
-    bot.setActive(true)
-    await bot.run()
-  }
 
   /**
    * Stop an active bot.
@@ -81,7 +81,6 @@ class CBotManager {
     try {
       const bot = await this.getBot(ckey)
       await bot.stop()
-      this.activeBots.delete(ckey)
       Logger.info(`Bot ${ckey} stopped.`)
     } catch (error) {
       Logger.error(`Failed to stop bot ${ckey}:`, error)
@@ -93,11 +92,11 @@ class CBotManager {
    * Stops all active bots.
    */
   public async stopAll(): Promise<void> {
-    for (const [ckey, bot] of this.activeBots.entries()) {
-      await bot.stop()
-      Logger.info(`Bot "${ckey}" stopped.`)
+
+    for (const [ckey] of this.activeBots.entries()) {
+      await this.stopBot(ckey)
     }
-    this.activeBots.clear()
+
     Logger.info('All bots have been stopped.')
   }
 
@@ -115,11 +114,13 @@ class CBotManager {
     }
   }
 
-  public async restartBots(): Promise<void> {
+  public async resumeBots(): Promise<void> {
     const allBotConfigs = await this.getAllBotConfigs({})
     for (const config of allBotConfigs) {
       if (config.status !== 'stopped') {
-        await this.restartBot(config.ckey)
+        const bot = await this.getBot(config.ckey)
+        this.activeBots.set(config.ckey, bot)
+        await bot.resume()
       }
     }
   }

@@ -8,6 +8,7 @@ import config from '../config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { basicAuthMiddleware } from './middleware/authentication.js'
 import botManager from '../c-bots/c-bot-manager.js'
+import { getWaitTime } from '../utils/utils.js'
 
 
 const environment = config.NODE_ENV
@@ -32,13 +33,23 @@ app.use(express.static(publicDirectory));
 app.use(routes)
 app.use(errorHandler)
 
+async function resumeBots() : Promise<void> {
+  try {
+    await botManager.resumeBots()
+    Logger.info('All active bots have been resumed.');
+  } catch (error) {
+    Logger.error('Error resuming active bots:', error);
+    setTimeout(resumeBots, getWaitTime(error))
+  }
+}
+
 app.listen(port, async () => {
   Logger.info(`Server starting in ${environment} mode on port ${port}`);
   Logger.info(`http://localhost:${port}`);
   try {
-    await botManager.restartBots()
-    Logger.info('All active bots have been started.');
+    await resumeBots()
+    Logger.info('All active bots have been resumed.');
   } catch (error) {
-    Logger.error('Error starting bots:', error);
+    Logger.error('Error resuming active bots:', error);
   }
 });

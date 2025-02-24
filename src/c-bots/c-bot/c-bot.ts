@@ -35,6 +35,7 @@ class CBot {
   private castStrategy: CastStrategy
 
   private isActive = false
+  public onStop!: () => void;
 
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
@@ -52,10 +53,10 @@ class CBot {
     this.state = newState
   }
 
-  public async getStatus(): Promise<{ bot_state: BotStatus; game_state: GameStatus }> {
+  public getStatus(): { bot_state: BotStatus; game_state: GameStatus } {
     return {
       bot_state: this.state.status,
-      game_state: this.gameClient.status()
+      game_state: this.gameClient.status(),
     }
   }
 
@@ -82,8 +83,17 @@ class CBot {
   public async start() {
     this.state.start()
     this.setActive(true)
-    this.run().catch((error) => {
-      Logger.error(`Bot "${this.ckey()}" crashed unexpectedly:`, error)
+    this.run().then(() => {
+      this.onStop()
+    })
+  }
+
+  public async resume(){
+    await this.gameClient.check()
+    this.initialise()
+    this.setActive(true)
+    this.run().then(() => {
+      this.onStop()
     })
   }
 
@@ -103,14 +113,15 @@ class CBot {
     Logger.info(`Bot "${this.ckey()}" main loop exited.`)
   }
 
-  public async init() {
-    await this.gameClient.init()
+  public initialise(): void {
+
     const state = this.gameClient.state
 
-    if (state) {
-      this.moveStrategy.init(state)
-    }
+    if (!state) return
+
+    this.moveStrategy.init(state)
   }
+
 
   async play() {
     await this.gameClient.check()
