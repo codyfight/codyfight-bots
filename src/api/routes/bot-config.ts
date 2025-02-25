@@ -24,6 +24,12 @@ router.get('/bot/:ckey', asyncHandler(async (req: Request, res: Response) => {
 
 // Get All Bots
 router.get('/bots', asyncHandler(async (req: Request, res: Response) => {
+  
+  if(!req.query.player_id) {
+    res.status(400).json({ message: 'Missing player_id in query parameters' })
+    return
+  }
+
   const bots = await botManager.getAllBotConfigs(req.query)
   res.status(200).json({ message: 'Bots retrieved successfully!', bots: bots })
 }))
