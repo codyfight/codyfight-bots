@@ -98,22 +98,60 @@ export class PostgresCBotRepository implements ICBotRepository {
    * Throws an error if the bot doesn't exist.
    */
   public async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
-    const result = await this.client.query(
-      `UPDATE bots
-       SET player_id = $1,
-           mode = $2,
-           environment = $3,
-           status = $4,
-           move_strategy = $5,
-           cast_strategy = $6
-       WHERE ckey = $7`,
-      [bot.player_id, bot.mode, bot.environment, bot.status, bot.move_strategy, bot.cast_strategy, ckey]
-    )
+    const params: string[] = [];
+    const values: any[] = [];
+    let index = 1;
+
+    if (bot.player_id !== undefined) {
+      params.push(`player_id = $${index}`);
+      values.push(bot.player_id);
+      index++;
+    }
+
+    if (bot.mode !== undefined) {
+      params.push(`mode = $${index}`);
+      values.push(bot.mode);
+      index++;
+    }
+
+    if (bot.environment !== undefined) {
+      params.push(`environment = $${index}`);
+      values.push(bot.environment);
+      index++;
+    }
+
+    if (bot.status !== undefined) {
+      params.push(`status = $${index}`);
+      values.push(bot.status);
+      index++;
+    }
+
+    if (bot.move_strategy !== undefined) {
+      params.push(`move_strategy = $${index}`);
+      values.push(bot.move_strategy);
+      index++;
+    }
+
+    if (bot.cast_strategy !== undefined) {
+      params.push(`cast_strategy = $${index}`);
+      values.push(bot.cast_strategy);
+      index++;
+    }
+
+    if (params.length === 0) {
+      throw new ApiError(`No fields provided to update for bot with ckey '${ckey}'.`);
+    }
+
+    values.push(ckey);
+    const query = `UPDATE bots SET ${params.join(', ')} WHERE ckey = $${index}`;
+
+    const result = await this.client.query(query, values);
 
     if (result.rowCount === 0) {
-      throw new ApiError(`Bot with ckey '${ckey}' not found.`)
+      throw new ApiError(`Bot with ckey '${ckey}' not found.`);
     }
   }
+
 
   /**
    * Deletes a bot by ckey.
