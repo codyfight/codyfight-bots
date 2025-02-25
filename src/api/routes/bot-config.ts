@@ -4,13 +4,14 @@ import { createCBotRepository } from '../../db/repository/create-c-bot-repositor
 import { asyncHandler } from '../../utils/utils.js'
 import { jwtAuthMiddleware } from '../middleware/authentication.js'
 import botManager from '../../c-bots/c-bot-manager.js'
+import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 
 const router = Router()
 const botRepository = createCBotRepository()
 
 // Create Bot
 router.post('/bot', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Response) => {
-  await botManager.addBot(req.body)
+  await botManager.addBot(req.body as ICBotConfig)
   res.status(201).json({ message: 'Bot added successfully!', bot: req.body })
 }))
 

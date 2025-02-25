@@ -4,6 +4,7 @@ import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
+import { BotStatus } from '../../game/state/game-state.type.js'
 
 
 const { Client } = pkg
@@ -31,8 +32,8 @@ export class PostgresCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-    INSERT INTO bots (player_id, ckey, mode, environment, move_strategy, cast_strategy)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO bots (player_id, ckey, mode, environment, move_strategy, cast_strategy, status)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
   `
 
     try {
@@ -42,7 +43,8 @@ export class PostgresCBotRepository implements ICBotRepository {
         bot.mode,
         bot.environment,
         bot.move_strategy,
-        bot.cast_strategy
+        bot.cast_strategy,
+        BotStatus.Stopped
       ])
     } catch (err) {
       Logger.error('Error adding bot:', err)
