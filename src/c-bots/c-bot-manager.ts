@@ -16,7 +16,7 @@ class CBotManager {
     this.botFactory = new CBotFactory(this.botRepository)
   }
 
-  public async addBot(botData: any): Promise<void> {
+  public async addBot(botData: ICBotConfig): Promise<void> {
     await this.botRepository.addBot(botData)
   }
 
