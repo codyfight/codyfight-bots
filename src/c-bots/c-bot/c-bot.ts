@@ -33,7 +33,8 @@ class CBot {
 
   private _active = false
   public onStop!: () => void // used for callback to remove from active bots
-
+  public onFinish!: () => void // used for callback to reload bot
+  
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
     this._state = createBotState(this, status)

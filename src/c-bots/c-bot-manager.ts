@@ -44,6 +44,14 @@ class CBotManager {
       this.activeBots.delete(bot.ckey)
     }
 
+    bot.onFinish = async () => {
+      this.activeBots.delete(bot.ckey);
+      Logger.info(`Bot "${bot.ckey}" is reloading from manager.`);
+      const freshBot = await this.getBot(bot.ckey);
+      this.activeBots.set(bot.ckey, freshBot);
+      await freshBot.start();
+    };
+    
     return bot
   }
 
