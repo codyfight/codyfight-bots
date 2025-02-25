@@ -38,6 +38,7 @@ router.put('/bot/:ckey', jwtAuthMiddleware, asyncHandler(async (req: Request, re
 // Delete Bot
 router.delete('/bot/:ckey', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Response) => {
   const ckey = req.params.ckey
+  await botManager.stopBot(ckey)
   const bot = await botManager.getBot(ckey)
   const json = bot.toJSON()
   await botManager.deleteBotConfig(ckey)
