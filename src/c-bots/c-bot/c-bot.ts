@@ -1,13 +1,11 @@
 import { createCastStrategy, createMoveStrategy } from '../strategies/strategy-factory.js'
-import { BotStatus, ICBotConfig } from './c-bot-config.interface.js'
+import { ICBotConfig, ICBotState } from './c-bot-config.interface.js'
 import MoveStrategy from '../strategies/move/move-strategy.js'
 import CastStrategy from '../strategies/cast/cast-strategy.js'
 import GameClient from '../api/game-client.js'
 import BotState from '../state/bot-state.js'
 import Logger from '../../utils/logger.js'
-import { GameStatus } from '../../game/state/game-state.type.js'
 import createBotState from '../state/create-bot-state.js'
-
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -27,37 +25,93 @@ import createBotState from '../state/create-bot-state.js'
 
 class CBot {
 
-  private state: BotState
-  private readonly playerId: number | undefined
-
+  private readonly playerId: number | undefined // TODO - review if player id should be required
+  private _state: BotState
   public readonly gameClient: GameClient
   private moveStrategy: MoveStrategy
   private castStrategy: CastStrategy
 
-  private isActive = false
-  public onStop!: () => void;
+  private _active = false
+  public onStop!: () => void // used for callback to remove from active bots
 
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
-    this.state = createBotState(this, status)
+    this._state = createBotState(this, status)
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
   }
 
-  public ckey(): string {
+  public initialise(): void {
+    const state = this.gameClient.state
+    if (!state) return
+    this.moveStrategy.init(state)
+  }
+
+  public async start() {
+    this.state.start()
+    this.active = true
+    this.run().then(() => {
+      this.onStop()
+    })
+  }
+
+  public async stop() {
+    this.state.stop()
+  }
+
+  public async resume() {
+    await this.gameClient.check()
+    this.initialise()
+    this.active = true
+    this.run().then(() => {
+      this.onStop()
+    })
+  }
+
+  public async run() {
+    while (this.active) {
+      try {
+        await this.state.tick()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      } catch (error) {
+        Logger.error(`Bot "${this.ckey}" tick() error:`, error)
+      }
+    }
+    Logger.info(`Bot "${this.ckey}" main loop exited.`)
+  }
+
+  public async play() {
+    await this.gameClient.check()
+    await this.castSkills()
+    await this.performMove()
+  }
+
+  public get ckey(): string {
     return this.gameClient.ckey
   }
 
-  public setState(newState: BotState): void {
-    this.state = newState
+  public get status(): ICBotState {
+    return {
+      bot_state: this._state.status,
+      game_state: this.gameClient.status
+    }
   }
 
-  public getStatus(): { bot_state: BotStatus; game_state: GameStatus } {
-    return {
-      bot_state: this.state.status,
-      game_state: this.gameClient.status(),
-    }
+  public get state(): BotState {
+    return this._state
+  }
+
+  public set state(value: BotState) {
+    this._state = value;
+  }
+
+  public set active(value: boolean) {
+    this._active = value
+  }
+
+  public get active(): boolean {
+    return this._active
   }
 
   public toString(): string {
@@ -74,59 +128,6 @@ class CBot {
       move_strategy: this.moveStrategy.type,
       cast_strategy: this.castStrategy.type
     }
-  }
-
-  public setActive(active: boolean): void {
-    this.isActive = active
-  }
-
-  public async start() {
-    this.state.start()
-    this.setActive(true)
-    this.run().then(() => {
-      this.onStop()
-    })
-  }
-
-  public async resume(){
-    await this.gameClient.check()
-    this.initialise()
-    this.setActive(true)
-    this.run().then(() => {
-      this.onStop()
-    })
-  }
-
-  public async stop() {
-    this.state.stop()
-  }
-
-  public async run() {
-    while (this.isActive) {
-      try {
-        await this.state.tick()
-        await new Promise((resolve) => setTimeout(resolve, 500))
-      } catch (error) {
-        Logger.error(`Bot "${this.ckey()}" tick() error:`, error)
-      }
-    }
-    Logger.info(`Bot "${this.ckey()}" main loop exited.`)
-  }
-
-  public initialise(): void {
-
-    const state = this.gameClient.state
-
-    if (!state) return
-
-    this.moveStrategy.init(state)
-  }
-
-
-  async play() {
-    await this.gameClient.check()
-    await this.castSkills()
-    await this.performMove()
   }
 
   private async castSkills() {

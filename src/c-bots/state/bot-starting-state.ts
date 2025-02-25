@@ -11,7 +11,7 @@ class BotStartingState extends BotState{
   }
 
   async tick(): Promise<void> {
-    const status = this.cBot.gameClient.status()
+    const status = this.cBot.gameClient.status
 
     switch (status) {
 
@@ -34,7 +34,7 @@ class BotStartingState extends BotState{
 
   public async stop(): Promise<void> {
     await this.cBot.gameClient.surrender()
-    this.cBot.setActive(false)
+    this.cBot.active = false
     await this.transitionTo(new BotStoppedState(this.cBot))
   }
 }

@@ -11,7 +11,7 @@ class BotRunningState extends BotState{
   }
 
   async tick(): Promise<void> {
-    const status = this.cBot.gameClient.status()
+    const status = this.cBot.gameClient.status
 
     switch (status) {
 

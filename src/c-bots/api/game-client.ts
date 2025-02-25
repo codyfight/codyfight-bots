@@ -26,7 +26,7 @@ class GameClient {
     return this.gameState
   }
 
-  public status(): GameStatus {
+  public get status(): GameStatus {
     return this.state
       ? this.state.getStatus()
       : GameStatus.Empty

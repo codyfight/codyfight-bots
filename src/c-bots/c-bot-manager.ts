@@ -1,10 +1,9 @@
 import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
-import { GameStatus } from '../game/state/game-state.type.js'
 import { IBotFilter, ICBotRepository } from '../db/repository/c-bot-repository.interface.js'
 import { createCBotRepository } from '../db/repository/create-c-bot-repository.js'
-import { ICBotConfig } from './c-bot/c-bot-config.interface.js'
+import { ICBotConfig, ICBotState } from './c-bot/c-bot-config.interface.js'
 
 class CBotManager {
   private readonly botRepository: ICBotRepository
@@ -42,7 +41,7 @@ class CBotManager {
 
     bot.onStop = () => {
       Logger.info(`Bot removed from active bots.`)
-      this.activeBots.delete(bot.ckey())
+      this.activeBots.delete(bot.ckey)
     }
 
     return bot
@@ -52,9 +51,9 @@ class CBotManager {
    * Return the bot's current status (bot_state + game_state).
    * If the bot isn't active or doesn't exist, default to "stopped".
    */
-  public async getBotStatus(ckey: string): Promise<{ bot_state: string; game_state: GameStatus }> {
+  public async getBotStatus(ckey: string): Promise<ICBotState> {
     const bot = await this.getBot(ckey)
-    return bot.getStatus()
+    return bot.status
   }
 
   /**
@@ -72,7 +71,6 @@ class CBotManager {
     this.activeBots.set(ckey, bot)
     await bot.start()
   }
-
 
   /**
    * Stop an active bot.
@@ -92,11 +90,9 @@ class CBotManager {
    * Stops all active bots.
    */
   public async stopAll(): Promise<void> {
-
     for (const [ckey] of this.activeBots.entries()) {
       await this.stopBot(ckey)
     }
-
     Logger.info('All bots have been stopped.')
   }
 
@@ -106,10 +102,10 @@ class CBotManager {
   public async runAll(): Promise<void> {
     const cbots: CBot[] = await this.botFactory.createAllCBots()
     for (const bot of cbots) {
-      if (!this.activeBots.has(bot.ckey())) {
-        this.activeBots.set(bot.ckey(), bot)
+      if (!this.activeBots.has(bot.ckey)) {
+        this.activeBots.set(bot.ckey, bot)
         await bot.start()
-        Logger.info(`Bot "${bot.ckey()}" started in runAll().`)
+        Logger.info(`Bot "${bot.ckey}" started in runAll().`)
       }
     }
   }
