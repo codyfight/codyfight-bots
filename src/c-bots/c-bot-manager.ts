@@ -40,7 +40,7 @@ class CBotManager {
     const bot = this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
 
     bot.onStop = () => {
-      Logger.info(`Bot removed from active bots.`)
+      Logger.info(`Bot "${bot.ckey}" removed from active bots.`)
       this.activeBots.delete(bot.ckey)
     }
 
@@ -64,12 +64,13 @@ class CBotManager {
 
     // Check if it's already active
     if (this.activeBots.has(ckey)) {
-      Logger.info(`Bot ${ckey} is already active.`)
+      Logger.info(`Bot "${ckey}" is already active.`)
       return
     }
 
     this.activeBots.set(ckey, bot)
     await bot.start()
+    Logger.info(`Bot "${ckey}" has started.`)
   }
 
   /**
@@ -79,7 +80,7 @@ class CBotManager {
     try {
       const bot = await this.getBot(ckey)
       await bot.stop()
-      Logger.info(`Bot ${ckey} stopped.`)
+      Logger.info(`Bot "${ckey}" stopped.`)
     } catch (error) {
       Logger.error(`Failed to stop bot ${ckey}:`, error)
       throw error
@@ -105,7 +106,7 @@ class CBotManager {
       if (!this.activeBots.has(bot.ckey)) {
         this.activeBots.set(bot.ckey, bot)
         await bot.start()
-        Logger.info(`Bot "${bot.ckey}" started in runAll().`)
+        Logger.info(`Bot "${bot.ckey}" started in runAll(). `)
       }
     }
   }
@@ -117,6 +118,7 @@ class CBotManager {
         const bot = await this.getBot(config.ckey)
         this.activeBots.set(config.ckey, bot)
         await bot.resume()
+        Logger.info(`Bot "${config.ckey}" resumed.`)
       }
     }
   }

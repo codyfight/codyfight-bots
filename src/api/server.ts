@@ -33,10 +33,12 @@ app.use(errorHandler)
 async function resumeBots(): Promise<void> {
   try {
     await botManager.resumeBots()
-    Logger.info('All active bots have been resumed.')
+    Logger.info('All active bots have been resumed once.')
   } catch (error) {
+    const waitTime = getWaitTime(error)
     Logger.error('Error resuming active bots:', error)
-    setTimeout(resumeBots, getWaitTime(error))
+    Logger.info(`Retrying in ${waitTime}ms...`)
+    setTimeout(resumeBots, waitTime)
   }
 }
 
@@ -45,7 +47,7 @@ app.listen(port, async () => {
   Logger.info(`http://localhost:${port}`)
   try {
     await resumeBots()
-    Logger.info('All active bots have been resumed.')
+    Logger.info('Initial bot resume process completed.')
   } catch (error) {
     Logger.error('Error resuming active bots:', error)
   }
