@@ -6,7 +6,7 @@ import CBot from '../c-bot/c-bot.js'
 class BotStoppedState extends BotState{
   public constructor(protected cBot: CBot) {
     super(cBot)
-    this.cBot.active = false
+    this.cBot.stopPlaying()
   }
 
   get status(): BotStatus {

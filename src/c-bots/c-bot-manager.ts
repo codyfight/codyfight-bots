@@ -124,18 +124,20 @@ class CBotManager {
   }
 
   private attachCallbacks(bot: CBot): void {
+
     bot.onStop = () => {
       Logger.info(`Bot "${bot.ckey}" removed from active bots.`);
       this.activeBots.delete(bot.ckey);
     };
 
     bot.onFinish = async (): Promise<void> => {
-      this.activeBots.delete(bot.ckey);
       Logger.info(`Bot "${bot.ckey}" is reloading from manager.`);
       const freshBot = await this.getBot(bot.ckey);
+      this.attachCallbacks(freshBot);
       this.activeBots.set(bot.ckey, freshBot);
       await freshBot.start();
     };
+
   }
 
 }

@@ -20,7 +20,7 @@ class BotRunningState extends BotState{
 
       case GameStatus.Empty:
       case GameStatus.Ended:
-        await this.cBot.finishGame()
+        this.cBot.finishGame()
         break
       
       case GameStatus.Playing:

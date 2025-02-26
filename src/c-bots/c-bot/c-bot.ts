@@ -56,18 +56,12 @@ class CBot {
 
   public async start(): Promise<void> {
     this.state.start();
-    await this.runLoop();
+    await this.resume()
   }
 
   public async resume(): Promise<void> {
-    await this.runLoop();
-  }
-
-  private async runLoop(): Promise<void> {
     this.active = true;
-    this.run().then(() => {
-      this.onStop();
-    });
+    await this.run()
   }
 
   public async stop() {
@@ -85,6 +79,7 @@ class CBot {
         await wait(waitTime);
       }
     }
+
     Logger.info(`Game completed for bot "${this.ckey}". Run loop exited.`);
   }
 
@@ -94,9 +89,14 @@ class CBot {
     await this.performMove()
   }
 
-  public async finishGame(): Promise<void> {
+  public finishGame(): void {
     this.active = false;
     this.onFinish()
+  }
+
+  public stopPlaying(): void {
+    this.active = false;
+    this.onStop()
   }
 
   public get ckey(): string {
