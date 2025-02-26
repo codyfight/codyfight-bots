@@ -52,9 +52,9 @@ class CBotManager {
    * Start the bot (if not already active).
    */
   public async startBot(ckey: string): Promise<void> {
-    try{
+    try {
       const bot = await this.getBot(ckey)
-      this.attachCallbacks(bot);
+      this.attachCallbacks(bot)
 
       if (this.activeBots.has(ckey)) {
         Logger.info(`Bot "${ckey}" is already active.`)
@@ -70,6 +70,15 @@ class CBotManager {
     }
   }
 
+  private async restart(ckey: string): Promise<void> {
+    this.activeBots.delete(ckey)
+    await this.startBot(ckey)
+  }
+
+  private attachCallbacks(bot: CBot): void {
+    bot.restart = () => this.restart(bot.ckey)
+  }
+
   /**
    * Stop an active bot.
    */
@@ -77,6 +86,7 @@ class CBotManager {
     try {
       const bot = await this.getBot(ckey)
       await bot.stop()
+      this.activeBots.delete(ckey)
       Logger.info(`Bot "${ckey}" stopped.`)
     } catch (error) {
       Logger.error(`Failed to stop bot ${ckey}:`, error)
@@ -100,44 +110,27 @@ class CBotManager {
   public async runAll(): Promise<void> {
     const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
     for (const config of allBotConfigs) {
-        await this.startBot(config.ckey)
+      await this.startBot(config.ckey)
     }
   }
 
   public async resumeBots(): Promise<void> {
     const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
     for (const config of allBotConfigs) {
-        await this.resumeBot(config.ckey)
+      await this.resumeBot(config.ckey)
     }
   }
 
   private async resumeBot(ckey: string): Promise<void> {
-    try{
+    try {
       const bot = await this.getBot(ckey)
-      this.attachCallbacks(bot);
+      this.attachCallbacks(bot)
       this.activeBots.set(ckey, bot)
       await bot.resume()
       Logger.info(`Bot "${ckey}" resumed.`)
     } catch (error) {
       Logger.error(`Failed to resume bot ${ckey}:`, error)
     }
-  }
-
-  private attachCallbacks(bot: CBot): void {
-
-    bot.onStop = () => {
-      Logger.info(`Bot "${bot.ckey}" removed from active bots.`);
-      this.activeBots.delete(bot.ckey);
-    };
-
-    bot.onFinish = async (): Promise<void> => {
-      Logger.info(`Bot "${bot.ckey}" is reloading from manager.`);
-      const freshBot = await this.getBot(bot.ckey);
-      this.attachCallbacks(freshBot);
-      this.activeBots.set(bot.ckey, freshBot);
-      await freshBot.start();
-    };
-
   }
 
 }

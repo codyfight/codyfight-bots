@@ -34,8 +34,7 @@ class CBot {
   private castStrategy: CastStrategy
 
   private _active = false
-  public onStop!: () => void // used for callback to remove from active bots
-  public onFinish!: () => void // used for callback to reload bot
+  public restart!: () => void // used for callback to restart bot
   
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
@@ -61,7 +60,7 @@ class CBot {
 
   public async resume(): Promise<void> {
     this.active = true;
-    await this.run()
+    this.run().catch(error => Logger.error(`Error in run loop for bot "${this.ckey}":`, error));
   }
 
   public async stop() {
@@ -91,12 +90,11 @@ class CBot {
 
   public finishGame(): void {
     this.active = false;
-    this.onFinish()
+    this.restart()
   }
 
   public stopPlaying(): void {
     this.active = false;
-    this.onStop()
   }
 
   public get ckey(): string {
