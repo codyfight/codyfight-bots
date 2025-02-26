@@ -14,11 +14,13 @@ class BotStartingState extends BotState{
     const status = this.cBot.gameClient.status
 
     switch (status) {
+      case GameStatus.Uninitialised:
+        await this.cBot.initialise('check');
+        break
 
       case GameStatus.Ended:
       case GameStatus.Empty:
-        await this.cBot.gameClient.init()
-        this.cBot.initialise()
+        await this.cBot.initialise('init');
         break
 
       case GameStatus.Playing:
@@ -26,7 +28,6 @@ class BotStartingState extends BotState{
         return
 
       case GameStatus.Registering:
-      default:
         await this.cBot.gameClient.check()
         break
     }
@@ -34,8 +35,8 @@ class BotStartingState extends BotState{
 
   public async stop(): Promise<void> {
     await this.cBot.gameClient.surrender()
-    this.cBot.active = false
     await this.transitionTo(new BotStoppedState(this.cBot))
+    this.cBot.active = false
   }
 }
 

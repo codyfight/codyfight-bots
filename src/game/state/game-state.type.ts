@@ -18,19 +18,11 @@ export interface IGameStatus {
 }
 
 export enum GameStatus {
-  Terminated = -2,
+  Uninitialised = -2,
   Empty = -1,
   Registering = 0,
   Playing = 1,
   Ended = 2
-}
-
-export enum BotStatus{
-  Stopped = "stopped",
-  Initialising = "initialising",
-  Playing = "playing",
-  Finishing = "finishing",
-  Surrendering = "surrendering",
 }
 
 export enum GameMode {

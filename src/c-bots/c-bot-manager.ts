@@ -37,22 +37,7 @@ class CBotManager {
    * Returns a CBot instance, either from memory (activeBots) or by creating a new one.
    */
   public async getBot(ckey: string): Promise<CBot> {
-    const bot = this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
-
-    bot.onStop = () => {
-      Logger.info(`Bot "${bot.ckey}" removed from active bots.`)
-      this.activeBots.delete(bot.ckey)
-    }
-
-    bot.onFinish = async () => {
-      this.activeBots.delete(bot.ckey);
-      Logger.info(`Bot "${bot.ckey}" is reloading from manager.`);
-      const freshBot = await this.getBot(bot.ckey);
-      this.activeBots.set(bot.ckey, freshBot);
-      await freshBot.start();
-    };
-    
-    return bot
+    return this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
   }
 
   /**
@@ -68,17 +53,22 @@ class CBotManager {
    * Start the bot (if not already active).
    */
   public async startBot(ckey: string): Promise<void> {
-    const bot = await this.getBot(ckey)
+    try{
+      const bot = await this.getBot(ckey)
+      this.attachCallbacks(bot);
 
-    // Check if it's already active
-    if (this.activeBots.has(ckey)) {
-      Logger.info(`Bot "${ckey}" is already active.`)
-      return
+      if (this.activeBots.has(ckey)) {
+        Logger.info(`Bot "${ckey}" is already active.`)
+        return
+      }
+
+      this.activeBots.set(ckey, bot)
+      await bot.start()
+
+      Logger.info(`Bot "${ckey}" has started.`)
+    } catch (error) {
+      Logger.error(`Failed to start bot ${ckey}:`, error)
     }
-
-    this.activeBots.set(ckey, bot)
-    await bot.start()
-    Logger.info(`Bot "${ckey}" has started.`)
   }
 
   /**
@@ -109,12 +99,10 @@ class CBotManager {
    * Fetch all bots from the DB and run them in infinite loops.
    */
   public async runAll(): Promise<void> {
-    const cbots: CBot[] = await this.botFactory.createAllCBots()
-    for (const bot of cbots) {
-      if (!this.activeBots.has(bot.ckey)) {
-        this.activeBots.set(bot.ckey, bot)
-        await bot.start()
-        Logger.info(`Bot "${bot.ckey}" started in runAll(). `)
+    const allBotConfigs = await this.getAllBotConfigs({player_id: '1'})
+    for (const config of allBotConfigs) {
+      if (config.status !== 'stopped') {
+        await this.startBot(config.ckey)
       }
     }
   }
@@ -123,13 +111,38 @@ class CBotManager {
     const allBotConfigs = await this.getAllBotConfigs({})
     for (const config of allBotConfigs) {
       if (config.status !== 'stopped') {
-        const bot = await this.getBot(config.ckey)
-        this.activeBots.set(config.ckey, bot)
-        await bot.resume()
-        Logger.info(`Bot "${config.ckey}" resumed.`)
+        await this.resumeBot(config.ckey)
       }
     }
   }
+
+  private async resumeBot(ckey: string): Promise<void> {
+    try{
+      const bot = await this.getBot(ckey)
+      this.attachCallbacks(bot);
+      this.activeBots.set(ckey, bot)
+      await bot.resume()
+      Logger.info(`Bot "${ckey}" resumed.`)
+    } catch (error) {
+      Logger.error(`Failed to resume bot ${ckey}:`, error)
+    }
+  }
+
+  private attachCallbacks(bot: CBot): void {
+    bot.onStop = () => {
+      Logger.info(`Bot "${bot.ckey}" removed from active bots.`);
+      this.activeBots.delete(bot.ckey);
+    };
+
+    bot.onFinish = async (): Promise<void> => {
+      this.activeBots.delete(bot.ckey);
+      Logger.info(`Bot "${bot.ckey}" is reloading from manager.`);
+      const freshBot = await this.getBot(bot.ckey);
+      this.activeBots.set(bot.ckey, freshBot);
+      await freshBot.start();
+    };
+  }
+
 }
 
 const botManager = new CBotManager()

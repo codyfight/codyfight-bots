@@ -19,6 +19,10 @@ class BotStoppingState extends BotState{
 
     switch (status) {
 
+      case GameStatus.Uninitialised:
+        await this.cBot.initialise('check');
+        break
+
       case GameStatus.Empty:
       case GameStatus.Ended:
         await this.transitionTo(new BotStoppedState(this.cBot))
@@ -31,10 +35,6 @@ class BotStoppingState extends BotState{
 
       case GameStatus.Playing:
         await this.cBot.play()
-        break
-
-      default:
-        await this.cBot.gameClient.check()
         break
     }
   }

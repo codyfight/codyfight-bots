@@ -60,9 +60,6 @@ class GameError extends Error {
     MESSAGE: ${this.message}
     CODE: ${this.getErrorCode()}
     --------------------------
-    STACK TRACE:
-    ${this.stack ?? 'N/A'}
-    --------------------------
     CONTEXT:
     ${JSON.stringify(this.context, null, 2)}
     --------------------------`

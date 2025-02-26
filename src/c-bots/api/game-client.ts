@@ -29,7 +29,7 @@ class GameClient {
   public get status(): GameStatus {
     return this.state
       ? this.state.getStatus()
-      : GameStatus.Empty
+      : GameStatus.Uninitialised
   }
 
   public async init(): Promise<void> {

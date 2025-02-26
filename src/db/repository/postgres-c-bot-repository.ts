@@ -1,10 +1,9 @@
 import pkg from 'pg'
-import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { BotStatus, ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
 import Logger from '../../utils/logger.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
-import { BotStatus } from '../../game/state/game-state.type.js'
 
 
 const { Client } = pkg

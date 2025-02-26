@@ -6,6 +6,8 @@ import GameClient from '../api/game-client.js'
 import BotState from '../state/bot-state.js'
 import Logger from '../../utils/logger.js'
 import createBotState from '../state/create-bot-state.js'
+import { getWaitTime, wait } from '../../utils/utils.js'
+import { TICK_INTERVAL } from '../../config/constants.js'
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -43,49 +45,58 @@ class CBot {
     this.castStrategy = createCastStrategy(cast_strategy)
   }
 
-  public initialise(): void {
-    const state = this.gameClient.state
-    if (!state) return
-    this.moveStrategy.init(state)
+
+  public async initialise(action: 'check' | 'init'): Promise<void> {
+    await this.gameClient[action]();
+    const state = this.gameClient.state;
+    if (state) {
+      this.moveStrategy.init(state);
+    }
   }
 
-  public async start() {
-    this.state.start()
-    this.active = true
+  public async start(): Promise<void> {
+    this.state.start();
+    await this.runLoop();
+  }
+
+  public async resume(): Promise<void> {
+    await this.runLoop();
+  }
+
+  private async runLoop(): Promise<void> {
+    this.active = true;
     this.run().then(() => {
-      this.onStop()
-    })
+      this.onStop();
+    });
   }
 
   public async stop() {
     this.state.stop()
   }
 
-  public async resume() {
-    await this.gameClient.check()
-    this.initialise()
-    this.active = true
-    this.run().then(() => {
-      this.onStop()
-    })
-  }
-
-  public async run() {
+  public async run(): Promise<void> {
     while (this.active) {
       try {
-        await this.state.tick()
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        await this.state.tick();
+        await wait(TICK_INTERVAL);
       } catch (error) {
-        Logger.error(`Bot "${this.ckey}" tick() error:`, error)
+        const waitTime = getWaitTime(error)
+        Logger.error(`Bot "${this.ckey}" tick() error waiting ${waitTime} ms: `, error);
+        await wait(waitTime);
       }
     }
-    Logger.info(`Bot "${this.ckey}" main loop exited.`)
+    Logger.info(`Game completed for bot "${this.ckey}". Run loop exited.`);
   }
 
   public async play() {
     await this.gameClient.check()
     await this.castSkills()
     await this.performMove()
+  }
+
+  public async finishGame(): Promise<void> {
+    this.active = false;
+    this.onFinish()
   }
 
   public get ckey(): string {

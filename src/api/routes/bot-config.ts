@@ -1,5 +1,4 @@
 import { Request, Response, Router } from 'express'
-import { createCBotRepository } from '../../db/repository/create-c-bot-repository.js'
 
 import { asyncHandler } from '../../utils/utils.js'
 import { jwtAuthMiddleware } from '../middleware/authentication.js'
@@ -7,7 +6,6 @@ import botManager from '../../c-bots/c-bot-manager.js'
 import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 
 const router = Router()
-const botRepository = createCBotRepository()
 
 // Create Bot
 router.post('/bot', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Response) => {

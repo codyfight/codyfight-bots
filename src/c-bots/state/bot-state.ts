@@ -21,7 +21,7 @@ abstract class BotState {
   }
 
   protected async transitionTo(newState: BotState): Promise<void> {
-    Logger.debug(`Bot is transitioning from state ${this.status} to ${newState.status}`)
+    Logger.debug(`Bot ${this.cBot.ckey} is transitioning from state ${this.status} to ${newState.status}`)
     this.cBot.state = newState
 
     await botManager.updateBotConfig(this.cBot.ckey, {
