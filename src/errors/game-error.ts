@@ -60,9 +60,8 @@ class GameError extends Error {
     MESSAGE: ${this.message}
     CODE: ${this.getErrorCode()}
     --------------------------
-    CONTEXT:
-    ${JSON.stringify(this.context, null, 2)}
-    --------------------------`
+    CONTEXT: ${JSON.stringify(this.context, null, 2)}
+    --------------------------\n`
   }
 
   private formatAxiosError(error: AxiosError): string {
@@ -85,7 +84,7 @@ class GameError extends Error {
     RESPONSE_CODE: ${responseData.code ?? 'N/A'}
     RESPONSE_MESSAGE: ${responseData.message ?? 'N/A'}
     RESPONSE_CONTEXT: ${JSON.stringify(responseData.context ?? {}, null, 2)}
-    --------------------------
+    --------------------------\n
     `
   }
 }

@@ -1,7 +1,7 @@
 import CBot from './c-bot/c-bot.js'
 import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
-import { IBotFilter, ICBotRepository } from '../db/repository/c-bot-repository.interface.js'
+import { IBotFilter, IBotFilterCondition, ICBotRepository } from '../db/repository/c-bot-repository.interface.js'
 import { createCBotRepository } from '../db/repository/create-c-bot-repository.js'
 import { ICBotConfig, ICBotState } from './c-bot/c-bot-config.interface.js'
 
@@ -20,13 +20,12 @@ class CBotManager {
     await this.botRepository.addBot(botData)
   }
 
-  public async getAllBotConfigs(filter: IBotFilter): Promise<ICBotConfig[]> {
-    // TODO - Add filtering, enforce player id from endpoint, add bot status != stopped
+  public async getAllBotConfigs(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
     return this.botRepository.getBots(filter)
   }
 
-  public async updateBotConfig(ckey: string, bot: ICBotConfig): Promise<void> {
-    await this.botRepository.updateBot(ckey, bot)
+  public async updateBotConfig(ckey: string, params: IBotFilter): Promise<void> {
+    await this.botRepository.updateBot(ckey, params)
   }
 
   public async deleteBotConfig(ckey: string): Promise<void> {
@@ -99,20 +98,16 @@ class CBotManager {
    * Fetch all bots from the DB and run them in infinite loops.
    */
   public async runAll(): Promise<void> {
-    const allBotConfigs = await this.getAllBotConfigs({player_id: '1'})
+    const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
     for (const config of allBotConfigs) {
-      if (config.status !== 'stopped') {
         await this.startBot(config.ckey)
-      }
     }
   }
 
   public async resumeBots(): Promise<void> {
-    const allBotConfigs = await this.getAllBotConfigs({})
+    const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
     for (const config of allBotConfigs) {
-      if (config.status !== 'stopped') {
         await this.resumeBot(config.ckey)
-      }
     }
   }
 

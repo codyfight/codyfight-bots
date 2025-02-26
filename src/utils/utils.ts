@@ -12,7 +12,7 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
   try {
     return await fn()
   } catch (error) {
-    throw new GameError(error, {Message: `Error in ${fn.name}`})
+    throw new GameError(error, {Message: `Error when calling ${fn.name}()`})
   }
 }
 

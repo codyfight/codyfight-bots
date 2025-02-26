@@ -1,7 +1,7 @@
 import path from 'node:path'
 import sqlite3 from 'sqlite3'
 import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
-import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { IBotFilter, IBotFilterCondition, ICBotRepository } from './c-bot-repository.interface.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
 
@@ -50,7 +50,7 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+  public async getBots(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
     const query = `SELECT * FROM bots`
 
     const rows = await this.runSqlAll(query)
@@ -61,7 +61,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    * Updates an existing bot by ckey.
    * Throws an error if the bot with the given ckey does not exist.
    */
-  public async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
+  public async updateBot(ckey: string, bot: IBotFilter): Promise<void> {
     const query = `
     UPDATE bots
     SET 

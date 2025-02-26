@@ -1,4 +1,4 @@
-import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { IBotFilter, IBotFilterCondition, ICBotRepository } from './c-bot-repository.interface.js'
 import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 
 /**
@@ -43,7 +43,7 @@ class CustomCBotRepository implements ICBotRepository {
    *
    * @returns A promise that resolves with an array of all bot configurations.
    */
-  getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+  getBots(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
     // Implement logic to fetch all bot records from your custom database.
     return Promise.resolve([]) // Replace with actual logic.
   }
@@ -54,7 +54,7 @@ class CustomCBotRepository implements ICBotRepository {
    * @param ICBotConfig- The configuration of a bot to update.
    * @returns A promise that resolves when the bot is updated.
    */
-  updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
+  updateBot(ckey: string, bot: IBotFilter): Promise<void> {
     return Promise.resolve(undefined)
   }
 

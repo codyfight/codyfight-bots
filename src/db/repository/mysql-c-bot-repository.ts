@@ -1,4 +1,4 @@
-import { IBotFilter, ICBotRepository } from './c-bot-repository.interface.js'
+import { IBotFilter, IBotFilterCondition, ICBotRepository } from './c-bot-repository.interface.js'
 import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import mysql from 'mysql2/promise'
 import config from '../../config/env.js'
@@ -85,29 +85,30 @@ class MysqlCBotRepository implements ICBotRepository {
     }
   }
 
-  async getBots(filter: IBotFilter): Promise<ICBotConfig[]> {
+  async getBots(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
+    let query = 'SELECT * FROM bots';
+    const values: any[] = [];
 
-    const playerId = parseInt(filter.player_id as string);
-
-    if (!playerId) {
-      throw new ApiError('player_id is required', 500);
+    if (filter && filter.length > 0) {
+      const conditions = filter.map(cond => {
+        values.push(cond.value);
+        return `${cond.field} ${cond.operator} ?`;
+      });
+      query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    const query = `SELECT * FROM bots WHERE player_id = ?`
-
     try {
-      const connection = await this.pool.getConnection()
-      const [rows] = await connection.execute(query, [playerId])
-      connection.release()
-
-      return rows as ICBotConfig[]
+      const connection = await this.pool.getConnection();
+      const [rows] = await connection.execute(query, values);
+      connection.release();
+      return rows as ICBotConfig[];
     } catch (err) {
-      Logger.error('Error retrieving bots:', err)
+      Logger.error('Error retrieving bots:', err);
       throw ApiError.from(err, 'Failed to retrieve bots');
     }
   }
 
-  async updateBot(ckey: string, bot: ICBotConfig): Promise<void> {
+  async updateBot(ckey: string, bot: IBotFilter): Promise<void> {
     const query = `
     UPDATE bots 
     SET mode = ?, environment = ?, move_strategy = ?, cast_strategy = ?

@@ -6,10 +6,10 @@ class CBotFactory {
   constructor(private botRepository: ICBotRepository) {}
 
   /**
-   * Create CBot instances for all bots belonging to player_id = "1"
+   * Create CBot instances for all bots
    */
   public async createAllCBots(): Promise<CBot[]> {
-    const botConfigs = await this.botRepository.getBots({ player_id: '1' })
+    const botConfigs = await this.botRepository.getBots([])
     if (!botConfigs || botConfigs.length === 0) {
       throw new Error('No bot configurations found in the repository.')
     }

@@ -1,7 +1,8 @@
 import CBot from '../c-bot/c-bot.js'
 import botManager from '../c-bot-manager.js'
 import Logger from '../../utils/logger.js'
-import { BotStatus, ICBotConfig } from '../c-bot/c-bot-config.interface.js'
+import { IBotFilter } from '../../db/repository/c-bot-repository.interface.js'
+import { BotStatus } from '../c-bot/c-bot-config.interface.js'
 
 abstract class BotState {
   public constructor(protected cBot: CBot) {}
@@ -24,11 +25,7 @@ abstract class BotState {
     Logger.debug(`Bot ${this.cBot.ckey} is transitioning from state ${this.status} to ${newState.status}`)
     this.cBot.state = newState
 
-    await botManager.updateBotConfig(this.cBot.ckey, {
-      ckey: this.cBot.ckey,
-      status: newState.status
-    } as ICBotConfig);
-    
+    await botManager.updateBotConfig(this.cBot.ckey, { status: newState.status } as IBotFilter);
   }
 }
 
