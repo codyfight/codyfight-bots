@@ -73,6 +73,18 @@ class CBot {
         await this.state.tick();
         await wait(TICK_INTERVAL);
       } catch (error) {
+
+        // TODO - handle this better
+        //  quick fix to handle 422 errors
+        const err = error as any; // cast to any so we can access nested properties
+        const status = err?.error?.status || err?.response?.status;
+
+        if (status === 422) {
+          Logger.error(`Bot "${this.ckey}" received a 422 error. Stopping the bot.`, error);
+          await this.stop();
+          break;
+        }
+
         const waitTime = getWaitTime(error)
         Logger.error(`Bot "${this.ckey}" tick() error waiting ${waitTime} ms: `, error);
         await wait(waitTime);
