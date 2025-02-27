@@ -1,8 +1,8 @@
 import BotState from './bot-state.js'
 import { GameStatus } from '../../game/state/game-state.type.js'
 import BotRunningState from './bot-running-state.js'
-import BotStoppedState from './bot-stopped-state.js'
 import { BotStatus } from '../c-bot/c-bot-config.interface.js'
+import BotStoppingState from './bot-stopping-state.js'
 
 class BotStartingState extends BotState{
 
@@ -34,9 +34,7 @@ class BotStartingState extends BotState{
   }
 
   public async stop(): Promise<void> {
-    await this.cBot.gameClient.surrender()
-    await this.transitionTo(new BotStoppedState(this.cBot))
-    this.cBot.active = false
+    await this.transitionTo(new BotStoppingState(this.cBot))
   }
 }
 
