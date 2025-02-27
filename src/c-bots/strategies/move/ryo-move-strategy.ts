@@ -4,7 +4,11 @@ import { MoveStrategyType } from './move-strategy.type.js'
 
 
 class RyoMoveStrategy extends MoveStrategy {
-  public readonly type = MoveStrategyType.Ryo
+
+  public get type(): MoveStrategyType {
+    return MoveStrategyType.Ryo
+  }
+
   protected setTargets(): void {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);
     if (ryoAgents && ryoAgents.length > 0) {

@@ -10,6 +10,10 @@ import IdleMoveStrategy from './move/idle-move-strategy.js'
 import AggressiveMoveStrategy from './move/aggressive-move-strategy.js'
 import DynamicMoveStrategy from './move/dynamic-move-strategy.js'
 import RyoMoveStrategy from './move/ryo-move-strategy.js'
+import NoCastStrategy from './cast/no-cast-strategy.js'
+import DefensiveCastStrategy from './cast/defensive-cast-strategy.js'
+import AggressiveCastStrategy from './cast/aggressive-cast-strategy.js'
+import RyoCastStrategy from './cast/ryo-cast-strategy.js'
 
 /**
  * Factory function to create a CastStrategy based on the given type.
@@ -19,9 +23,16 @@ import RyoMoveStrategy from './move/ryo-move-strategy.js'
 export function createCastStrategy(type: CastStrategyType): CastStrategy {
   switch (type) {
     case CastStrategyType.None:
-      return new CastStrategy();
+      return new NoCastStrategy();
     case CastStrategyType.Random:
       return new RandomCastStrategy();
+    case CastStrategyType.Aggressive:
+      return new AggressiveCastStrategy();
+    case CastStrategyType.Defensive:
+      return new DefensiveCastStrategy();
+    case CastStrategyType.Ryo:
+      return new RyoCastStrategy();
+
     default:
       throw new Error(`Unknown CastStrategyType: ${type}`);
   }

@@ -5,12 +5,11 @@ import PlayerAgent from '../../../game/agents/player-agent.js'
 import { CastStrategyType, ICastStrategy } from './cast-strategy.type.js'
 import { randomElement } from '../../../game/utils/game-utils.js'
 
-class CastStrategy implements ICastStrategy {
-  public  type = CastStrategyType.None
+abstract class CastStrategy implements ICastStrategy {
 
-  public determineCast(game: GameState): [Skill, Position] | null {
-    return null // No cast by default
-  }
+  public abstract readonly type: CastStrategyType;
+
+  public abstract determineCast(game: GameState): [Skill, Position] | null
 
   protected getRandomCast(bearer: PlayerAgent): [Skill, Position] | null {
     const skills = bearer.getSkills()

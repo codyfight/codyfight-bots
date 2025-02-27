@@ -5,7 +5,7 @@ import GameState from '../../../game/state/game-state.js'
 import { CastStrategyType } from './cast-strategy.type.js'
 
 class RandomCastStrategy extends CastStrategy {
-  public type = CastStrategyType.Random
+  public readonly type = CastStrategyType.Random
 
   public determineCast(game: GameState): [Skill, Position] | null {
     return this.getRandomCast(game.getBearer())

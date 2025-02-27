@@ -4,7 +4,10 @@ import Position from '../../../game/map/position.js'
 
 export enum CastStrategyType {
   None = 'none',
-  Random = 'random'
+  Random = 'random',
+  Aggressive = 'aggressive',
+  Defensive = 'defensive',
+  Ryo = 'ryo'
 }
 
 export interface ICastStrategy {

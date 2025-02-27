@@ -1,5 +1,6 @@
 import MoveStrategy from './move-strategy.js'
 import Position from '../../../game/map/position.js'
+import { MoveStrategyType } from './move-strategy.type.js'
 
 /**
  * Example CustomMoveStrategy:
@@ -9,6 +10,11 @@ import Position from '../../../game/map/position.js'
  * Optionally override `getDefaultMove()` to define a fallback move.
  */
 class CustomMoveStrategy extends MoveStrategy {
+
+  public get type(): MoveStrategyType {
+    return MoveStrategyType.Idle
+  }
+
   /**
    * Sets the `targets` array. The bot will try each target in order, using BFS pathfinding
    * to see if it can reach that position. If no path is found for any target,

@@ -10,7 +10,7 @@ import SpecialAgent from '../../../game/agents/special-agent.js'
 import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
-  public readonly type!: MoveStrategyType;
+  public abstract get type(): MoveStrategyType;
 
   protected map!: GameMap
   protected bearer!: PlayerAgent
