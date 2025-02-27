@@ -48,6 +48,13 @@ class CBotManager {
     return bot.status
   }
 
+  public async isBotActive(ckey: string): Promise<boolean> {
+    const status = await this.getBotStatus(ckey)
+    const isActive = this.activeBots.has(ckey)
+
+    return isActive || status.bot_state !== 'stopped'
+  }
+
   /**
    * Start the bot (if not already active).
    */
