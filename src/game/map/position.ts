@@ -1,3 +1,5 @@
+import { euclideanDistance } from '../utils/game-utils.js'
+
 class Position {
   constructor(
     public readonly x: number,
@@ -10,6 +12,10 @@ class Position {
 
   public equals(other: Position) : boolean{
     return this.x == other.x && this.y == other.y
+  }
+
+  public adjacent(other: Position) : boolean{
+    return euclideanDistance(this, other) == 1
   }
 
   public toString(): string {

@@ -5,6 +5,8 @@ import PlayerAgent from '../../../game/agents/player-agent.js'
 import { randomElement } from '../../../game/utils/game-utils.js'
 import { CastStrategyType } from './cast-strategy.type.js'
 import GameAgent from '../../../game/agents/game-agent.js'
+import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import SpecialAgent from '../../../game/agents/special-agent.js'
 
 // A good way to improve how these strategies work is to introduce the concept of a result
 // This means, that we can guess the result of a cast, and then decide if we want to cast or not
@@ -20,10 +22,12 @@ abstract class CastStrategy {
 
   protected bearer!: PlayerAgent
   protected opponent!: GameAgent
+  protected specialAgents!: Map<SpecialAgentType, SpecialAgent[]>
 
   public init(game: GameState): void {
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
+    this.specialAgents = game.getSpecialAgents()
   }
 
   protected abstract determineSkill(): Skill | null
