@@ -17,18 +17,22 @@ class CBotManager {
   }
 
   public async addBot(botData: ICBotConfig): Promise<void> {
+    Logger.debug(`addBot() called "${botData.ckey}"...`)
     await this.botRepository.addBot(botData)
   }
 
   public async getAllBotConfigs(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
+    Logger.debug(`getAllBotConfigs() called...`)
     return this.botRepository.getBots(filter)
   }
 
   public async updateBotConfig(ckey: string, params: IBotFilter): Promise<void> {
+    Logger.debug(`updateBotConfig() called "${ckey}"...`)
     await this.botRepository.updateBot(ckey, params)
   }
 
   public async deleteBotConfig(ckey: string): Promise<void> {
+    Logger.debug(`deleteBotConfig() called "${ckey}"...`)
     await this.botRepository.deleteBot(ckey)
   }
 
@@ -36,6 +40,7 @@ class CBotManager {
    * Returns a CBot instance, either from memory (activeBots) or by creating a new one.
    */
   public async getBot(ckey: string): Promise<CBot> {
+    Logger.debug(`getBot() called "${ckey}"...`)
     return this.activeBots.get(ckey) || await this.botFactory.createBot(ckey)
   }
 
@@ -44,6 +49,7 @@ class CBotManager {
    * If the bot isn't active or doesn't exist, default to "stopped".
    */
   public async getBotStatus(ckey: string): Promise<ICBotState> {
+    Logger.debug(`getBotStatus() called "${ckey}"...`)
     const bot = await this.getBot(ckey)
     return bot.status
   }
@@ -60,11 +66,12 @@ class CBotManager {
    */
   public async startBot(ckey: string): Promise<void> {
     try {
+      Logger.info(`Starting bot "${ckey}"...`)
       const bot = await this.getBot(ckey)
       this.attachCallbacks(bot)
 
       if (this.activeBots.has(ckey)) {
-        Logger.info(`Bot "${ckey}" is already active.`)
+        Logger.warn(`Bot "${ckey}" is already active.`)
         return
       }
 
@@ -78,8 +85,10 @@ class CBotManager {
   }
 
   private async restart(ckey: string): Promise<void> {
+    Logger.info(`Restarting bot "${ckey}"...`)
     this.activeBots.delete(ckey)
     await this.startBot(ckey)
+    Logger.info(`Bot "${ckey}" restarted.`)
   }
 
   private attachCallbacks(bot: CBot): void {
@@ -91,6 +100,7 @@ class CBotManager {
    */
   public async stopBot(ckey: string): Promise<void> {
     try {
+      Logger.info(`Stopping bot "${ckey}"...`)
       const bot = await this.getBot(ckey)
       await bot.stop()
       this.activeBots.delete(ckey)
@@ -124,6 +134,7 @@ class CBotManager {
   public async resumeBots(): Promise<void> {
     const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
     for (const config of allBotConfigs) {
+      Logger.info(`Resuming bot "${config.ckey}..."`)
       await this.resumeBot(config.ckey)
     }
   }
@@ -134,7 +145,7 @@ class CBotManager {
       this.attachCallbacks(bot)
       this.activeBots.set(ckey, bot)
       await bot.resume()
-      Logger.info(`Bot "${ckey}" resumed.`)
+      Logger.info(`Bot "${ckey}" resumed successfully.`)
     } catch (error) {
       Logger.error(`Failed to resume bot ${ckey}:`, error)
     }

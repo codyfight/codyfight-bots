@@ -2,6 +2,7 @@ import BotState from './bot-state.js'
 import BotStartingState from './bot-starting-state.js'
 import { BotStatus } from '../c-bot/c-bot-config.interface.js'
 import CBot from '../c-bot/c-bot.js'
+import Logger from '../../utils/logger.js'
 
 class BotStoppedState extends BotState{
   public constructor(protected cBot: CBot) {
@@ -18,6 +19,7 @@ class BotStoppedState extends BotState{
   }
 
   public async start(): Promise<void> {
+    Logger.debug(`${this.cBot.ckey} - start request received in stopped state` )
     await this.transitionTo(new BotStartingState(this.cBot))
   }
 }
