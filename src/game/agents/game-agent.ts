@@ -5,7 +5,7 @@ import { IAgent } from './game-agent.type.js'
 class GameAgent implements IUpdatable {
   readonly id: number
   readonly name: string
-  private position: Position = new Position(0, 0)
+  private _position: Position = new Position(0, 0)
 
   constructor(agentData: IAgent) {
     this.id = agentData.id
@@ -17,13 +17,13 @@ class GameAgent implements IUpdatable {
     this.setPosition(agentData)
   }
 
-  public getPosition(): Position {
-    return this.position
+  public get position(): Position {
+    return this._position
   }
 
   private setPosition(agentData: IAgent): void {
     if (agentData.position) {
-      this.position = new Position(agentData.position.x, agentData.position.y)
+      this._position = new Position(agentData.position.x, agentData.position.y)
     }
   }
 }

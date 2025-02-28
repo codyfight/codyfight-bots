@@ -9,7 +9,7 @@ class ExitMoveStrategy extends MoveStrategy {
   }
 
   protected setTargets(): void {
-    const position = this.bearer.getPosition()
+    const position = this.bearer.position
     const type = TileType.ExitGate
 
     // Find the closest exit gate

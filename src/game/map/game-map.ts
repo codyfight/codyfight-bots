@@ -28,7 +28,7 @@ class GameMap implements IUpdatable {
     // Update agent positions
     this.agentPositions.clear()
     for (const agent of agents) {
-      this.agentPositions.set(agent.id, agent.getPosition())
+      this.agentPositions.set(agent.id, agent.position)
     }
   }
 

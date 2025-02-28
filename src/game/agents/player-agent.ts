@@ -15,24 +15,12 @@ class PlayerAgent extends GameAgent {
     super.update(agentData)
   }
 
-  public canCast(): boolean {
-    return this.hasReadySkills() && this.isPlayerTurn
-  }
-
   public get isPlayerTurn() {
     return this._isPlayerTurn
   }
 
-  public hasReadySkills() {
-    return this.skills.some((skill) => skill.isReady())
-  }
-
   public getPossibleMoves(): Position[] {
     return this.possibleMoves
-  }
-
-  public getSkills(): Skill[] {
-    return this.skills
   }
 
   public get availableSkills(): Skill[] {

@@ -14,6 +14,7 @@ class Skill {
   public readonly name: string
   public readonly type: number
   public readonly status: number
+  public readonly damage: number
   public readonly possibleTargets: Position[]
 
   constructor(skillData: any) {
@@ -21,6 +22,7 @@ class Skill {
     this.name = skillData.name
     this.type = skillData.type
     this.status = skillData.status
+    this.damage = skillData.damage
 
     this.possibleTargets = skillData.possible_targets.map(
       (target: any) => new Position(target.x, target.y)
@@ -29,6 +31,10 @@ class Skill {
 
   public isReady(): boolean {
     return this.status === SkillStatus.Ready
+  }
+
+  public canTarget(target: Position): boolean {
+    return this.possibleTargets.some((possibleTarget) => possibleTarget.equals(target))
   }
 }
 

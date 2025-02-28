@@ -12,7 +12,7 @@ class RyoMoveStrategy extends MoveStrategy {
   protected setTargets(): void {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);
     if (ryoAgents && ryoAgents.length > 0) {
-      this.targets.push(ryoAgents[0].getPosition());
+      this.targets.push(ryoAgents[0].position);
     }
   }
 }

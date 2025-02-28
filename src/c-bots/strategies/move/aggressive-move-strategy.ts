@@ -8,7 +8,7 @@ class AggressiveMoveStrategy extends MoveStrategy {
   }
 
   protected setTargets(): void {
-    this.targets.push(this.opponent.getPosition())
+    this.targets.push(this.opponent.position)
   }
 }
 

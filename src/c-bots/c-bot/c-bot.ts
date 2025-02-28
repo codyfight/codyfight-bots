@@ -47,10 +47,12 @@ class CBot {
 
   public async initialise(action: 'check' | 'init'): Promise<void> {
     await this.gameClient[action]();
+
     const state = this.gameClient.state;
-    if (state) {
-      this.moveStrategy.init(state);
-    }
+    if (!state) return
+
+    this.moveStrategy.init(state);
+    this.castStrategy.init(state);
   }
 
   public async start(): Promise<void> {

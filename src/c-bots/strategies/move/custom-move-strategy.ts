@@ -24,7 +24,7 @@ class CustomMoveStrategy extends MoveStrategy {
     // Example: push two positions
     // 1) A random move
     // 2) The bot's current position (fallback)
-    const position = this.bearer.getPosition()
+    const position = this.bearer.position
     const move = this.getRandomMove()
 
     this.targets.push(move)

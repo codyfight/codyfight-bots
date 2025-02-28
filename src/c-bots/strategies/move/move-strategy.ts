@@ -36,7 +36,7 @@ abstract class MoveStrategy implements IMoveStrategy {
   public determineMove(): Position {
     this.targets = []
     this.setTargets()
-    const start = this.bearer.getPosition()
+    const start = this.bearer.position
 
     for (const target of this.targets) {
       const path = this.findPath(start, target)
@@ -79,7 +79,7 @@ abstract class MoveStrategy implements IMoveStrategy {
    * returns the next valid move or null
    */
   private getNextValidMove(path: Position[]): Position {
-    return this.isMovePossible(path[1]) ? path[1] : this.bearer.getPosition()
+    return this.isMovePossible(path[1]) ? path[1] : this.bearer.position
   }
 
   /**
