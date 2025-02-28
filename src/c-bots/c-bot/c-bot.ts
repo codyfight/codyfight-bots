@@ -80,13 +80,13 @@ class CBot {
         const status = err?.error?.status || err?.response?.status;
 
         if (status === 422) {
-          Logger.error(`Bot "${this.ckey}" received a 422 error. Stopping the bot.`, error);
+          Logger.error(`Bot "${this.toString()}" received a 422 error. Stopping the bot.`, error);
           await this.stop();
           break;
         }
 
         const waitTime = getWaitTime(error)
-        Logger.error(`Bot "${this.ckey}" tick() error waiting ${waitTime} ms: `, error);
+        Logger.error(`Bot: "${this.toString()}" error calling tick() waiting ${waitTime} ms: `, error);
         await wait(waitTime);
       }
     }
@@ -106,6 +106,7 @@ class CBot {
   }
 
   public stopPlaying(): void {
+    Logger.debug(`Bot ${this.ckey} stopPlaying() called`)
     this.active = false;
   }
 

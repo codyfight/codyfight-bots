@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { ERROR_WAIT_LONG, ERROR_WAIT_SHORT } from '../config/constants.js'
 import GameError from '../errors/game-error.js'
-import Logger from './logger.js'
 
 
 /**
@@ -13,15 +12,6 @@ export async function safeApiCall<T>(fn: () => Promise<T>): Promise<T | void> {
   try {
     return await fn()
   } catch (error) {
-
-    const err = error as any; // cast to any so we can access nested properties
-    const status = err?.error?.status || err?.response?.status;
-
-    if (status === 400) {
-      Logger.error(`safeApiCall caught 400:`, error)
-      return
-    }
-
     throw new GameError(error, {Message: `Error when calling ${fn.name}()`})
   }
 }

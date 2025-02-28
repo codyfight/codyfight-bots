@@ -3,6 +3,7 @@ import { GameStatus } from '../../game/state/game-state.type.js'
 import BotStartingState from './bot-starting-state.js'
 import BotStoppingState from './bot-stopping-state.js'
 import { BotStatus } from '../c-bot/c-bot-config.interface.js'
+import Logger from '../../utils/logger.js'
 
 class BotRunningState extends BotState{
 
@@ -12,6 +13,7 @@ class BotRunningState extends BotState{
 
   async tick(): Promise<void> {
     const status = this.cBot.gameClient.status
+    Logger.debug(`${this.cBot.ckey} - tick in running state: ${status}` )
 
     switch (status) {
       case GameStatus.Uninitialised:
@@ -35,6 +37,7 @@ class BotRunningState extends BotState{
   }
 
   async stop(): Promise<void> {
+    Logger.debug(`${this.cBot.ckey} - stop request received in running state` )
     await this.transitionTo(new BotStoppingState(this.cBot))
   }
 
