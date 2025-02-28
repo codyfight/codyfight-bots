@@ -5,6 +5,16 @@ export interface IAgent {
   id: number
   name: string
   position: Position
+  stats: IAgentStats
+}
+
+interface IAgentStats{
+  armor: number
+  armor_cap: number
+  hitpoints: number
+  hitpoints_cap: number
+  energy: number
+  energy_cap: number
 }
 
 export interface IPlayerAgent extends IAgent {

@@ -1,13 +1,6 @@
 import Position from '../map/position.js'
+import { SkillCategory, SkillRegistry, SkillStatus } from './skill-type.js'
 
-enum SkillStatus {
-  Empty = -4,
-  Disabled = -3,
-  NoTargets = -2,
-  InsufficientEnergy = -1,
-  OnCooldown = 0,
-  Ready = 1
-}
 
 class Skill {
   public readonly id: number
@@ -27,6 +20,18 @@ class Skill {
     this.possibleTargets = skillData.possible_targets.map(
       (target: any) => new Position(target.x, target.y)
     )
+  }
+
+  public getCategory(): SkillCategory | undefined {
+    return SkillRegistry[this.id]?.category;
+  }
+
+  public getHealing(): number {
+    return SkillRegistry[this.id]?.healing ?? 0;
+  }
+
+  public getArmor(): number {
+    return SkillRegistry[this.id]?.armor ?? 0;
   }
 
   public isReady(): boolean {

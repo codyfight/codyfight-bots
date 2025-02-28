@@ -56,3 +56,12 @@ export function filterSafeMoves(map: GameMap, positions: Position[]): Position[]
     return tile && !tile.isDangerous();
   });
 }
+
+
+export function isRestoreEffective(value: number, max: number, restore: number, threshold: number): boolean {
+  const missing = max - value;
+  if (missing <= 0) return false;
+
+  const utilization = missing / restore;
+  return utilization >= threshold;
+}
