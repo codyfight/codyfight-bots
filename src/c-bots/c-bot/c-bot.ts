@@ -75,19 +75,17 @@ class CBot {
         await this.state.tick();
         await wait(TICK_INTERVAL);
       } catch (error) {
-
-        // TODO - handle this better
-        //  quick fix to handle 422 errors
-        const err = error as any; // cast to any so we can access nested properties
+        const err = error as any;
         const status = err?.error?.status || err?.response?.status;
 
-        if (status === 422) {
-          Logger.error(`Bot "${this.toString()}" received a 422 error. Stopping the bot.`, error);
+        // Stop the bot if a 422 or 400 error occurs TODO - this is a quick fix, please review
+        if (status === 422 || status === 400) {
+          Logger.error(`Bot "${this.toString()}" received a ${status} error. Stopping the bot.`, error);
           await this.stop();
           break;
         }
 
-        const waitTime = getWaitTime(error)
+        const waitTime = getWaitTime(error);
         Logger.error(`Bot: "${this.toString()}" error calling tick() waiting ${waitTime} ms: `, error);
         await wait(waitTime);
       }
@@ -95,6 +93,7 @@ class CBot {
 
     Logger.info(`Game completed for bot "${this.ckey}". Run loop exited.`);
   }
+
 
   public async play() {
     await this.gameClient.check()
