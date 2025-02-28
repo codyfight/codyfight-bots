@@ -38,10 +38,10 @@ class CBot {
   
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
     this.playerId = player_id
-    this._state = createBotState(this, status)
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
+    this._state = createBotState(this, status)
   }
 
 
