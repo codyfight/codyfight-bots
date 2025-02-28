@@ -26,12 +26,13 @@ import { SpecialAgentType } from '../agents/game-agent.type.js'
  */
 
 class GameState implements IUpdatable {
-  private status: GameStatus
-  private mode: GameMode
-  private gameAgentManager: GameAgentManager
-  private readonly map: GameMap
+  private status!: GameStatus
+  private mode!: GameMode
+  private gameAgentManager!: GameAgentManager
+  private map!: GameMap
+  private _initialised = false
 
-  constructor(gameState: IGameState) {
+  public initialise(gameState: IGameState): void {
     const { bearer, opponent } = gameState.players
     const { special_agents } = gameState
 
@@ -46,6 +47,7 @@ class GameState implements IUpdatable {
       special_agents
     )
     this.map = new GameMap(gameState.map)
+    this._initialised = true
   }
 
   public update(gameState: IGameState): void {
@@ -67,8 +69,12 @@ class GameState implements IUpdatable {
     }
   }
 
+  public get initialised(): boolean {
+    return this._initialised
+  }
+
   public getStatus(): GameStatus {
-    return this.status
+    return this.status || GameStatus.Uninitialised
   }
 
   public getBearer(): PlayerAgent {
@@ -88,7 +94,7 @@ class GameState implements IUpdatable {
   }
 
   public isPlayerTurn(): boolean {
-    return this.gameAgentManager.getBearer().isTurn()
+    return this.gameAgentManager.getBearer().isPlayerTurn
   }
 
   public toString(): string {

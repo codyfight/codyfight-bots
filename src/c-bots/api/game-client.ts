@@ -6,6 +6,7 @@ import { createGameAPI } from './game-api-factory.js'
 import config from '../../config/env.js'
 import Position from '../../game/map/position.js'
 import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
+import Skill from '../../game/skills/skill.js'
 
 class GameClient {
   public readonly ckey: string
@@ -13,23 +14,22 @@ class GameClient {
   public readonly environment: string
 
   private readonly gameAPI: IGameAPI
-  private gameState: GameState | null = null
+  private readonly gameState: GameState
 
   constructor(ckey: string, mode: GameMode, environment: string) {
     this.ckey = ckey
     this.mode = mode
     this.environment = environment
     this.gameAPI = createGameAPI(environment == 'production' ? config.PROD_API_URL : config.DEV_API_URL)
+    this.gameState = new GameState()
   }
 
-  public get state(): GameState | null {
+  public get state(): GameState {
     return this.gameState
   }
 
   public get status(): GameStatus {
-    return this.state
-      ? this.state.getStatus()
-      : GameStatus.Uninitialised
+    return this.state.getStatus()
   }
 
   public async init(): Promise<void> {
@@ -53,9 +53,9 @@ class GameClient {
     this.updateGameState(data)
   }
 
-  public async cast(skillId: number, position: Position): Promise<void> {
-    Logger.debug(`${this.ckey} => cast(skillId=${skillId}, x=${position.x}, y=${position.y})`)
-    const castSkill = async () => this.gameAPI.cast(this.ckey, skillId, position.x, position.y)
+  public async cast(skill: Skill, position: Position): Promise<void> {
+    Logger.debug(`${this.ckey} => cast(skillId=${skill.id}, x=${position.x}, y=${position.y})`)
+    const castSkill = async () => this.gameAPI.cast(this.ckey, skill.id, position.x, position.y)
     const data = await safeApiCall(castSkill)
     this.updateGameState(data)
   }
@@ -68,12 +68,10 @@ class GameClient {
   }
 
   private updateGameState(data: any): void {
-    if (!this.gameState) {
-      this.gameState = new GameState(data)
-    } else {
-      this.gameState.update(data)
-    }
+    this.gameState.initialised || this.gameState.initialise(data);
+    this.gameState.update(data);
   }
+
 }
 
 export default GameClient

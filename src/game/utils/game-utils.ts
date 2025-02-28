@@ -1,5 +1,6 @@
 import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
+import GameError from '../../errors/game-error.js'
 
 /**
  * Calculates the Euclidean distance between two positions.
@@ -20,6 +21,11 @@ export function euclideanDistance(pos1: Position, pos2: Position): number {
  * @returns {T | null} A random element from the array, or null if the array is empty.
  */
 export function randomElement<T>(array: T[]): T {
+
+  if (array.length === 0) {
+    throw new GameError('randomElement() was called with an empty array');
+  }
+
   const index = Math.floor(Math.random() * array.length)
   return array[index]
 }
@@ -50,6 +56,3 @@ export function filterSafeMoves(map: GameMap, positions: Position[]): Position[]
     return tile && !tile.isDangerous();
   });
 }
-
-
-

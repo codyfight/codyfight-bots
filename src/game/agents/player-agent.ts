@@ -6,17 +6,25 @@ import { IPlayerAgent } from './game-agent.type.js'
 class PlayerAgent extends GameAgent {
   private possibleMoves: Position[] = []
   private skills: Skill[] = []
-  private isPlayerTurn = false
+  private _isPlayerTurn = false
 
   public update(agentData: IPlayerAgent) {
     this.possibleMoves = this.mapToPositions(agentData.possible_moves)
     this.skills = this.mapToSkills(agentData.skills)
-    this.isPlayerTurn = agentData.is_player_turn
+    this._isPlayerTurn = agentData.is_player_turn
     super.update(agentData)
   }
 
-  public isTurn() {
-    return this.isPlayerTurn
+  public canCast(): boolean {
+    return this.hasReadySkills() && this.isPlayerTurn
+  }
+
+  public get isPlayerTurn() {
+    return this._isPlayerTurn
+  }
+
+  public hasReadySkills() {
+    return this.skills.some((skill) => skill.isReady())
   }
 
   public getPossibleMoves(): Position[] {
@@ -25,6 +33,10 @@ class PlayerAgent extends GameAgent {
 
   public getSkills(): Skill[] {
     return this.skills
+  }
+
+  public get availableSkills(): Skill[] {
+    return this.skills.filter((skill) => skill.isReady())
   }
 
   private mapToPositions(data: { x: number; y: number }[]): Position[] {

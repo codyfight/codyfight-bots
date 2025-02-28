@@ -106,7 +106,6 @@ class CBot {
   }
 
   public stopPlaying(): void {
-    Logger.debug(`Bot ${this.ckey} stopPlaying() called`)
     this.active = false;
   }
 
@@ -153,17 +152,15 @@ class CBot {
     }
   }
 
-  private async castSkills() {
-    const state = this.gameClient.state
-    if (!state || !state.isPlayerTurn()) return
+  private async castSkills(): Promise<void> {
+    const cast = this.castStrategy.determineCast();
+    if (!cast) return;
 
-    const nextCast = this.castStrategy.determineCast(state)
-    if (!nextCast) return
-
-    const [skill, target] = nextCast
-    await this.gameClient.cast(skill.id, target)
+    const [skill, target] = cast;
+    await this.gameClient.cast(skill, target);
+    await this.castSkills();
   }
-
+  
   private async performMove() {
     const state = this.gameClient.state
     if (!state || !state.isPlayerTurn()) return
