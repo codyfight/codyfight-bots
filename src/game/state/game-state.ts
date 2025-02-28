@@ -74,7 +74,7 @@ class GameState implements IUpdatable {
   }
 
   public getStatus(): GameStatus {
-    return this.status || GameStatus.Uninitialised
+    return this.status ?? GameStatus.Uninitialised;
   }
 
   public getBearer(): PlayerAgent {
