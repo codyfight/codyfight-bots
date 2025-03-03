@@ -54,11 +54,17 @@ class CBotManager {
     return bot.status
   }
 
-  public async isBotActive(ckey: string): Promise<boolean> {
-    const status = await this.getBotStatus(ckey)
-    const isActive = this.activeBots.has(ckey)
+  public async isBotActive(bot: CBot): Promise<boolean> {
 
-    return isActive || status.bot_state !== 'stopped'
+    const inActiveBots = this.activeBots.has(bot.ckey)
+
+    if (inActiveBots && bot.status.bot_state === 'stopped') {
+      Logger.warn(`Stopped bot "${bot.ckey}" in activeBots`)
+      this.removeActiveBot(bot.ckey)
+      return false
+    }
+
+    return inActiveBots
   }
 
   /**
@@ -68,13 +74,14 @@ class CBotManager {
     try {
       Logger.info(`Starting bot "${ckey}"...`)
       const bot = await this.getBot(ckey)
-      this.attachCallbacks(bot)
+      const isActive = await this.isBotActive(bot)
 
-      if (this.activeBots.has(ckey)) {
-        Logger.warn(`Bot "${ckey}" is already active.`)
+      if (isActive) {
+        Logger.warn(`Bot "${ckey}" is already active with a status ${bot.status}`)
         return
       }
 
+      this.attachCallbacks(bot)
       this.activeBots.set(ckey, bot)
       await bot.start()
 
@@ -82,17 +89,6 @@ class CBotManager {
     } catch (error) {
       Logger.error(`Failed to start bot ${ckey}:`, error)
     }
-  }
-
-  private async restart(ckey: string): Promise<void> {
-    Logger.info(`Restarting bot "${ckey}"...`)
-    this.activeBots.delete(ckey)
-    await this.startBot(ckey)
-    Logger.info(`Bot "${ckey}" restarted.`)
-  }
-
-  private attachCallbacks(bot: CBot): void {
-    bot.restart = () => this.restart(bot.ckey)
   }
 
   /**
@@ -103,7 +99,7 @@ class CBotManager {
       Logger.info(`Stopping bot "${ckey}"...`)
       const bot = await this.getBot(ckey)
       await bot.stop()
-      this.activeBots.delete(ckey)
+
       Logger.info(`Bot "${ckey}" stopped.`)
     } catch (error) {
       Logger.error(`Failed to stop bot ${ckey}:`, error)
@@ -149,6 +145,22 @@ class CBotManager {
     } catch (error) {
       Logger.error(`Failed to resume bot ${ckey}:`, error)
     }
+  }
+
+  private attachCallbacks(bot: CBot): void {
+
+    bot.on('stopped', (ckey: string) => this.removeActiveBot(ckey))
+
+    bot.on('restart', async (ckey) => {
+      this.removeActiveBot(ckey)
+      await this.startBot(ckey)
+    })
+
+  }
+
+  private removeActiveBot(ckey: string): void {
+    Logger.info(`Removing bot "${ckey}" from activeBots...`)
+    this.activeBots.delete(ckey)
   }
 
 }

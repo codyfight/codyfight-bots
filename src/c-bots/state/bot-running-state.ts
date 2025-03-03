@@ -13,7 +13,7 @@ class BotRunningState extends BotState{
 
   async tick(): Promise<void> {
     const status = this.cBot.gameClient.status
-    Logger.debug(`${this.cBot.ckey} - tick in running state: ${status}` )
+    Logger.debug(`${this.cBot.ckey} - tick in running state, Game Status: ${status}` )
 
     switch (status) {
       case GameStatus.Uninitialised:

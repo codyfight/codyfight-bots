@@ -46,16 +46,15 @@ router.put('/bot/:ckey', jwtAuthMiddleware, asyncHandler(async (req: Request, re
 router.delete('/bot/:ckey', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Response) => {
 
   const ckey = req.params.ckey
-  const isActive = await botManager.isBotActive(ckey)
+  const bot = await botManager.getBot(ckey)
+  const isActive = await botManager.isBotActive(bot)
 
   if (isActive) {
     res.status(400).json({ error: 'Bot is active. Please stop the bot before deleting it.' })
     return
   }
 
-  const bot = await botManager.getBot(ckey)
   const json = bot.toJSON()
-
   await botManager.deleteBotConfig(ckey)
 
   res.status(200).json({ message: 'Bot deleted successfully!', json })

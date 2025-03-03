@@ -9,7 +9,7 @@ class RyoCastStrategy extends CastStrategy{
 
   protected determineSkill(): Skill | null {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);
-    if (!ryoAgents) return null;
+    if (!ryoAgents || ryoAgents.length === 0) return null;
 
     const ryoPosition = ryoAgents[0].position;
 
@@ -21,8 +21,7 @@ class RyoCastStrategy extends CastStrategy{
 
     return skills.length > 0 ? skills[0] : null;
   }
-
-
+  
   protected determineTarget(skill: Skill): Position | null {
     return this.getRandomTarget(skill)
   }

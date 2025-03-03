@@ -6,8 +6,10 @@ import GameClient from '../api/game-client.js'
 import BotState from '../state/bot-state.js'
 import Logger from '../../utils/logger.js'
 import createBotState from '../state/create-bot-state.js'
-import { getWaitTime, wait } from '../../utils/utils.js'
+import { wait } from '../../utils/utils.js'
 import { TICK_INTERVAL } from '../../config/constants.js'
+import EventEmitter from 'node:events'
+import handleBotError from '../c-bot-error-handler.js'
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -25,7 +27,7 @@ import { TICK_INTERVAL } from '../../config/constants.js'
  * - The class uses a logger that can be enabled or disabled when creating the class.
  */
 
-class CBot {
+class CBot extends EventEmitter {
 
   private readonly playerId: number | undefined // TODO - review if player id should be required
   private _state: BotState
@@ -34,9 +36,9 @@ class CBot {
   private castStrategy: CastStrategy
 
   private _active = false
-  public restart!: () => void // used for callback to restart bot
   
   constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
+    super()
     this.playerId = player_id
     this.gameClient = new GameClient(ckey, mode, environment)
     this.moveStrategy = createMoveStrategy(move_strategy)
@@ -75,19 +77,7 @@ class CBot {
         await this.state.tick();
         await wait(TICK_INTERVAL);
       } catch (error) {
-        const err = error as any;
-        const status = err?.error?.status || err?.response?.status;
-
-        // Stop the bot if a 422 or 400 error occurs TODO - this is a quick fix, please review
-        if (status === 422 || status === 400) {
-          Logger.error(`Bot "${this.toString()}" received a ${status} error. Stopping the bot.`, error);
-          await this.stop();
-          break;
-        }
-
-        const waitTime = getWaitTime(error);
-        Logger.error(`Bot: "${this.toString()}" error calling tick() waiting ${waitTime} ms: `, error);
-        await wait(waitTime);
+        await handleBotError(this, error as Error)
       }
     }
 
@@ -103,11 +93,12 @@ class CBot {
 
   public finishGame(): void {
     this.active = false;
-    this.restart()
+    this.emit('restart', this.ckey);
   }
 
   public stopPlaying(): void {
     this.active = false;
+    this.emit('stop', this.ckey)
   }
 
   public get ckey(): string {
