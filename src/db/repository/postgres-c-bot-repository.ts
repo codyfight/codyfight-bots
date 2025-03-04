@@ -31,19 +31,19 @@ export class PostgresCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-    INSERT INTO bots (player_id, ckey, mode, environment, move_strategy, cast_strategy, status)
+    INSERT INTO bots (ckey, player_id, environment, mode, move_strategy, cast_strategy, status)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
   `
 
     try {
       await this.client.query(query, [
-        bot.player_id,
         bot.ckey,
-        bot.mode,
+        bot.player_id,
         bot.environment,
+        bot.mode,
         bot.move_strategy,
         bot.cast_strategy,
-        BotStatus.Stopped
+        bot.status || BotStatus.Stopped
       ])
     } catch (err) {
       Logger.error('Error adding bot:', err)
@@ -137,13 +137,13 @@ export class PostgresCBotRepository implements ICBotRepository {
    */
   private mapRow(row: any): ICBotConfig {
     return {
-      player_id: row.player_id,
       ckey: row.ckey,
-      mode: row.mode,
-      status: row.status,
+      player_id: row.player_id,
       environment: row.environment,
+      mode: row.mode,
       move_strategy: row.move_strategy,
-      cast_strategy: row.cast_strategy
+      cast_strategy: row.cast_strategy,
+      status: row.status
     }
   }
 }

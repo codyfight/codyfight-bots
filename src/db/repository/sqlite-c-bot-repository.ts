@@ -1,10 +1,9 @@
 import path from 'node:path'
 import sqlite3 from 'sqlite3'
-import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { BotStatus, ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import { IBotFilter, IBotFilterCondition, ICBotRepository } from './c-bot-repository.interface.js'
 import config from '../../config/env.js'
 import ApiError from '../../errors/api-error.js'
-
 
 export class SqliteCBotRepository implements ICBotRepository {
   private readonly dbPath: string
@@ -18,15 +17,17 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (ckey, mode, environment, move_strategy, cast_strategy)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO bots (ckey, player_id, environment, mode, move_strategy, cast_strategy, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `
     const params = [
       bot.ckey,
-      bot.mode,
+      bot.player_id,
       bot.environment,
+      bot.mode,
       bot.move_strategy,
-      bot.cast_strategy
+      bot.cast_strategy,
+      bot.status || BotStatus.Stopped
     ]
 
     await this.runSql(query, params)
@@ -37,7 +38,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    * Throws an error if the bot is not found.
    */
   public async getBot(ckey: string): Promise<ICBotConfig> {
-    const query = `SELECT * FROM bots WHERE ckey = ?`
+    const query = `SELECT ckey, player_id, environment, mode, move_strategy, cast_strategy, status FROM bots WHERE ckey = ?`
     const row = await this.runSqlGet(query, [ckey])
 
     if (!row) {
@@ -50,8 +51,8 @@ export class SqliteCBotRepository implements ICBotRepository {
   /**
    * Retrieves all bots from the database.
    */
-  public async getBots(filter: IBotFilterCondition[]): Promise<ICBotConfig[]> {
-    const query = `SELECT * FROM bots`
+  public async getBots(filter: IBotFilterCondition[] = []): Promise<ICBotConfig[]> {
+    const query = `SELECT ckey, player_id, environment, mode, move_strategy, cast_strategy, status FROM bots`
 
     const rows = await this.runSqlAll(query)
     return rows.map(row => this.mapRow(row))
@@ -59,34 +60,25 @@ export class SqliteCBotRepository implements ICBotRepository {
 
   /**
    * Updates an existing bot by ckey.
-   * Throws an error if the bot with the given ckey does not exist.
+   * Throws an error if the bot doesn't exist.
    */
-  public async updateBot(ckey: string, bot: IBotFilter): Promise<void> {
-    const query = `
-    UPDATE bots
-    SET 
-        mode = ?,
-        environment = ?,
-        move_strategy = ?,
-        cast_strategy = ?
-    WHERE ckey = ?
-  `;
+  public async updateBot(ckey: string, params: IBotFilter): Promise<void> {
+    const keys = Object.keys(params);
 
-    const params = [
-      bot.mode,
-      bot.environment,
-      bot.move_strategy,
-      bot.cast_strategy,
-      ckey
-    ];
+    if (keys.length === 0) {
+      throw new ApiError("No parameters provided to update the bot.");
+    }
 
-    const changes = await this.runSql(query, params);
+    const values = Object.values(params);
+    const setClause = keys.map((key) => `${key} = ?`).join(', ');
+
+    const query = `UPDATE bots SET ${setClause} WHERE ckey = ?`;
+    const changes = await this.runSql(query, [...values, ckey]);
 
     if (changes === 0) {
-      throw new ApiError(`Bot with ckey ${ckey} not found`, 404);
+      throw new ApiError(`Bot with ckey '${ckey}' not found.`, 404);
     }
   }
-
 
   /**
    * Deletes a bot by its ckey.
@@ -102,11 +94,12 @@ export class SqliteCBotRepository implements ICBotRepository {
   private mapRow(row: any): ICBotConfig {
     return {
       ckey: row.ckey,
-      mode: row.mode,
-      status: row.status,
+      player_id: row.player_id,
       environment: row.environment,
+      mode: row.mode,
       move_strategy: row.move_strategy,
-      cast_strategy: row.cast_strategy
+      cast_strategy: row.cast_strategy,
+      status: row.status
     }
   }
 
@@ -117,7 +110,7 @@ export class SqliteCBotRepository implements ICBotRepository {
     return new Promise((resolve, reject) => {
       const db = new sqlite3.Database(this.dbPath);
 
-      db.run(query, params, function (err) {  // Use function() to access `this.changes`
+      db.run(query, params, function (err) {
         db.close();
 
         if (err) {
@@ -130,23 +123,22 @@ export class SqliteCBotRepository implements ICBotRepository {
     });
   }
 
-
   /**
    * Runs a SQL statement expected to return a single row (e.g. SELECT one item).
    */
   private runSqlGet(query: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.dbPath)
+      const db = new sqlite3.Database(this.dbPath);
       db.get(query, params, (err, row) => {
-        db.close()
+        db.close();
 
         if (err) {
-          reject(err)
-          return
+          reject(err);
+          return;
         }
-        resolve(row)
-      })
-    })
+        resolve(row);
+      });
+    });
   }
 
   /**
@@ -154,16 +146,16 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   private runSqlAll(query: string, params: any[] = []): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.dbPath)
+      const db = new sqlite3.Database(this.dbPath);
       db.all(query, params, (err, rows) => {
-        db.close()
+        db.close();
 
         if (err) {
-          reject(err)
-          return
+          reject(err);
+          return;
         }
-        resolve(rows)
-      })
-    })
+        resolve(rows);
+      });
+    });
   }
 }
