@@ -5,6 +5,7 @@ export interface ITile {
   name: string
   type: TileType
   position: Position
+  is_walkable: boolean
   config: {
     is_charged: boolean
   }

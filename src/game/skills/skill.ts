@@ -44,3 +44,19 @@ class Skill {
 }
 
 export default Skill
+
+// Skill Casting Improvement Ideas
+
+// Enhancing movement through skill casting
+// Addition of a Skill Cast Resolver class to determine the result of casting a skill
+// Each skill can have a category (e.g., healing, damaging, movement)
+// For the movement skills, we can check what target the skill applies to
+// if it's the current player, we can find the result (position) of the skill cast and include it in the pathfinding algorithm
+// The tricky part with this will be selecting the best moment to cast the skill, as it could be used to overcome obstacles
+// We should save it so it is available when needed
+
+// The resolver class can then be enhanced for different skill categories
+// For example, for healing skills, the resolver can calculate the amount (%) of healing applied to the player
+// For damaging skills, the resolver can calculate the amount (%) of damage dealt to the target
+// Other skills can be a bit more tricky, and depend on the goal of the agent
+// For example, A utility skill that builds something and reduces an enemies available moves

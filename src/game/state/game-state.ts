@@ -59,7 +59,7 @@ class GameState implements IUpdatable {
       this.mode = gameState.state.mode
 
       this.gameAgentManager.update(bearer, opponent, special_agents)
-      this.map.update(gameState.map, this.gameAgentManager.getAgents())
+      this.map.update(gameState.map)
     } catch (error) {
       throw new GameError(error, {
           Message: "An error occurred while updating game state",

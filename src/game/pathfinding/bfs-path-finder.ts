@@ -76,15 +76,10 @@ class BFSPathFinder {
       return true
     }
 
-    // is the tile occupied by another agent
-    if (this.map.isPositionOccupied(position)) {
-      return false
-    }
-
     const tile = this.map.getTile(position)
 
-    // is it a valid safe tile?
-    if (!tile || !tile.isWalkable()) {
+    // is it a valid tile?
+    if (!tile || !tile.walkable) {
       return false
     }
 
