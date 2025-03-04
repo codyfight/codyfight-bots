@@ -31,8 +31,8 @@ class BotStoppingState extends BotState{
         break
 
       case GameStatus.Registering:
-        await this.cBot.gameClient.surrender()
         await this.transitionTo(new BotStoppedState(this.cBot))
+        await this.cBot.gameClient.surrender()
         break
 
       case GameStatus.Playing:
