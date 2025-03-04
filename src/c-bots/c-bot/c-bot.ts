@@ -98,7 +98,7 @@ class CBot extends EventEmitter {
 
   public stopPlaying(): void {
     this.active = false;
-    this.emit('stop', this.ckey)
+    this.emit('stopped', this.ckey)
   }
 
   public get ckey(): string {
