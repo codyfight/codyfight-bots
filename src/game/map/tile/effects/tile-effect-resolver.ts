@@ -39,8 +39,9 @@ class TileEffectResolver {
     if (!tile) return position
 
     // Get the tiles effect and apply it, for now this just works with positions
-    const effect = tile.getEffect()
-    const newPosition = effect.apply(position)
+    const effect = tile.effect
+    const result = effect.apply({ position: position, hitpoints: 0 })
+    const newPosition = result.position
 
     // Stop if position hasn't changed, or the effect does not chain
     if (newPosition.equals(position) || !effect.isChainEffect) {

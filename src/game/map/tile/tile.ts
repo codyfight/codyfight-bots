@@ -1,5 +1,5 @@
 import Position from '../position.js'
-import { DANGEROUS_TILES, ITile, SAFE_TILES, TileType } from './tile.type.js'
+import { DANGEROUS_TILES, ITile, TileType } from './tile.type.js'
 import TileEffect from './effects/tile-effect.js'
 import { createTileEffect } from './effects/tile-effect-factory.js'
 
@@ -10,7 +10,7 @@ class Tile {
   readonly position: Position
   readonly _walkable: boolean
 
-  readonly effect: TileEffect
+  readonly _effect: TileEffect
 
   constructor(data: ITile) {
     this.id = data.id
@@ -18,19 +18,11 @@ class Tile {
     this.type = data.type
     this.position = new Position(data.position.x, data.position.y)
     this._walkable = data.is_walkable
-    this.effect = createTileEffect(this.type, data.config.is_charged)
-  }
-
-  update(data: ITile): void {
-    //TODO
+    this._effect = createTileEffect(this.type, data.config.is_charged)
   }
 
   public equals(other: Tile): boolean {
     return this.position.equals(other.position)
-  }
-
-  public isSafe(): boolean {
-    return SAFE_TILES.has(this.type)
   }
 
   public get walkable(): boolean {
@@ -41,8 +33,8 @@ class Tile {
     return DANGEROUS_TILES.has(this.type)
   }
 
-  public getEffect(): TileEffect {
-    return this.effect
+  public get effect(): TileEffect {
+    return this._effect
   }
 }
 

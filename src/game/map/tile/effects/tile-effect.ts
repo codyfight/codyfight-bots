@@ -1,4 +1,4 @@
-import Position from '../../position.js'
+import { IAgentState } from '../../../agents/game-agent.type.js'
 
 /**
  * Abstract base class for all tile effects.
@@ -29,7 +29,7 @@ abstract class TileEffect {
    * Applies the effect, for now this just considers positions and movement
    * Later this can be extended to include effects like damaging or healing the player
    */
-  public abstract apply(position: Position): Position
+  public abstract apply(agentState: IAgentState): IAgentState
 }
 
 export default TileEffect

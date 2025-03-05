@@ -75,8 +75,8 @@ class GameMap implements IUpdatable {
     if (teleports.length === 2) {
       const [t1, t2] = teleports
 
-      const effect1 = t1.getEffect() as TeleportEffect
-      const effect2 = t2.getEffect() as TeleportEffect
+      const effect1 = t1.effect as TeleportEffect
+      const effect2 = t2.effect as TeleportEffect
 
       effect1.setDestination(t2.position)
       effect2.setDestination(t1.position)

@@ -1,9 +1,9 @@
 import TileEffect from './tile-effect.js'
-import Position from '../../position.js'
+import { IAgentState } from '../../../agents/game-agent.type.js'
 
 class EmptyEffect extends TileEffect {
-  public apply(position: Position): Position {
-    return position
+  public apply(agentState: IAgentState): IAgentState {
+    return agentState
   }
 }
 
