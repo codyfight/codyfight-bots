@@ -3,7 +3,7 @@ import CBotFactory from './c-bot/c-bot-factory.js'
 import Logger from '../utils/logger.js'
 import { IBotFilter, IBotFilterCondition, ICBotRepository } from '../db/repository/c-bot-repository.interface.js'
 import { createCBotRepository } from '../db/repository/create-c-bot-repository.js'
-import { ICBotConfig, ICBotState } from './c-bot/c-bot-config.interface.js'
+import { BotStatus, ICBotConfig, ICBotState } from './c-bot/c-bot-config.interface.js'
 
 class CBotManager {
   private readonly botRepository: ICBotRepository
@@ -28,7 +28,14 @@ class CBotManager {
 
   public async updateBotConfig(ckey: string, params: IBotFilter): Promise<void> {
     Logger.debug(`updateBotConfig() called "${ckey}"...`)
+
+    const status = await this.getBotStatus(ckey)
     await this.botRepository.updateBot(ckey, params)
+
+    if(status.bot_state == BotStatus.Starting) {
+      await this.stopBot(ckey)
+      await this.startBot(ckey)
+    }
   }
 
   public async deleteBotConfig(ckey: string): Promise<void> {
