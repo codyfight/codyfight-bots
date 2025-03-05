@@ -1,55 +1,46 @@
 import GameMap from '../../game-map.js'
-import Position from '../../position.js'
-
-/**
- * The TileEffectResolver class determines the final position of a player after interacting with tiles on the game map.
- *
- * Key Responsibilities:
- * - Resolves tile effects recursively to simulate the player's movement across the map.
- * - Handles "chain effects" where one tile effect (e.g., a slider) leads to another tile.
- * - Prevents infinite loops by tracking visited tiles during resolution.
- *
- * Usage:
- * - This class is mainly used by pathfinding algorithms to determine where a player will ultimately end up
- *   after stepping on a tile with an effect.
- *
- * Example:
- * - A slider moves the player to another tile, which could have another effect (e.g., teleporting).
- * - The resolve method keeps applying effects until the player "settles" at a final position.
- */
+import { IAgentState } from '../../../agents/game-agent.type.js'
+import TileEffect from './tile-effect.js'
 
 class TileEffectResolver {
   constructor(private map: GameMap) {}
 
-  public resolve(
-    position: Position,
-    visited: Set<string> = new Set()
-  ): Position {
-    const key = position.toString()
+  /**
+   * Recursively applies tile effects to the given `agentState`.
+   *
+   * @param agentState The current agent state
+   * @param visited A set of visited states
+   */
+  public resolve(agentState: IAgentState, visited: Set<string> = new Set()): IAgentState {
+    const key = this.makeKey(agentState)
 
-    // Check for loops
-    if (visited.has(key)) return position
+    if (visited.has(key)) return agentState
 
-    // Mark position as visited
     visited.add(key)
 
-    const tile = this.map.getTile(position)
+    // Get the tile at the agent's position
+    const tile = this.map.getTile(agentState.position)
 
-    // If the tile is invalid, return the current position
-    if (!tile) return position
+    if (!tile) return agentState
 
-    // Get the tiles effect and apply it, for now this just works with positions
-    const effect = tile.effect
-    const result = effect.apply({ position: position, hitpoints: 0 })
-    const newPosition = result.position
+    const effect: TileEffect = tile.effect
+    const newAgentState = effect.apply(agentState)
 
-    // Stop if position hasn't changed, or the effect does not chain
-    if (newPosition.equals(position) || !effect.isChainEffect) {
-      return newPosition
+    // If position hasn't changed or the effect is not chainable, we're done
+    if (newAgentState.position.equals(agentState.position) || !effect.isChainEffect) {
+      return newAgentState
     }
 
-    // Continue resolving position
-    return this.resolve(newPosition, visited)
+    // Otherwise, recurse for chain effects
+    return this.resolve(newAgentState, visited)
+  }
+
+  /**
+   * Builds a unique key for visited states
+   */
+  private makeKey(agentState: IAgentState): string {
+    const { position, hitpoints } = agentState
+    return `${position.toString()}|HP=${hitpoints}`
   }
 }
 

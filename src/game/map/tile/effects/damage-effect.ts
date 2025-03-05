@@ -20,7 +20,11 @@ class DamageEffect extends TileEffect {
 
 
   public apply(agentState: IAgentState) : IAgentState {
-    return agentState
+    const remainingHitpoints = agentState.hitpoints - this.damage
+    return {
+      ...agentState,
+      hitpoints: Math.max(remainingHitpoints, 0)
+    }
   }
 
 }

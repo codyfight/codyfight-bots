@@ -2,18 +2,20 @@ import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
 import TileEffectResolver from '../map/tile/effects/tile-effect-resolver.js'
 import GameError from '../../errors/game-error.js'
+import { IAgentState } from '../agents/game-agent.type.js'
 
 class BFSPathFinder {
+
   constructor(
     private map: GameMap,
     private visited = new Set<string>(),
-    private queue: Position[][] = [],
+    private queue: IAgentState[][] = [],
     private tileEffectResolver = new TileEffectResolver(map)
   ) {}
 
-  public findPathToTarget(start: Position, target: Position): Position[] {
-    this.queue.push([start])
-    this.visited.add(start.toString())
+  public findPathToTarget(initialAgentState: IAgentState, target: Position): IAgentState[] {
+    this.queue.push([initialAgentState])
+    this.visited.add(this.makeVisitedKey(initialAgentState))
 
     try {
       while (this.queue.length > 0) {
@@ -25,7 +27,7 @@ class BFSPathFinder {
     } catch (error) {
       throw new GameError(error, {
         Message: 'Error in findPathToTarget()',
-        Start: start,
+        Start: initialAgentState,
         Target: target
       })
     }
@@ -33,57 +35,69 @@ class BFSPathFinder {
     return []
   }
 
-  private processQueue(target: Position): Position[] {
-    const currentPath = this.queue.shift()!
-    const position = currentPath[currentPath.length - 1]
-    const finalPosition = this.tileEffectResolver.resolve(position)
+  private processQueue(target: Position): IAgentState[] {
+    const path = this.queue.shift()!
+    const state = path[path.length - 1]
+    const finalState = this.tileEffectResolver.resolve(state)
 
-    if (finalPosition.equals(target)) {
-      return currentPath
+    if (finalState.position.equals(target)) {
+      return path
     }
 
-    const neighbors = this.getNeighbors(finalPosition)
-    this.processNeighbors(currentPath, neighbors, target)
+    const neighbors = this.getNeighbors(finalState.position)
+    this.processNeighbors(finalState, path, neighbors, target)
 
     return []
   }
 
-  private processNeighbors(
-    currentPath: Position[],
-    neighbors: Position[],
-    target: Position
-  ) {
+  private processNeighbors(state: IAgentState, path: IAgentState[], neighbors: Position[], target: Position) {
     for (const position of neighbors) {
-      if (this.isValidMove(position, target)) {
-        this.visited.add(position.toString())
-        const newPath = [...currentPath, position]
+
+      const neighborState = { ...state, position }
+
+      if (this.isValidMove(neighborState, target)) {
+
+        this.visited.add(this.makeVisitedKey(neighborState))
+
+        const newPath = [...path, neighborState]
         this.queue.push(newPath)
       }
     }
   }
 
-  private getNeighbors(position: Position): Position[] {
-    return Position.getDirections().map((direction) => position.add(direction))
-  }
-
-  private isValidMove(position: Position, target: Position): boolean {
+  private isValidMove(state: IAgentState, target: Position): boolean {
     // Check if the position was already visited
-    if (this.visited.has(position.toString())) {
+    if (this.visited.has(this.makeVisitedKey(state))) {
       return false
     }
 
-    if (position.equals(target)) {
+    if (state.position.equals(target)) {
       return true
     }
 
-    const tile = this.map.getTile(position)
+    const tile = this.map.getTile(state.position)
 
     // is it a valid tile?
     if (!tile || !tile.walkable) {
       return false
     }
 
+    const result = tile.effect.apply(state)
+
+    if(result.hitpoints <= 0){
+      return false
+    }
+
     return true
+  }
+
+  private getNeighbors(position: Position): Position[] {
+    return Position.getDirections().map((direction) => position.add(direction))
+  }
+
+  private makeVisitedKey(agentState: IAgentState): string {
+    const { position, hitpoints } = agentState
+    return `${position.toString()}|HP=${hitpoints}`
   }
 }
 

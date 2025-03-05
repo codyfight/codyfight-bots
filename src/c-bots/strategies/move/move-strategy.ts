@@ -7,7 +7,7 @@ import GameState from '../../../game/state/game-state.js'
 import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.js'
 import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 import SpecialAgent from '../../../game/agents/special-agent.js'
-import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   public abstract get type(): MoveStrategyType;
@@ -39,7 +39,13 @@ abstract class MoveStrategy implements IMoveStrategy {
     const start = this.bearer.position
 
     for (const target of this.targets) {
-      const path = this.findPath(start, target)
+
+      const state = {
+        position: start,
+        hitpoints: this.bearer.hitpoints
+      }
+
+      const path = this.findPath(state, target)
 
       if (path.length > 1) {
         return this.getNextValidMove(path)
@@ -69,9 +75,10 @@ abstract class MoveStrategy implements IMoveStrategy {
       : randomElement(possibleMoves)
   }
 
-  private findPath(start: Position, target: Position): Position[] {
+  private findPath(state: IAgentState, target: Position): Position[] {
     const pathFinder = new BFSPathFinder(this.map)
-    return pathFinder.findPathToTarget(start, target)
+    const statePath = pathFinder.findPathToTarget(state, target)
+    return statePath.map((state) => state.position)
   }
 
   /**
