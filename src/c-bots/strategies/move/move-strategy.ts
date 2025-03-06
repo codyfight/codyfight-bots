@@ -5,7 +5,7 @@ import GameAgent from '../../../game/agents/game-agent.js'
 import Position from '../../../game/map/position.js'
 import GameState from '../../../game/state/game-state.js'
 import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.js'
-import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
+import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.ts.bk'
 import SpecialAgent from '../../../game/agents/special-agent.js'
 import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
