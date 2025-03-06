@@ -1,29 +1,31 @@
 import GameMap from '../map/game-map.js'
-import Node from './node.js'
+import GameNode from './game-node.js'
+import Position from '../map/position.js'
+import { IAgentState } from '../agents/game-agent.type.js'
 
 
 class BfsPathFinder {
   private readonly visited = new Set<string>()
   private readonly map: GameMap
 
-  private readonly start: Node
-  private readonly finish: Node
+  private readonly start: GameNode
+  private readonly finish: Position
 
-  private frontier: Node[] = []
+  private frontier: GameNode[] = []
 
-  constructor(start: Node, finish: Node, map: GameMap) {
+  constructor(initialState: IAgentState, finish: Position, map: GameMap) {
     this.map = map
-    this.start = start
+    this.start = new GameNode(null, initialState)
     this.finish = finish
   }
 
-  public findPath(): Node | null {
+  public findPath(): GameNode | null {
     this.frontier.push(this.start)
     this.visited.add(this.start.toString())
 
     while (this.frontier.length > 0) {
       const currentPath = this.processQueue()
-      if (currentPath!==null) {
+      if (currentPath !== null) {
         return currentPath
       }
     }
@@ -31,8 +33,8 @@ class BfsPathFinder {
     return null
   }
 
-  private processQueue() : Node | null {
-    const current : Node = this.frontier.shift()!
+  private processQueue() : GameNode | null {
+    const current : GameNode = this.frontier.shift()!
 
     if(current.equals(this.finish)) {
       return current
@@ -50,7 +52,7 @@ class BfsPathFinder {
     return null
   }
 
-  private processNode(node: Node) {
+  private processNode(node: GameNode) {
     const key = node.toString()
     if (!this.visited.has(key)) {
       this.visited.add(key)

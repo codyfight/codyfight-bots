@@ -8,7 +8,6 @@ import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.j
 import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 import SpecialAgent from '../../../game/agents/special-agent.js'
 import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
-import Node from '../../../game/pathfinding/node.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   public abstract get type(): MoveStrategyType;
@@ -38,12 +37,12 @@ abstract class MoveStrategy implements IMoveStrategy {
     this.targets = []
     this.setTargets()
 
-    for (const target of this.targets) {
+    const state : IAgentState = {
+      position: this.bearer.position,
+      hitpoints: this.bearer.hitpoints
+    }
 
-      const state : IAgentState = {
-        position: this.bearer.position,
-        hitpoints: this.bearer.hitpoints
-      }
+    for (const target of this.targets) {
 
       const path = this.findPath(state, target)
 
@@ -76,20 +75,13 @@ abstract class MoveStrategy implements IMoveStrategy {
   }
 
   private findPath(state: IAgentState, target: Position): Position[] {
-    const start: Node = new Node(null, state)
-    const finish: Node = new Node(null, { position: target, hitpoints: 0 })
-    const pathFinder = new BFSPathFinder(start, finish, this.map)
 
+    const pathFinder = new BFSPathFinder(state, target, this.map)
     const result = pathFinder.findPath()
 
-    if (result === null) {
-      return []
-    }
+    if (!result) return []
 
-    const path = result.path
-    const positions = path.map((node) => node.state.position)
-
-    return positions
+    return result.path.map((node) => node.state.position)
   }
 
   /**
