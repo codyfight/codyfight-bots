@@ -10,7 +10,6 @@ db.serialize(() => {
       CREATE TABLE IF NOT EXISTS bots (
         ckey TEXT PRIMARY KEY,
         mode INTEGER NOT NULL,
-        environment TEXT NOT NULL DEFAULT 'production',
         move_strategy TEXT NOT NULL,
         cast_strategy TEXT NOT NULL
       );

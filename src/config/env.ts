@@ -27,11 +27,8 @@ const config = {
   /** PASSWORD to protect config access in production */
   PASSWORD: getEnvVar('PASSWORD', '<PASSWORD>'),
 
-  /** URL for production environment where requests will be sent */
-  PROD_API_URL: getEnvVar('PROD_API_URL', 'https://game.codyfight.com'),
-
-  /** URL for development environment where requests will be sent */
-  DEV_API_URL: getEnvVar('DEV_API_URL', 'https://game-dev.codyfight.com'),
+  /** URL for environment where requests will be sent */
+  GAME_API_URL: getEnvVar('GAME_API_URL', 'https://dev.game.codyfight.com'),
 
   /** Logging level (0=debug, 1=info, 2=warning, 3=error) */
   LOG_LEVEL: Number(getEnvVar('LOG_LEVEL', '1')),

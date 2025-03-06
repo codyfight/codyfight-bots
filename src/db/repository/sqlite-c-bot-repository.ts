@@ -18,13 +18,12 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (ckey, mode, environment, move_strategy, cast_strategy)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO bots (ckey, mode, move_strategy, cast_strategy)
+      VALUES (?, ?, ?, ?)
     `
     const params = [
       bot.ckey,
       bot.mode,
-      bot.environment,
       bot.move_strategy,
       bot.cast_strategy
     ]
@@ -66,7 +65,6 @@ export class SqliteCBotRepository implements ICBotRepository {
     UPDATE bots
     SET 
         mode = ?,
-        environment = ?,
         move_strategy = ?,
         cast_strategy = ?
     WHERE ckey = ?
@@ -74,7 +72,6 @@ export class SqliteCBotRepository implements ICBotRepository {
 
     const params = [
       bot.mode,
-      bot.environment,
       bot.move_strategy,
       bot.cast_strategy,
       ckey
@@ -104,7 +101,6 @@ export class SqliteCBotRepository implements ICBotRepository {
       ckey: row.ckey,
       mode: row.mode,
       status: row.status,
-      environment: row.environment,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy
     }

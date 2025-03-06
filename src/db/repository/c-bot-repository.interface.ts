@@ -6,7 +6,6 @@ import { GameMode } from '../../game/state/game-state.type.js'
 export interface IBotFilter {
   player_id?: string,
   mode?: GameMode,
-  environment?: "development" | "production",
   move_strategy?: MoveStrategyType,
   cast_strategy?: CastStrategyType,
   status?: BotStatus

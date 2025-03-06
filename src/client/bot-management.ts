@@ -124,7 +124,6 @@ function populateBotTable(bots: Bot[]): void {
       <td>${modeLabel}</td>
       <td>${bot.move_strategy}</td>
       <td>${bot.cast_strategy}</td>
-      <td class="developer-option" >${bot.environment}</td>
       <td>
         <button class="btn btn-danger btn-sm" onclick="deleteBot('${bot.ckey}')">
           Delete
