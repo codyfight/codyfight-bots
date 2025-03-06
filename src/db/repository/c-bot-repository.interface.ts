@@ -7,7 +7,6 @@ export interface IBotFilter {
   ckey?: string,
   player_id?: string,
   mode?: GameMode,
-  environment?: "development" | "production",
   move_strategy?: MoveStrategyType,
   cast_strategy?: CastStrategyType,
   status?: BotStatus

@@ -1,10 +1,11 @@
 CREATE TABLE bots (
     ckey VARCHAR(255) NOT NULL,
     player_id INT NOT NULL,
-	environment VARCHAR(255) NOT NULL DEFAULT 'production',
     mode INT NOT NULL,
-    move_strategy VARCHAR(255) NOT NULL,
-    cast_strategy VARCHAR(255) NOT NULL,
+    move_strategy VARCHAR(50) NOT NULL,
+    cast_strategy VARCHAR(50) NOT NULL,
     status VARCHAR(255) NOT NULL DEFAULT 'stopped',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (ckey)
 );

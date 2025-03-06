@@ -3,7 +3,6 @@ import Logger from '../../utils/logger.js'
 import { IGameAPI } from '../api/game-api.interface.js'
 import GameState from '../../game/state/game-state.js'
 import { createGameAPI } from './game-api-factory.js'
-import config from '../../config/env.js'
 import Position from '../../game/map/position.js'
 import { GameMode, GameStatus } from '../../game/state/game-state.type.js'
 import Skill from '../../game/skills/skill.js'
@@ -11,16 +10,14 @@ import Skill from '../../game/skills/skill.js'
 class GameClient {
   public readonly ckey: string
   public readonly mode: GameMode
-  public readonly environment: string
 
   private readonly gameAPI: IGameAPI
   private readonly gameState: GameState
 
-  constructor(ckey: string, mode: GameMode, environment: string) {
+  constructor(ckey: string, mode: GameMode) {
     this.ckey = ckey
     this.mode = mode
-    this.environment = environment
-    this.gameAPI = createGameAPI(environment == 'production' ? config.PROD_API_URL : config.DEV_API_URL)
+    this.gameAPI = createGameAPI()
     this.gameState = new GameState()
   }
 

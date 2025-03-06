@@ -6,7 +6,6 @@ export interface ICBotConfig {
   ckey: string
   player_id?: number
   mode: GameMode
-  environment: string
   move_strategy: MoveStrategyType
   cast_strategy: CastStrategyType
   status: BotStatus

@@ -10,7 +10,7 @@ async function handleBotError(bot: CBot, error: Error): Promise<void> {
 
   if (STOP_ERRORS.has(status)) {
     Logger.error(`Bot "${bot}" received a ${status} error. Stopping the bot.`, error);
-    bot.stopPlaying();
+    await bot.stop();
     return;
   }
 

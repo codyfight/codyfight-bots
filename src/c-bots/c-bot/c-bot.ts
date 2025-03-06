@@ -37,10 +37,10 @@ class CBot extends EventEmitter {
 
   private _active = false
   
-  constructor({ player_id, ckey, mode, environment, status, move_strategy, cast_strategy }: ICBotConfig) {
+  constructor({ player_id, ckey, mode, status, move_strategy, cast_strategy }: ICBotConfig) {
     super()
     this.playerId = player_id
-    this.gameClient = new GameClient(ckey, mode, environment)
+    this.gameClient = new GameClient(ckey, mode)
     this.moveStrategy = createMoveStrategy(move_strategy)
     this.castStrategy = createCastStrategy(cast_strategy)
     this._state = createBotState(this, status)
@@ -138,7 +138,6 @@ class CBot extends EventEmitter {
       ckey: this.gameClient.ckey,
       status: this.state.status,
       mode: this.gameClient.mode,
-      environment: this.gameClient.environment,
       move_strategy: this.moveStrategy.type,
       cast_strategy: this.castStrategy.type
     }
