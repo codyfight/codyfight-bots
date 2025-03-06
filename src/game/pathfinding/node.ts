@@ -5,9 +5,8 @@ import Position from '../map/position.js'
 class Node {
 
   public constructor(
-    public readonly parent: Node | null, // Parent node
-    // Agent state contains position, health and skills
-    public readonly state: IAgentState
+    public readonly parent: Node | null,  // Parent node
+    public readonly state: IAgentState    // Agent state contains position, health and skills
   ) {}
 
   public toString(): string {
@@ -18,38 +17,69 @@ class Node {
     return this.state.position.equals(other.state.position)
   }
 
-  public expand(map: GameMap): Node[] {
+  public get path(): Node[] {
 
-    // get array of valid reachable positions
+    if (!this.parent) {
+      return [];
+    }
 
-    // get array of nodes with agent states at those positions
-
-    // make sure to exclude invalid states
-
-
-    return []
+    return [...this.parent.path, this];
   }
 
-  private neighbours(map: GameMap): Node [] {
-    const adjacent= this.getAdjacentNodes(map)
-    const skillReachable = this.getSkillReachablePositions(map)
 
-    return [...adjacent, ...skillReachable]
+
+
+  public expand(map: GameMap): Node[] {
+    // Get array of all reachable positions
+    const allNeighbors = this.getNeighbors(map)
+
+    // Filter invalid states (like HP <= 0, or out-of-bounds)
+    const validNeighbors = this.filterInvalidStates(allNeighbors, map)
+
+    return validNeighbors
+  }
+
+  private getNeighbors(map: GameMap): Node [] {
+    const adjacentNodes = this.getAdjacentNodes(map)
+    const skillNodes = this.getSkillNodes(map)
+
+    return [...adjacentNodes, ...skillNodes]
   }
 
   private getAdjacentNodes(map: GameMap): Node[] {
+    // Get positions adjacent to the current state.position
+    const adjacentPositions = Position.getDirections().map(dir =>
+      this.state.position.add(dir)
+    );
 
-    // Position.getDirections().map((direction) => position.add(direction))
-    // This should get adjacent positions
-    // Filter positions that are out of bounds
+    const nodes: Node[] = [];
 
-    // For each position, create the agent state for that position
-    // this.createNodeFromPosition(position, this.state)
+    // For each adjacent position, try to create a valid node
+    for (const pos of adjacentPositions) {
+      const node = this.createNode(pos, map);
+      if (node) {
+        nodes.push(node);
+      }
+    }
 
-    return []
+    return nodes;
   }
 
-  private getSkillReachablePositions(map: GameMap): Node[] {
+  private createNode(position: Position, map: GameMap): Node | null {
+    const tile = map.getTile(position);
+
+    // If the tile doesn't exist or isn't walkable, return null
+    if (!tile || !tile.walkable) {
+      return null;
+    }
+
+    // Apply the tile effect to update the agent state at the new position
+    const newState = tile.effect.apply({ ...this.state, position });
+    return new Node(this, newState);
+  }
+
+
+  private getSkillNodes(map: GameMap): Node[] {
 
     // Get ready skills that are of type movement
     // get the targets for each of these skills
@@ -58,31 +88,22 @@ class Node {
     return []
   }
 
-  private createNodeFromPosition(position: Position, state: IAgentState) : Node {
-    // Here we should add some logic for the hitpoints etc..
-    const newState = {...state, position }
-    return new Node(this, newState)
-  }
+  private filterInvalidStates(nodes: Node[], map: GameMap): Node[] {
 
-  private fliterInvalidStates(nodes: Node[]): Node[] {
+    const valid: Node[] = []
 
-    // loop through all the nodes
-    // process the states and remove invalid states
+    for (const node of nodes) {
+      const { hitpoints } = node.state
 
-    return []
-  }
+      if (hitpoints <= 0) {
+        // Agent died - TODO - We could configure an agents tolerance to damage here
+        continue
+      }
 
-
-  public get path(): Node[] {
-    const path: Node[] = []
-    let current = this.parent
-
-    while (this.parent !== null) {
-      path.unshift(current!)
-      current = current!.parent
+      valid.push(node)
     }
 
-    return path
+    return valid
   }
 
 }

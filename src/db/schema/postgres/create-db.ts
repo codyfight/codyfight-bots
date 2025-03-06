@@ -17,7 +17,6 @@ try {
     CREATE TABLE IF NOT EXISTS bots (
       ckey VARCHAR NOT NULL,
       player_id INT NOT NULL,
-      environment VARCHAR NOT NULL DEFAULT 'production',
       mode INT NOT NULL,
       move_strategy VARCHAR NOT NULL,
       cast_strategy VARCHAR NOT NULL,

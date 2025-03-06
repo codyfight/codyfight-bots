@@ -5,9 +5,10 @@ import GameAgent from '../../../game/agents/game-agent.js'
 import Position from '../../../game/map/position.js'
 import GameState from '../../../game/state/game-state.js'
 import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.js'
-import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.ts.bk'
+import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 import SpecialAgent from '../../../game/agents/special-agent.js'
 import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import Node from '../../../game/pathfinding/node.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   public abstract get type(): MoveStrategyType;
@@ -36,18 +37,17 @@ abstract class MoveStrategy implements IMoveStrategy {
   public determineMove(): Position {
     this.targets = []
     this.setTargets()
-    const start = this.bearer.position
 
     for (const target of this.targets) {
 
-      const state = {
-        position: start,
+      const state : IAgentState = {
+        position: this.bearer.position,
         hitpoints: this.bearer.hitpoints
       }
 
       const path = this.findPath(state, target)
 
-      if (path.length > 1) {
+      if (path.length > 0) {
         return this.getNextValidMove(path)
       }
     }
@@ -76,9 +76,20 @@ abstract class MoveStrategy implements IMoveStrategy {
   }
 
   private findPath(state: IAgentState, target: Position): Position[] {
-    const pathFinder = new BFSPathFinder(this.map)
-    const statePath = pathFinder.findPathToTarget(state, target)
-    return statePath.map((state) => state.position)
+    const start: Node = new Node(null, state)
+    const finish: Node = new Node(null, { position: target, hitpoints: 0 })
+    const pathFinder = new BFSPathFinder(start, finish, this.map)
+
+    const result = pathFinder.findPath()
+
+    if (result === null) {
+      return []
+    }
+
+    const path = result.path
+    const positions = path.map((node) => node.state.position)
+
+    return positions
   }
 
   /**
@@ -86,7 +97,7 @@ abstract class MoveStrategy implements IMoveStrategy {
    * returns the next valid move or null
    */
   private getNextValidMove(path: Position[]): Position {
-    return this.isMovePossible(path[1]) ? path[1] : this.bearer.position
+    return this.isMovePossible(path[0]) ? path[0] : this.bearer.position
   }
 
   /**

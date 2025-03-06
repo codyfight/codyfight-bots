@@ -9,7 +9,7 @@ export interface ISkillState {
 export interface IAgentState {
   position: Position;
   hitpoints: number;
-  skillsState: ISkillState[];
+  skillsState?: ISkillState[];
 }
 
 export interface IAgent {

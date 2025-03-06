@@ -17,13 +17,12 @@ export class SqliteCBotRepository implements ICBotRepository {
    */
   public async addBot(bot: ICBotConfig): Promise<void> {
     const query = `
-      INSERT INTO bots (ckey, player_id, environment, mode, move_strategy, cast_strategy, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO bots (ckey, player_id, mode, move_strategy, cast_strategy, status)
+      VALUES (?, ?, ?, ?, ?, ?)
     `
     const params = [
       bot.ckey,
       bot.player_id,
-      bot.environment,
       bot.mode,
       bot.move_strategy,
       bot.cast_strategy,
@@ -38,7 +37,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    * Throws an error if the bot is not found.
    */
   public async getBot(ckey: string): Promise<ICBotConfig> {
-    const query = `SELECT ckey, player_id, environment, mode, move_strategy, cast_strategy, status FROM bots WHERE ckey = ?`
+    const query = `SELECT ckey, player_id, mode, move_strategy, cast_strategy, status FROM bots WHERE ckey = ?`
     const row = await this.runSqlGet(query, [ckey])
 
     if (!row) {
@@ -52,7 +51,7 @@ export class SqliteCBotRepository implements ICBotRepository {
    * Retrieves all bots from the database.
    */
   public async getBots(filter: IBotFilterCondition[] = []): Promise<ICBotConfig[]> {
-    const query = `SELECT ckey, player_id, environment, mode, move_strategy, cast_strategy, status FROM bots`
+    const query = `SELECT ckey, player_id, mode, move_strategy, cast_strategy, status FROM bots`
 
     const rows = await this.runSqlAll(query)
     return rows.map(row => this.mapRow(row))
@@ -95,7 +94,6 @@ export class SqliteCBotRepository implements ICBotRepository {
     return {
       ckey: row.ckey,
       player_id: row.player_id,
-      environment: row.environment,
       mode: row.mode,
       move_strategy: row.move_strategy,
       cast_strategy: row.cast_strategy,

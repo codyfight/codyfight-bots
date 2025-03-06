@@ -30,14 +30,13 @@ class MysqlCBotRepository implements ICBotRepository {
   async addBot(bot: ICBotConfig): Promise<void> {
 
     const query = `
-      INSERT INTO bots (ckey, player_id, environment, mode, move_strategy, cast_strategy, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO bots (ckey, player_id, mode, move_strategy, cast_strategy, status)
+      VALUES (?, ?, ?, ?, ?, ?)
     `
 
     const params = [
       bot.ckey,
       bot.player_id,
-      bot.environment,
       bot.mode,
       bot.move_strategy,
       bot.cast_strategy,
