@@ -3,6 +3,8 @@ import GameNode from './game-node.js'
 import Position from '../map/position.js'
 import { IAgentState } from '../agents/game-agent.type.js'
 
+type GoalTest = (state: IAgentState, target: Position) => boolean;
+
 export default class BFSPathfinder {
   private readonly visited = new Set<string>();
   private readonly frontier: GameNode[] = [];
@@ -19,14 +21,14 @@ export default class BFSPathfinder {
    * Performs a BFS to find a path from the start node to the goal position.
    * Returns the ending node if a path is found, otherwise null.
    */
-  public findPath(): GameNode | null {
+  public findPath(isGoal: GoalTest): GameNode | null {
     this.frontier.push(this.startNode);
     this.visited.add(this.startNode.key);
 
     while (this.frontier.length > 0) {
       const currentNode = this.frontier.shift()!;
 
-      if (currentNode.equals(this.goalPosition)) {
+      if (isGoal(currentNode.state, this.goalPosition)) {
         return currentNode;
       }
 

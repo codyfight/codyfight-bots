@@ -1,6 +1,7 @@
 import MoveStrategy from './move-strategy.js'
-import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 import { MoveStrategyType } from './move-strategy.type.js'
+import Position from '../../../game/map/position.js'
 
 
 class RyoMoveStrategy extends MoveStrategy {
@@ -14,6 +15,10 @@ class RyoMoveStrategy extends MoveStrategy {
     if (ryoAgents && ryoAgents.length > 0) {
       this.targets.push(ryoAgents[0].position);
     }
+  }
+
+  protected isGoal(state: IAgentState, target: Position): boolean {
+    return state.position.adjacent(target)
   }
 }
 

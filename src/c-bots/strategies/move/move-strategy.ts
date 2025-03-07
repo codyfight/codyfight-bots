@@ -74,10 +74,18 @@ abstract class MoveStrategy implements IMoveStrategy {
       : randomElement(possibleMoves)
   }
 
+  protected isGoal(state: IAgentState, target: Position) : boolean {
+    return state.position.equals(target)
+  }
+
   private findPath(state: IAgentState, target: Position): Position[] {
 
+    if (state.position.equals(target)) {
+      return [target]
+    }
+
     const pathFinder = new BFSPathFinder(state, target, this.map)
-    const result = pathFinder.findPath()
+    const result = pathFinder.findPath(this.isGoal.bind(this))
 
     if (!result) return []
 
