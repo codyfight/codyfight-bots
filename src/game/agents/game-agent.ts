@@ -8,7 +8,7 @@ class GameAgent implements IUpdatable {
   readonly name: string
   private _position: Position = new Position(0, 0)
 
-  private hitpoints!: number;
+  private _hitpoints!: number;
   private hitpointsCap!: number;
   private armor!: number;
   private armorCap!: number;
@@ -25,7 +25,7 @@ class GameAgent implements IUpdatable {
     this.hitpointsCap = agentData.stats.hitpoints_cap;
     this.armorCap = agentData.stats.armor_cap;
     this.energyCap = agentData.stats.energy_cap;
-    this.hitpoints = agentData.stats.hitpoints;
+    this._hitpoints = agentData.stats.hitpoints;
     this.armor = agentData.stats.armor;
     this.energy = agentData.stats.energy;
     this.setPosition(agentData)
@@ -33,6 +33,10 @@ class GameAgent implements IUpdatable {
 
   public get position(): Position {
     return this._position
+  }
+
+  public get hitpoints(): number {
+    return this._hitpoints + this.armor
   }
 
   public isHitpointsRestoreEffective(restoreValue: number, threshold = 0.8): boolean {

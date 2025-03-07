@@ -4,8 +4,7 @@ import config from '../../../config/env.js'
 const { Client } = pkg
 
 const client = new Client({
-  connectionString:
-    config.POSTGRES_URL,
+  connectionString: config.POSTGRES_URL,
   ssl: {
     rejectUnauthorized: false
   }
@@ -16,10 +15,13 @@ await client.connect()
 try {
   await client.query(`
     CREATE TABLE IF NOT EXISTS bots (
-      ckey TEXT PRIMARY KEY,
-      mode INTEGER NOT NULL,
-      move_strategy TEXT NOT NULL,
-      cast_strategy TEXT NOT NULL
+      ckey VARCHAR NOT NULL,
+      player_id INT NOT NULL,
+      mode INT NOT NULL,
+      move_strategy VARCHAR NOT NULL,
+      cast_strategy VARCHAR NOT NULL,
+      status VARCHAR NOT NULL DEFAULT 'stopped',
+      PRIMARY KEY (ckey)
     );
   `)
 

@@ -1,7 +1,6 @@
 interface Bot {
   ckey: string;
   mode: number;
-  environment: string;
   move_strategy: string;
   cast_strategy: string;
 }

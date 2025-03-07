@@ -1,10 +1,11 @@
 CREATE TABLE bots (
-    player_id BIGINT UNSIGNED NOT NULL,
-    ckey VARCHAR(255) PRIMARY KEY,
+    ckey VARCHAR(255) NOT NULL,
+    player_id INT NOT NULL,
     mode INT NOT NULL,
     move_strategy VARCHAR(50) NOT NULL,
     cast_strategy VARCHAR(50) NOT NULL,
+    status VARCHAR(255) NOT NULL DEFAULT 'stopped',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_player FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+    PRIMARY KEY (ckey)
 );

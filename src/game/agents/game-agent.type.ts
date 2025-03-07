@@ -1,6 +1,17 @@
 import Position from '../map/position.js'
 import Skill from '../skills/skill.js'
 
+export interface ISkillState {
+  id: number;
+  ready: boolean;
+}
+
+export interface IAgentState {
+  position: Position;
+  hitpoints: number;
+  skillsState?: ISkillState[];
+}
+
 export interface IAgent {
   id: number
   name: string

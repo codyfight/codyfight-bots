@@ -5,6 +5,7 @@ export interface ITile {
   name: string
   type: TileType
   position: Position
+  is_walkable: boolean
   config: {
     is_charged: boolean
   }
@@ -36,9 +37,9 @@ export enum TileType {
 }
 
 export const DANGEROUS_TILES = new Set<TileType>([
-  TileType.ZapTrap,
-  TileType.ProximityMine,
-  TileType.BoobyTrap,
+  TileType.ZapTrap, // 30 damage
+  TileType.ProximityMine, // 150 damage
+  TileType.BoobyTrap, // 75 damage
   TileType.IceTrap,
 ])
 
@@ -61,7 +62,7 @@ const OBSTACLE_TILES = new Set<TileType>([
   TileType.Craze,
   TileType.WallMarkOne,
   TileType.BombTile,
-  TileType.DeathPit,
+  TileType.DeathPit, // 1024 damage
 ])
 
 export const SAFE_TILES = new Set<TileType>([

@@ -1,5 +1,6 @@
 import TileEffect from './tile-effect.js'
 import Position from '../../position.js'
+import { IAgentState } from '../../../agents/game-agent.type.js'
 
 /**
  * Represents a teleport effect that moves the player to a specific destination.
@@ -24,8 +25,14 @@ class TeleportEffect extends TileEffect {
     this.destination = destination
   }
 
-  public apply(position: Position): Position {
-    return this.isCharged ? this.destination || position : position
+  public apply(agentState: IAgentState): IAgentState  {
+    const position = agentState.position
+    const newPosition = this.isCharged ? this.destination || position : position
+
+    return {
+      ...agentState,
+      position: newPosition
+    }
   }
 }
 

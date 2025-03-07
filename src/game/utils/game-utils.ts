@@ -1,6 +1,7 @@
 import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
 import GameError from '../../errors/game-error.js'
+import PlayerAgent from '../agents/player-agent.js'
 
 /**
  * Calculates the Euclidean distance between two positions.
@@ -64,4 +65,17 @@ export function isRestoreEffective(value: number, max: number, restore: number, 
 
   const utilization = missing / restore;
   return utilization >= threshold;
+}
+
+class AgentState {
+}
+
+export function createAgentState(agent: PlayerAgent) : AgentState {
+  return {
+    hitpoints: agent.hitpoints,
+    skillsState: agent.availableSkills.map(skill => ({
+      id: skill.id,
+      ready: skill.isReady()
+    }))
+  };
 }

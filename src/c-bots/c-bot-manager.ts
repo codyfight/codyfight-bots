@@ -121,7 +121,7 @@ class CBotManager {
    * Fetch all bots from the DB and run them in infinite loops.
    */
   public async runAll(): Promise<void> {
-    const allBotConfigs = await this.getAllBotConfigs([{ field: 'status', operator: '!=', value: 'stopped' }])
+    const allBotConfigs = await this.getAllBotConfigs([])
     for (const config of allBotConfigs) {
       await this.startBot(config.ckey)
     }

@@ -7,7 +7,7 @@ import GameState from '../../../game/state/game-state.js'
 import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.js'
 import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 import SpecialAgent from '../../../game/agents/special-agent.js'
-import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   public abstract get type(): MoveStrategyType;
@@ -36,12 +36,17 @@ abstract class MoveStrategy implements IMoveStrategy {
   public determineMove(): Position {
     this.targets = []
     this.setTargets()
-    const start = this.bearer.position
+
+    const state : IAgentState = {
+      position: this.bearer.position,
+      hitpoints: this.bearer.hitpoints
+    }
 
     for (const target of this.targets) {
-      const path = this.findPath(start, target)
 
-      if (path.length > 1) {
+      const path = this.findPath(state, target)
+
+      if (path.length > 0) {
         return this.getNextValidMove(path)
       }
     }
@@ -69,9 +74,22 @@ abstract class MoveStrategy implements IMoveStrategy {
       : randomElement(possibleMoves)
   }
 
-  private findPath(start: Position, target: Position): Position[] {
-    const pathFinder = new BFSPathFinder(this.map)
-    return pathFinder.findPathToTarget(start, target)
+  protected isGoal(state: IAgentState, target: Position) : boolean {
+    return state.position.equals(target)
+  }
+
+  private findPath(state: IAgentState, target: Position): Position[] {
+
+    if (state.position.equals(target)) {
+      return [target]
+    }
+
+    const pathFinder = new BFSPathFinder(state, target, this.map)
+    const result = pathFinder.findPath(this.isGoal.bind(this))
+
+    if (!result) return []
+
+    return result.path.map((node) => node.position)
   }
 
   /**
@@ -79,7 +97,7 @@ abstract class MoveStrategy implements IMoveStrategy {
    * returns the next valid move or null
    */
   private getNextValidMove(path: Position[]): Position {
-    return this.isMovePossible(path[1]) ? path[1] : this.bearer.position
+    return this.isMovePossible(path[0]) ? path[0] : this.bearer.position
   }
 
   /**

@@ -1,5 +1,5 @@
 import { IBotFilter, IBotFilterCondition, ICBotRepository } from './c-bot-repository.interface.js'
-import { ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
+import { BotStatus, ICBotConfig } from '../../c-bots/c-bot/c-bot-config.interface.js'
 import mysql from 'mysql2/promise'
 import config from '../../config/env.js'
 import Logger from '../../utils/logger.js'
@@ -30,15 +30,17 @@ class MysqlCBotRepository implements ICBotRepository {
   async addBot(bot: ICBotConfig): Promise<void> {
 
     const query = `
-      INSERT INTO bots (player_id, ckey, mode, move_strategy, cast_strategy)
-      VALUES (?, ?, ?, ?, ?)`
+      INSERT INTO bots (ckey, player_id, mode, move_strategy, cast_strategy, status)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `
 
     const params = [
-      bot.player_id,
       bot.ckey,
+      bot.player_id,
       bot.mode,
       bot.move_strategy,
-      bot.cast_strategy
+      bot.cast_strategy,
+      bot.status || BotStatus.Stopped
     ]
 
     try {
@@ -108,18 +110,22 @@ class MysqlCBotRepository implements ICBotRepository {
   }
 
   async updateBot(ckey: string, bot: IBotFilter): Promise<void> {
-    const query = `
-    UPDATE bots 
-    SET mode = ?, move_strategy = ?, cast_strategy = ?
-    WHERE ckey = ?
-  `
+    const keys = Object.keys(bot)
 
-    const params = [
-      bot.mode,
-      bot.move_strategy,
-      bot.cast_strategy,
-      ckey
-    ]
+    if (keys.length === 0) {
+      throw new ApiError("No parameters provided to update the bot.")
+    }
+
+    const values = Object.values(bot)
+    const setClause = keys.map((key) => `${key} = ?`).join(', ')
+
+    const query = `
+      UPDATE bots 
+      SET ${setClause}
+      WHERE ckey = ?
+    `
+
+    const params = [...values, ckey]
 
     try {
       const connection = await this.pool.getConnection()
@@ -132,10 +138,10 @@ class MysqlCBotRepository implements ICBotRepository {
       connection.release()
     } catch (err) {
       Logger.error('Error updating bot:', err)
-      throw ApiError.from(err, 'Failed to update bot');
+      throw ApiError.from(err, 'Failed to update bot')
     }
   }
-
+  
 }
 
 export default MysqlCBotRepository

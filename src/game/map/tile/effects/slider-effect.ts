@@ -1,6 +1,7 @@
 import TileEffect from './tile-effect.js'
 import Position from '../../position.js'
 import { TileType } from '../tile.type.js'
+import { IAgentState } from '../../../agents/game-agent.type.js'
 
 /**
  * Represents a slider effect that moves the player in a specific direction (up, down, left, or right).
@@ -31,8 +32,13 @@ class SliderEffect extends TileEffect {
     this.offset = DIRECTION_OFFSETS[type] || new Position(0, 0)
   }
 
-  public apply(position: Position): Position {
-    return this.isCharged ? position.add(this.offset) : position
+  public apply(agentState: IAgentState): IAgentState {
+    const position = agentState.position
+    const newPosition = this.isCharged ? position.add(this.offset) : position
+    return {
+      ...agentState,
+      position: newPosition
+    }
   }
 }
 

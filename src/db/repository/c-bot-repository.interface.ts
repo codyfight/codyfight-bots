@@ -4,6 +4,7 @@ import { CastStrategyType } from '../../c-bots/strategies/cast/cast-strategy.typ
 import { GameMode } from '../../game/state/game-state.type.js'
 
 export interface IBotFilter {
+  ckey?: string,
   player_id?: string,
   mode?: GameMode,
   move_strategy?: MoveStrategyType,

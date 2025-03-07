@@ -1,95 +1,56 @@
-import Position from '../map/position.js'
 import GameMap from '../map/game-map.js'
-import TileEffectResolver from '../map/tile/effects/tile-effect-resolver.js'
-import GameError from '../../errors/game-error.js'
+import GameNode from './game-node.js'
+import Position from '../map/position.js'
+import { IAgentState } from '../agents/game-agent.type.js'
 
-class BFSPathFinder {
-  constructor(
-    private map: GameMap,
-    private visited = new Set<string>(),
-    private queue: Position[][] = [],
-    private tileEffectResolver = new TileEffectResolver(map)
-  ) {}
+type GoalTest = (state: IAgentState, target: Position) => boolean;
 
-  public findPathToTarget(start: Position, target: Position): Position[] {
-    this.queue.push([start])
-    this.visited.add(start.toString())
+export default class BFSPathfinder {
+  private readonly visited = new Set<string>();
+  private readonly frontier: GameNode[] = [];
 
-    try {
-      while (this.queue.length > 0) {
-        const currentPath = this.processQueue(target)
-        if (currentPath.length > 0) {
-          return currentPath
-        }
+  private readonly startNode: GameNode;
+  private readonly goalPosition: Position;
+
+  constructor(initialState: IAgentState, goalPosition: Position, private readonly map: GameMap) {
+    this.startNode = new GameNode(null, initialState.position, initialState);
+    this.goalPosition = goalPosition;
+  }
+
+  /**
+   * Performs a BFS to find a path from the start node to the goal position.
+   * Returns the ending node if a path is found, otherwise null.
+   */
+  public findPath(isGoal: GoalTest): GameNode | null {
+    this.frontier.push(this.startNode);
+    this.visited.add(this.startNode.key);
+
+    while (this.frontier.length > 0) {
+      const currentNode = this.frontier.shift()!;
+
+      if (isGoal(currentNode.state, this.goalPosition)) {
+        return currentNode;
       }
-    } catch (error) {
-      throw new GameError(error, {
-        Message: 'Error in findPathToTarget()',
-        Start: start,
-        Target: target
-      })
+
+      this.processNeighbors(currentNode);
     }
 
-    return []
+    return null;
   }
 
-  private processQueue(target: Position): Position[] {
-    const currentPath = this.queue.shift()!
-    const position = currentPath[currentPath.length - 1]
-    const finalPosition = this.tileEffectResolver.resolve(position)
-
-    if (finalPosition.equals(target)) {
-      return currentPath
-    }
-
-    const neighbors = this.getNeighbors(finalPosition)
-    this.processNeighbors(currentPath, neighbors, target)
-
-    return []
-  }
-
-  private processNeighbors(
-    currentPath: Position[],
-    neighbors: Position[],
-    target: Position
-  ) {
-    for (const position of neighbors) {
-      if (this.isValidMove(position, target)) {
-        this.visited.add(position.toString())
-        const newPath = [...currentPath, position]
-        this.queue.push(newPath)
-      }
+  private processNeighbors(currentNode: GameNode): void {
+    for (const neighbor of currentNode.expand(this.map)){
+      this.enqueueIfUnvisited(neighbor);
     }
   }
 
-  private getNeighbors(position: Position): Position[] {
-    return Position.getDirections().map((direction) => position.add(direction))
-  }
+  /**
+   * Adds a node to the frontier if it hasn't been visited yet.
+   */
+  private enqueueIfUnvisited(node: GameNode): void {
+    if (this.visited.has(node.key)) return
 
-  private isValidMove(position: Position, target: Position): boolean {
-    // Check if the position was already visited
-    if (this.visited.has(position.toString())) {
-      return false
-    }
-
-    if (position.equals(target)) {
-      return true
-    }
-
-    // is the tile occupied by another agent
-    if (this.map.isPositionOccupied(position)) {
-      return false
-    }
-
-    const tile = this.map.getTile(position)
-
-    // is it a valid safe tile?
-    if (!tile || !tile.isWalkable()) {
-      return false
-    }
-
-    return true
+    this.visited.add(node.key);
+    this.frontier.push(node);
   }
 }
-
-export default BFSPathFinder

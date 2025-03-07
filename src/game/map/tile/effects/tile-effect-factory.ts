@@ -3,6 +3,7 @@ import SliderEffect from './slider-effect.js'
 import TileEffect from './tile-effect.js'
 import EmptyEffect from './empty-effect.js'
 import TeleportEffect from './teleport-effect.js'
+import DamageEffect from './damage-effect.js'
 
 /**
  * Factory function to create a TileEffect based on the type and charge state.
@@ -20,6 +21,12 @@ export function createTileEffect(type: TileType, isCharged: boolean): TileEffect
 
     case TileType.BidirectionalTeleport:
       return new TeleportEffect(isCharged);
+
+    case TileType.DeathPit:
+    case TileType.ProximityMine:
+    case TileType.BoobyTrap:
+    case TileType.ZapTrap:
+      return new DamageEffect(isCharged, type)
 
     default:
       return new EmptyEffect(false);

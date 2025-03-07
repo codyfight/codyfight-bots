@@ -3,12 +3,12 @@ import { MoveStrategyType } from '../strategies/move/move-strategy.type.js'
 import { CastStrategyType } from '../strategies/cast/cast-strategy.type.js'
 
 export interface ICBotConfig {
-  player_id?: number
   ckey: string
-  status: BotStatus
+  player_id?: number
   mode: GameMode
   move_strategy: MoveStrategyType
   cast_strategy: CastStrategyType
+  status: BotStatus
 }
 
 export interface ICBotState {
