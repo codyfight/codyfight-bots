@@ -20,7 +20,7 @@ class GameNode {
   /**
    * Returns a string representation of the current node (position).
    */
-  public toString(): string {
+  public get key(): string {
     return this.state.position.toString();
   }
 

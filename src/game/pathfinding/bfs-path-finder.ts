@@ -3,63 +3,52 @@ import GameNode from './game-node.js'
 import Position from '../map/position.js'
 import { IAgentState } from '../agents/game-agent.type.js'
 
+export default class BFSPathfinder {
+  private readonly visited = new Set<string>();
+  private readonly frontier: GameNode[] = [];
 
-class BfsPathFinder {
-  private readonly visited = new Set<string>()
-  private readonly map: GameMap
+  private readonly startNode: GameNode;
+  private readonly goalPosition: Position;
 
-  private readonly start: GameNode
-  private readonly finish: Position
-
-  private frontier: GameNode[] = []
-
-  constructor(initialState: IAgentState, finish: Position, map: GameMap) {
-    this.map = map
-    this.start = new GameNode(null, initialState)
-    this.finish = finish
+  constructor(initialState: IAgentState, goalPosition: Position, private readonly map: GameMap) {
+    this.startNode = new GameNode(null, initialState);
+    this.goalPosition = goalPosition;
   }
 
+  /**
+   * Performs a BFS to find a path from the start node to the goal position.
+   * Returns the ending node if a path is found, otherwise null.
+   */
   public findPath(): GameNode | null {
-    this.frontier.push(this.start)
-    this.visited.add(this.start.toString())
+    this.frontier.push(this.startNode);
+    this.visited.add(this.startNode.key);
 
     while (this.frontier.length > 0) {
-      const currentPath = this.processQueue()
-      if (currentPath !== null) {
-        return currentPath
+      const currentNode = this.frontier.shift()!;
+
+      if (currentNode.equals(this.goalPosition)) {
+        return currentNode;
       }
+
+      this.processNeighbors(currentNode);
     }
 
-    return null
+    return null;
   }
 
-  private processQueue() : GameNode | null {
-    const current : GameNode = this.frontier.shift()!
-
-    if(current.equals(this.finish)) {
-      return current
-    }
-
-    // This will return all the valid neighbors of the current node
-    // it includes tiles that can be reached via skill casting
-    // it excludes tiles that will cause the agent to die
-    const neighbors = current.expand(this.map)
-
-    for (const neighbor of neighbors) {
-      this.processNode(neighbor)
-    }
-
-    return null
-  }
-
-  private processNode(node: GameNode) {
-    const key = node.toString()
-    if (!this.visited.has(key)) {
-      this.visited.add(key)
-      this.frontier.push(node)
+  private processNeighbors(currentNode: GameNode): void {
+    for (const neighbor of currentNode.expand(this.map)){
+      this.enqueueIfUnvisited(neighbor);
     }
   }
 
+  /**
+   * Adds a node to the frontier if it hasn't been visited yet.
+   */
+  private enqueueIfUnvisited(node: GameNode): void {
+    if (this.visited.has(node.key)) return
+
+    this.visited.add(node.key);
+    this.frontier.push(node);
+  }
 }
-
-export default BfsPathFinder
