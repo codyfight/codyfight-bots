@@ -8,8 +8,10 @@ export enum SkillStatus {
 }
 
 export enum SkillCategory {
+  Unknown = 'Unknown',
   Healing = 'Healing',
   MovementEnemy = 'MovementEnemy',
+  MovementPlayer = 'MovementPlayer',
 }
 
 export interface SkillMetadata {
@@ -80,5 +82,12 @@ export const SkillRegistry: Record<number, SkillMetadata> = {
     id: 53,
     name: 'Shove',
     category: SkillCategory.MovementEnemy
+  },
+
+  // Player-moving Skills
+  7: {
+    id: 7,
+    name: 'Blink',
+    category: SkillCategory.MovementPlayer
   }
 }

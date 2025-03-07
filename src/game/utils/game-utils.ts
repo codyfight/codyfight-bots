@@ -75,7 +75,7 @@ export function createAgentState(agent: PlayerAgent) : AgentState {
     hitpoints: agent.hitpoints,
     skillsState: agent.availableSkills.map(skill => ({
       id: skill.id,
-      ready: skill.isReady()
+      ready: skill.ready
     }))
   };
 }

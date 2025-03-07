@@ -1,4 +1,4 @@
-import { IAgentState } from '../agents/game-agent.type.js'
+import { IAgentState, ISkillState } from '../agents/game-agent.type.js'
 import GameMap from '../map/game-map.js'
 import Position from '../map/position.js'
 import { resolveTileEffect } from '../map/tile/effects/tile-effect-resolver.js'
@@ -76,14 +76,43 @@ class GameNode {
     return new GameNode(this, position, newState);
   }
 
-
+  // Returns a list of nodes that can be reached by using a skill
   private getSkillNodes(map: GameMap): GameNode[] {
 
-    // Get ready skills that are of type movement
-    // get the targets for each of these skills
-    // Create a node from each target and make sure to set skill state to used
+    // uncomment to exclude skill based path finding
+    // return []
 
-    return []
+    const readySkills = this.state.skillsState.filter(skill => skill.ready);
+    const nodes = readySkills.flatMap(skill => this.createNodesForSkill(skill));
+
+    return nodes
+  }
+
+  // Creates a list of nodes for each target of a skill
+  private createNodesForSkill(skill: ISkillState): GameNode[] {
+    const updatedSkills = this.getUpdatedSkillsForUsedSkill(skill);
+    const nodes = skill.targets.map(target => this.createNodeForTarget(target, updatedSkills));
+    return nodes
+  }
+
+  // Returns a list of skills with the used skill marked as not ready
+  private getUpdatedSkillsForUsedSkill(usedSkill: ISkillState): ISkillState[] {
+
+    const updatedSkills = this.state.skillsState.map(skill =>
+      skill.id === usedSkill.id ? { ...skill, ready: false } : skill
+    );
+
+    return updatedSkills
+  }
+
+  // Creates a new node with the target position and updated skills
+  private createNodeForTarget(target: Position, updatedSkills: ISkillState[]): GameNode {
+    const newState: IAgentState = {
+      ...this.state,      // preserve any additional properties
+      position: target,   // update to the target position
+      skillsState: updatedSkills
+    };
+    return new GameNode(this, target, newState);
   }
 
   private filterInvalidStates(nodes: GameNode[]): GameNode[] {

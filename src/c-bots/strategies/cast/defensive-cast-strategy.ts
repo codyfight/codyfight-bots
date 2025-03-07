@@ -10,7 +10,7 @@ class DefensiveCastStrategy extends CastStrategy {
   protected determineSkill(): Skill | null {
 
     const healingSkills = this.bearer.availableSkills.filter(
-      s => s.getCategory() === SkillCategory.Healing && s.isReady()
+      s => s.category === SkillCategory.Healing && s.ready
     );
 
     // Filter and sort all healing skills by healing amount
@@ -37,14 +37,14 @@ class DefensiveCastStrategy extends CastStrategy {
 
    // If there is a skill available to move the enemy away find and return it
     const movementSkills = this.bearer.availableSkills.filter(
-      s => s.getCategory() === SkillCategory.MovementEnemy && s.isReady()
+      s => s.category === SkillCategory.MovementEnemy && s.ready
     );
 
     return movementSkills.length > 0 ? movementSkills[0] : null;
   }
 
   protected determineTarget(skill: Skill): Position | null {
-    if (skill.getCategory() === SkillCategory.Healing) {
+    if (skill.category === SkillCategory.Healing) {
       if (skill.possibleTargets.some(pos => pos.equals(this.bearer.position))) {
         return this.bearer.position;
       }

@@ -1,7 +1,8 @@
 import GameAgent from './game-agent.js'
 import Position from '../map/position.js'
 import Skill from '../skills/skill.js'
-import { IPlayerAgent } from './game-agent.type.js'
+import { IPlayerAgent, ISkillState } from './game-agent.type.js'
+import { SkillCategory } from '../skills/skill-type.js'
 
 class PlayerAgent extends GameAgent {
   private possibleMoves: Position[] = []
@@ -24,7 +25,18 @@ class PlayerAgent extends GameAgent {
   }
 
   public get availableSkills(): Skill[] {
-    return this.skills.filter((skill) => skill.isReady())
+    return this.skills.filter((skill) => skill.ready)
+  }
+
+  public createSkillsState(): ISkillState[] {
+    return this.availableSkills
+      .filter(skill => skill.category === SkillCategory.MovementPlayer)
+      .map(skill => ({
+        id: skill.id,
+        category: skill.category,
+        ready: skill.ready,
+        targets: skill.possibleTargets
+      }));
   }
 
   private mapToPositions(data: { x: number; y: number }[]): Position[] {

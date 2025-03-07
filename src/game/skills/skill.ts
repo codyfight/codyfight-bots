@@ -22,8 +22,8 @@ class Skill {
     )
   }
 
-  public getCategory(): SkillCategory | undefined {
-    return SkillRegistry[this.id]?.category;
+  public get category(): SkillCategory {
+    return SkillRegistry[this.id]?.category || SkillCategory.Unknown;
   }
 
   public getHealing(): number {
@@ -34,7 +34,7 @@ class Skill {
     return SkillRegistry[this.id]?.armor ?? 0;
   }
 
-  public isReady(): boolean {
+  public get ready(): boolean {
     return this.status === SkillStatus.Ready
   }
 

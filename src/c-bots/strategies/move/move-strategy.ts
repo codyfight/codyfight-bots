@@ -26,6 +26,7 @@ abstract class MoveStrategy implements IMoveStrategy {
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
     this.specialAgents = game.getSpecialAgents()
+
   }
 
   /**
@@ -39,7 +40,8 @@ abstract class MoveStrategy implements IMoveStrategy {
 
     const state : IAgentState = {
       position: this.bearer.position,
-      hitpoints: this.bearer.hitpoints
+      hitpoints: this.bearer.hitpoints,
+      skillsState: this.bearer.createSkillsState()
     }
 
     for (const target of this.targets) {
