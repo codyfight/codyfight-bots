@@ -13,7 +13,7 @@ export default class BFSPathfinder {
   private readonly goalPosition: Position;
 
   constructor(initialState: IAgentState, goalPosition: Position, private readonly map: GameMap) {
-    this.startNode = new GameNode(null, initialState);
+    this.startNode = new GameNode(null, initialState.position, initialState);
     this.goalPosition = goalPosition;
   }
 

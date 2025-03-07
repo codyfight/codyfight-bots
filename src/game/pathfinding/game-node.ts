@@ -7,7 +7,8 @@ class GameNode {
 
   public constructor(
     public readonly parent: GameNode | null,  // Parent node
-    public readonly state: IAgentState    // Agent state contains position, health and skills
+    public readonly position: Position,       // Position of the node
+    public readonly state: IAgentState        // Agent state contains position, health and skills
   ) {}
 
   /**
@@ -72,7 +73,7 @@ class GameNode {
     // Apply tile effects (e.g. damage, movement, etc.)
     const newState = resolveTileEffect({...this.state, position}, map)
 
-    return new GameNode(this, newState);
+    return new GameNode(this, position, newState);
   }
 
 

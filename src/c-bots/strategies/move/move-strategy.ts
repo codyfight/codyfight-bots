@@ -89,7 +89,7 @@ abstract class MoveStrategy implements IMoveStrategy {
 
     if (!result) return []
 
-    return result.path.map((node) => node.state.position)
+    return result.path.map((node) => node.position)
   }
 
   /**
