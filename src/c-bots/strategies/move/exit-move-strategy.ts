@@ -16,7 +16,7 @@ class ExitMoveStrategy extends MoveStrategy {
     const exit = this.map.findClosestTilePosition(type, position)
 
     if (exit) {
-      this.targets.push(exit)
+      this._targets.push(exit)
     }
   }
 }

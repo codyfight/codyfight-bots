@@ -8,6 +8,7 @@ import { filterSafeMoves, randomElement } from '../../../game/utils/game-utils.j
 import BFSPathFinder from '../../../game/pathfinding/bfs-path-finder.js'
 import SpecialAgent from '../../../game/agents/special-agent.js'
 import { IAgentState, SpecialAgentType } from '../../../game/agents/game-agent.type.js'
+import GameNode from '../../../game/pathfinding/game-node.js'
 
 abstract class MoveStrategy implements IMoveStrategy {
   public abstract get type(): MoveStrategyType;
@@ -17,7 +18,9 @@ abstract class MoveStrategy implements IMoveStrategy {
   protected opponent!: GameAgent
   protected specialAgents!: Map<SpecialAgentType, SpecialAgent[]>
 
-  protected targets: Position[] = []
+  protected _targets: Position[] = []
+
+  protected path: GameNode[] = []
 
   protected abstract setTargets(): void
 
@@ -26,7 +29,12 @@ abstract class MoveStrategy implements IMoveStrategy {
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
     this.specialAgents = game.getSpecialAgents()
+  }
 
+  public get targets(): Position[] {
+    this._targets = []
+    this.setTargets()
+    return this._targets
   }
 
   /**
@@ -34,26 +42,28 @@ abstract class MoveStrategy implements IMoveStrategy {
    * If the path is valid, and the next step is found, returns that step.
    * Otherwise, returns the default move.
    */
-  public determineMove(): Position {
-    this.targets = []
-    this.setTargets()
+  public determineMove(path: GameNode[]): Position {
+    // const path = this.getPath(this.targets)
 
-    const state : IAgentState = {
-      position: this.bearer.position,
-      hitpoints: this.bearer.hitpoints,
-      skillsState: this.bearer.createSkillsState()
-    }
-
-    for (const target of this.targets) {
-
-      const path = this.findPath(state, target)
-
-      if (path.length > 0) {
-        return this.getNextValidMove(path)
-      }
+    if(path.length > 0) {
+      return this.getNextValidMove(path)
     }
 
     return this.getDefaultMove()
+  }
+
+
+  public getPath(targets: Position[]): GameNode[] {
+    const state = this.bearer.createAgentState()
+
+    for (const target of targets) {
+      const pathFinder = new BFSPathFinder(state, target, this.map)
+      const result = pathFinder.findPath(this.isGoal.bind(this))
+
+      if (result) return result.path
+    }
+
+    return []
   }
 
   /**
@@ -80,26 +90,16 @@ abstract class MoveStrategy implements IMoveStrategy {
     return state.position.equals(target)
   }
 
-  private findPath(state: IAgentState, target: Position): Position[] {
-
-    if (state.position.equals(target)) {
-      return [target]
-    }
-
-    const pathFinder = new BFSPathFinder(state, target, this.map)
-    const result = pathFinder.findPath(this.isGoal.bind(this))
-
-    if (!result) return []
-
-    return result.path.map((node) => node.position)
-  }
-
   /**
    * Using the path from the player position to the target,
    * returns the next valid move or null
    */
-  private getNextValidMove(path: Position[]): Position {
-    return this.isMovePossible(path[0]) ? path[0] : this.bearer.position
+  private getNextValidMove(path: GameNode[]): Position {
+
+    const possible = this.isMovePossible(path[0].position)
+    const position = possible ? path[0].position : this.bearer.position
+
+    return position
   }
 
   /**

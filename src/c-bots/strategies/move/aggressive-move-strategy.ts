@@ -10,7 +10,7 @@ class AggressiveMoveStrategy extends MoveStrategy {
   }
 
   protected setTargets(): void {
-    this.targets.push(this.opponent.position)
+    this._targets.push(this.opponent.position)
   }
 
   protected isGoal(state: IAgentState, target: Position): boolean {

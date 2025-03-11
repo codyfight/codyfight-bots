@@ -27,8 +27,8 @@ class CustomMoveStrategy extends MoveStrategy {
     const position = this.bearer.position
     const move = this.getRandomMove()
 
-    this.targets.push(move)
-    this.targets.push(position)
+    this._targets.push(move)
+    this._targets.push(position)
   }
 
   /**

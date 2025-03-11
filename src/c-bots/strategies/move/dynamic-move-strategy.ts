@@ -9,7 +9,7 @@ class DynamicMoveStrategy extends ExitMoveStrategy {
 
   protected setTargets(): void {
     super.setTargets()
-    this.targets.push(this.opponent.position)
+    this._targets.push(this.opponent.position)
   }
 }
 

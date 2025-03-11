@@ -1,5 +1,5 @@
-import GameState from '../../../game/state/game-state.js'
 import Position from '../../../game/map/position.js'
+import GameNode from '../../../game/pathfinding/game-node.js'
 
 export enum MoveStrategyType {
   Idle = 'idle',
@@ -11,7 +11,7 @@ export enum MoveStrategyType {
 }
 
 export interface IMoveStrategy {
-  determineMove(game: GameState): Position
+  determineMove(path: GameNode []): Position
 }
 
 // Options for dropdown

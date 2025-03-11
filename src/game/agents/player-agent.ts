@@ -1,7 +1,7 @@
 import GameAgent from './game-agent.js'
 import Position from '../map/position.js'
 import Skill from '../skills/skill.js'
-import { IPlayerAgent, ISkillState } from './game-agent.type.js'
+import { IAgentState, IPlayerAgent, ISkillState } from './game-agent.type.js'
 import { SkillCategory } from '../skills/skill-type.js'
 
 class PlayerAgent extends GameAgent {
@@ -28,15 +28,21 @@ class PlayerAgent extends GameAgent {
     return this.skills.filter((skill) => skill.ready)
   }
 
+  public createAgentState(): IAgentState {
+    return {
+      position: this.position,
+      hitpoints: this.hitpoints,
+      skills: this.createSkillsState()
+    }
+  }
+
   public createSkillsState(): ISkillState[] {
-    return this.availableSkills
-      .filter(skill => skill.category === SkillCategory.MovementPlayer)
-      .map(skill => ({
-        id: skill.id,
-        category: skill.category,
-        ready: skill.ready,
-        targets: skill.possibleTargets
-      }));
+    const moveSkills = this.availableSkills.filter(skill => skill.category === SkillCategory.MovementPlayer)
+
+    return moveSkills.map(skill => ({
+      id: skill.id,
+      targets: skill.possibleTargets
+    }))
   }
 
   private mapToPositions(data: { x: number; y: number }[]): Position[] {

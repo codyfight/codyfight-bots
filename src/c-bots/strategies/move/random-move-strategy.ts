@@ -8,7 +8,7 @@ class RandomMoveStrategy extends MoveStrategy {
   }
 
   protected setTargets(): void {
-    this.targets.push(this.getRandomMove())
+    this._targets.push(this.getRandomMove())
   }
 }
 

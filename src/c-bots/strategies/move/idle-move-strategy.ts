@@ -8,7 +8,7 @@ class IdleMoveStrategy extends MoveStrategy {
   }
 
   protected setTargets(): void {
-    this.targets.push(this.bearer.position)
+    this._targets.push(this.bearer.position)
   }
 }
 
