@@ -83,32 +83,34 @@ class GameNode {
   private getSkillNodes(map: GameMap): GameNode[] {
     // TODO - Skills available targets are only from agents position
     // For this to work correctly with pathfinding we need the targets from the nodes position
-    return this.state.skills.flatMap(skill => this.createNodesForSkill(skill))
+    return this.state.skills.flatMap(skill => this.createNodesForSkill(skill, map))
   }
 
   /**
    * Create new node(s) for every target associated with the given skill.
    */
-  private createNodesForSkill(skill: ISkillState): GameNode[] {
-    return skill.targets.map(target => this.createNodeForSkillTarget(skill, target));
+  private createNodesForSkill(skill: ISkillState, map: GameMap): GameNode[] {
+    return skill.targets.map(target => this.createNodeForSkillTarget(skill, target, map));
   }
 
   /**
    * Creates a new node after "using" a skill to move to the given target.
    * In this example, we remove the used skill from the agent’s skill list.
    */
-  private createNodeForSkillTarget(skill: ISkillState, target: Position): GameNode {
+  private createNodeForSkillTarget(skill: ISkillState, target: Position, map: GameMap): GameNode {
     // Remove or mark as used the skill that was just utilized
     const updatedSkills = this.state.skills.filter(s => s.id !== skill.id);
 
-    const newState: IAgentState = {
+    const state: IAgentState = {
       ...this.state,
       position: target,
       skills: updatedSkills // updated skill set
     };
 
+    const finalState = resolveTileEffect(state, map);
+
     // "action" can store the used skill to help track how we reached this node
-    return new GameNode(this, target, newState, skill);
+    return new GameNode(this, target, finalState, skill);
   }
 
   private filterInvalidStates(nodes: GameNode[]): GameNode[] {
