@@ -38,8 +38,18 @@ router.get('/bots', asyncHandler(async (req: Request, res: Response) => {
 // Update Bot
 router.put('/bot/:ckey', jwtAuthMiddleware, asyncHandler(async (req: Request, res: Response) => {
   const ckey = req.params.ckey
-  await botManager.stopBot(ckey)
-  await botManager.updateBotConfig(ckey, req.body as IBotFilter)
+
+  const bot = await botManager.getBot(ckey)
+  const status = bot.status.bot_state
+
+  if (status === 'starting') {
+    await botManager.stopBot(ckey)
+    await botManager.updateBotConfig(ckey, req.body as IBotFilter)
+    await botManager.startBot(ckey)
+  }else{
+    await botManager.updateBotConfig(ckey, req.body as IBotFilter)
+  }
+
   res.status(200).json({ message: 'Bot updated successfully!', bot: { ckey, ...req.body } })
 }))
 
