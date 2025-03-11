@@ -3,12 +3,16 @@ import { MoveStrategyType } from './move-strategy.type.js'
 
 class RandomMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move randomly.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Random
   }
 
   protected setTargets(): void {
-    this.targets.push(this.getRandomMove())
+    this._targets.push(this.getRandomMove())
   }
 }
 

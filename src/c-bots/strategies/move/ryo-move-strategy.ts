@@ -6,6 +6,10 @@ import Position from '../../../game/map/position.js'
 
 class RyoMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move towards Mr. Ryo.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Ryo
   }
@@ -13,7 +17,7 @@ class RyoMoveStrategy extends MoveStrategy {
   protected setTargets(): void {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);
     if (ryoAgents && ryoAgents.length > 0) {
-      this.targets.push(ryoAgents[0].position);
+      this._targets.push(ryoAgents[0].position);
     }
   }
 

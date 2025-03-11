@@ -1,15 +1,18 @@
 import Position from '../map/position.js'
 import Skill from '../skills/skill.js'
 
+// TODO - For now this is just going to be skills that can move the player
+// In the future this should include all skills
+
 export interface ISkillState {
   id: number;
-  ready: boolean;
+  targets: Position[];
 }
 
 export interface IAgentState {
   position: Position;
   hitpoints: number;
-  skillsState?: ISkillState[];
+  skills: ISkillState[];
 }
 
 export interface IAgent {

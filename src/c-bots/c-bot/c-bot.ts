@@ -10,6 +10,7 @@ import { wait } from '../../utils/utils.js'
 import { TICK_INTERVAL } from '../../config/constants.js'
 import EventEmitter from 'node:events'
 import handleBotError from '../c-bot-error-handler.js'
+import GameNode from '../../game/pathfinding/game-node.js'
 
 /**
  * The CBot class is responsible for managing the lifecycle of a bot in the game.
@@ -84,13 +85,6 @@ class CBot extends EventEmitter {
     Logger.info(`Game completed for bot "${this.ckey}". Run loop exited.`);
   }
 
-
-  public async play() {
-    await this.gameClient.check()
-    await this.castSkills()
-    await this.performMove()
-  }
-
   public finishGame(): void {
     this.active = false;
     this.emit('restart', this.ckey);
@@ -143,20 +137,28 @@ class CBot extends EventEmitter {
     }
   }
 
-  private async castSkills(): Promise<void> {
-    const cast = this.castStrategy.determineCast();
+  public async play() {
+    await this.gameClient.check()
+    const targets = this.moveStrategy.targets
+    const path = this.moveStrategy.getPath(targets)
+    await this.castSkills(path)
+    await this.performMove(path)
+  }
+
+  private async castSkills(path: GameNode[]): Promise<void> {
+    const cast = this.castStrategy.determineCast(path);
     if (!cast) return;
 
     const [skill, target] = cast;
     await this.gameClient.cast(skill, target);
-    await this.castSkills();
+    await this.castSkills(path);
   }
   
-  private async performMove() {
+  private async performMove(path: GameNode[]) {
     const state = this.gameClient.state
     if (!state || !state.isPlayerTurn()) return
 
-    const nextMove = this.moveStrategy.determineMove()
+    const nextMove = this.moveStrategy.determineMove(path)
     if (!nextMove) return
 
     await this.gameClient.move(nextMove)

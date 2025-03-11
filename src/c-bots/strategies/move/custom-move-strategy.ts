@@ -11,6 +11,10 @@ import { MoveStrategyType } from './move-strategy.type.js'
  */
 class CustomMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move to a random position.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Idle
   }
@@ -27,8 +31,8 @@ class CustomMoveStrategy extends MoveStrategy {
     const position = this.bearer.position
     const move = this.getRandomMove()
 
-    this.targets.push(move)
-    this.targets.push(position)
+    this._targets.push(move)
+    this._targets.push(position)
   }
 
   /**

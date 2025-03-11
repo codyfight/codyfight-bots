@@ -1,4 +1,4 @@
-import { IAgentState } from '../agents/game-agent.type.js'
+import { IAgentState, ISkillState } from '../agents/game-agent.type.js'
 import GameMap from '../map/game-map.js'
 import Position from '../map/position.js'
 import { resolveTileEffect } from '../map/tile/effects/tile-effect-resolver.js'
@@ -8,36 +8,37 @@ class GameNode {
   public constructor(
     public readonly parent: GameNode | null,  // Parent node
     public readonly position: Position,       // Position of the node
-    public readonly state: IAgentState        // Agent state contains position, health and skills
+    public readonly state: IAgentState,       // Agent state contains position, health and skills
+    public readonly action: any = null        // Action taken to reach this node
   ) {}
 
   /**
    * Recursively constructs the path from the root ancestor to this node.
    */
   public get path(): GameNode[] {
-    return this.parent ? [...this.parent.path, this] : [];
+    return this.parent ? [...this.parent.path, this] : []
   }
 
   /**
    * Returns a string representation of the current node (position).
    */
   public get key(): string {
-    return this.state.position.toString();
+    return this.state.position.toString()
   }
 
   /**
    * Checks if the given position is the same as this node's position.
    */
   public equals(position: Position): boolean {
-    return this.state.position.equals(position);
+    return this.state.position.equals(position)
   }
 
   /**
    * Expands from the current node to produce all valid child nodes.
    */
   public expand(map: GameMap): GameNode[] {
-    const neighbors = this.getNeighbors(map);
-    return this.filterInvalidStates(neighbors);
+    const neighbors = this.getNeighbors(map)
+    return this.filterInvalidStates(neighbors)
   }
 
   /**
@@ -47,7 +48,7 @@ class GameNode {
     return [
       ...this.getAdjacentNodes(map),
       ...this.getSkillNodes(map)
-    ];
+    ]
   }
 
   /**
@@ -57,37 +58,63 @@ class GameNode {
     return Position.getDirections()
       .map(direction => this.state.position.add(direction))
       .map(pos => this.createChildNode(pos, map))
-      .filter((child): child is GameNode => child !== null);
+      .filter((child): child is GameNode => child !== null)
   }
 
   /**
-   * A small helper to create a new child node if the target tile is valid.
+   * Helper to create a new child node if the target tile is valid.
    */
   private createChildNode(position: Position, map: GameMap): GameNode | null {
-    const tile = map.getTile(position);
+    const tile = map.getTile(position)
 
     if (!tile || !tile.walkable) {
-      return null; // not a valid tile or not walkable
+      return null // not a valid tile or not walkable
     }
 
     // Apply tile effects (e.g. damage, movement, etc.)
-    const newState = resolveTileEffect({...this.state, position}, map)
+    const newState = resolveTileEffect({ ...this.state, position }, map)
 
-    return new GameNode(this, position, newState);
+    return new GameNode(this, position, newState)
   }
 
-
+  /**
+   * Generates child nodes based on using each skill’s targets for movement.
+   */
   private getSkillNodes(map: GameMap): GameNode[] {
+    // TODO - Skills available targets are only from agents position
+    // For this to work correctly with pathfinding we need the targets from the nodes position
+    return this.state.skills.flatMap(skill => this.createNodesForSkill(skill, map))
+  }
 
-    // Get ready skills that are of type movement
-    // get the targets for each of these skills
-    // Create a node from each target and make sure to set skill state to used
+  /**
+   * Create new node(s) for every target associated with the given skill.
+   */
+  private createNodesForSkill(skill: ISkillState, map: GameMap): GameNode[] {
+    return skill.targets.map(target => this.createNodeForSkillTarget(skill, target, map));
+  }
 
-    return []
+  /**
+   * Creates a new node after "using" a skill to move to the given target.
+   * In this example, we remove the used skill from the agent’s skill list.
+   */
+  private createNodeForSkillTarget(skill: ISkillState, target: Position, map: GameMap): GameNode {
+    // Remove or mark as used the skill that was just utilized
+    const updatedSkills = this.state.skills.filter(s => s.id !== skill.id);
+
+    const state: IAgentState = {
+      ...this.state,
+      position: target,
+      skills: updatedSkills // updated skill set
+    };
+
+    const finalState = resolveTileEffect(state, map);
+
+    // "action" can store the used skill to help track how we reached this node
+    return new GameNode(this, target, finalState, skill);
   }
 
   private filterInvalidStates(nodes: GameNode[]): GameNode[] {
-    return nodes.filter(node => node.state.hitpoints > 0);
+    return nodes.filter(node => node.state.hitpoints > 0)
   }
 
 }
