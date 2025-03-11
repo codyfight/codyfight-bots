@@ -4,6 +4,10 @@ import { MoveStrategyType } from './move-strategy.type.js'
 
 class ExitMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move towards the exit gate.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Exit
   }

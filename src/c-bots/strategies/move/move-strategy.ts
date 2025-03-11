@@ -22,6 +22,8 @@ abstract class MoveStrategy implements IMoveStrategy {
 
   protected path: GameNode[] = []
 
+  public abstract get description(): string
+
   protected abstract setTargets(): void
 
   public init(game: GameState): void {

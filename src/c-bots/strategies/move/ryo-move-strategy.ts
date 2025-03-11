@@ -6,6 +6,10 @@ import Position from '../../../game/map/position.js'
 
 class RyoMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move towards Mr. Ryo.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Ryo
   }

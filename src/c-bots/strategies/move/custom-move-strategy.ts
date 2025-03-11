@@ -11,6 +11,10 @@ import { MoveStrategyType } from './move-strategy.type.js'
  */
 class CustomMoveStrategy extends MoveStrategy {
 
+  public get description(): string {
+    return 'Your bot will move to a random position.'
+  }
+
   public get type(): MoveStrategyType {
     return MoveStrategyType.Idle
   }
