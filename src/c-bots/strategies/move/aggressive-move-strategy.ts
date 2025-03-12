@@ -5,10 +5,6 @@ import Position from '../../../game/map/position.js'
 
 class AggressiveMoveStrategy extends MoveStrategy {
 
-  public get description(): string {
-    return 'Your bot will move aggressively towards the opponent.'
-  }
-
   public get type(): MoveStrategyType {
     return MoveStrategyType.Aggressive
   }

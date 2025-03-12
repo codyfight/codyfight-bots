@@ -6,10 +6,6 @@ import { CastStrategyType } from './cast-strategy.type.js'
 class RandomCastStrategy extends CastStrategy {
   public readonly type = CastStrategyType.Random
 
-  public get description(): string {
-    return 'Your bot will cast random skills at random targets.'
-  }
-
   protected determineSkill(): Skill | null {
     return this.getRandomSkill()
   }

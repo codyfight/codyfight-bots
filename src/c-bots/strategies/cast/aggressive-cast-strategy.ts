@@ -11,10 +11,6 @@ import Position from '../../../game/map/position.js'
 class AggressiveCastStrategy extends CastStrategy{
   public readonly type = CastStrategyType.Aggressive
 
-  public get description(): string {
-    return 'Your bot will focus on dealing damage to the opponent.'
-  }
-
   protected determineSkill(): Skill | null {
     const skills = this.bearer.availableSkills;
     return skills.length === 0 ? null : this.getSkillWithHighestDamage(skills);
