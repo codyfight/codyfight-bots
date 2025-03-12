@@ -59,12 +59,14 @@ class CBot extends EventEmitter {
   }
 
   public async start(): Promise<void> {
+    this.active = true;
     this.state.start();
-    await this.resume()
+    this.run().catch(error => Logger.error(`Error in run loop for bot "${this.ckey}":`, error));
   }
 
   public async resume(): Promise<void> {
     this.active = true;
+    this.state.resume();
     this.run().catch(error => Logger.error(`Error in run loop for bot "${this.ckey}":`, error));
   }
 

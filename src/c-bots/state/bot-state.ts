@@ -17,6 +17,10 @@ abstract class BotState {
     // no-op
   }
 
+  resume(): void {
+    // no-op
+  }
+
   async tick(): Promise<void> {
     // no-op
   }

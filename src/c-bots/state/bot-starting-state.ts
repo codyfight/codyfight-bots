@@ -11,6 +11,11 @@ class BotStartingState extends BotState{
     return BotStatus.Starting
   }
 
+  public async resume(): Promise<void> {
+    Logger.debug(`${this.cBot.ckey} - resume request received in starting state` )
+    await this.cBot.initialise('init');
+  }
+
   async tick(): Promise<void> {
     const status = this.cBot.gameClient.status
     Logger.debug(`${this.cBot.ckey} - tick in starting state, Game Status: ${status}` )

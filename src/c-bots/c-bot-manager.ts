@@ -135,6 +135,18 @@ class CBotManager {
     }
   }
 
+  public async reloadBot(ckey: string): Promise<void> {
+
+    const bot = await this.getBot(ckey)
+    const active = await this.isBotActive(bot)
+    
+    if(active) {
+      this.removeActiveBot(ckey)
+      await this.resumeBot(ckey)
+    }
+
+  }
+
   private async resumeBot(ckey: string): Promise<void> {
     try {
       const bot = await this.getBot(ckey)
@@ -148,19 +160,19 @@ class CBotManager {
   }
 
   private attachCallbacks(bot: CBot): void {
-
     bot.on('stopped', (ckey: string) => this.removeActiveBot(ckey))
-
-    bot.on('restart', async (ckey) => {
-      this.removeActiveBot(ckey)
-      await this.startBot(ckey)
-    })
-
+    bot.on('restart', async (ckey) => await this.restartBot(ckey))
   }
 
   private removeActiveBot(ckey: string): void {
     Logger.info(`Removing bot "${ckey}" from activeBots...`)
     this.activeBots.delete(ckey)
+  }
+
+  private async restartBot(ckey: string): Promise<void> {
+    Logger.info(`Restarting bot "${ckey}"...`)
+    this.removeActiveBot(ckey)
+    await this.startBot(ckey)
   }
 
 }
