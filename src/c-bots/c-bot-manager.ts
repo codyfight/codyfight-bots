@@ -141,7 +141,8 @@ class CBotManager {
     const active = await this.isBotActive(bot)
     
     if(active) {
-      this.removeActiveBot(ckey)
+      bot.stopPlaying()
+      await new Promise(resolve => setTimeout(resolve, 5000))
       await this.resumeBot(ckey)
     }
 
