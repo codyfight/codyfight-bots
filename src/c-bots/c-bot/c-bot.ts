@@ -60,7 +60,7 @@ class CBot extends EventEmitter {
 
   public async start(): Promise<void> {
     this.state.start();
-    await this.resume()
+    await this.resume();
   }
 
   public async resume(): Promise<void> {

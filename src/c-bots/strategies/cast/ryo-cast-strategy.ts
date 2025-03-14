@@ -7,9 +7,6 @@ import { SpecialAgentType } from '../../../game/agents/game-agent.type.js'
 class RyoCastStrategy extends CastStrategy{
   public readonly type = CastStrategyType.Ryo
 
-  public get description(): string {
-    return 'Your bot will cast skills at or near Mr. Ryo.'
-  }
 
   protected determineSkill(): Skill | null {
     const ryoAgents = this.specialAgents.get(SpecialAgentType.MrRyo);

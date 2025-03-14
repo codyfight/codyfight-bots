@@ -15,10 +15,8 @@ class BotStartingState extends BotState{
     const status = this.cBot.gameClient.status
     Logger.debug(`${this.cBot.ckey} - tick in starting state, Game Status: ${status}` )
     switch (status) {
-      case GameStatus.Uninitialised:
-        await this.cBot.initialise('check');
-        break
 
+      case GameStatus.Uninitialised:
       case GameStatus.Ended:
       case GameStatus.Empty:
         await this.cBot.initialise('init');

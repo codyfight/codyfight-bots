@@ -11,9 +11,6 @@ import { CastStrategyType } from './cast-strategy.type.js'
 class CustomCastStrategy extends CastStrategy {
   public readonly  type = CastStrategyType.None
 
-  public get description(): string {
-    return 'Your bot will not cast any skills.'
-  }
 
   protected determineSkill(): Skill | null {
     // Decide which skill to cast, if any

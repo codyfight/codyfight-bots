@@ -6,10 +6,6 @@ import { SkillCategory } from '../../../game/skills/skill-type.js'
 
 class DefensiveCastStrategy extends CastStrategy {
   public readonly type = CastStrategyType.Defensive
-
-  public get description(): string {
-    return 'Your bot will focus on healing and protecting itself.'
-  }
   
   protected determineSkill(): Skill | null {
 

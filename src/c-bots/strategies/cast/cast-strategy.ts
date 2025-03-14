@@ -25,8 +25,6 @@ abstract class CastStrategy {
   protected opponent!: GameAgent
   protected specialAgents!: Map<SpecialAgentType, SpecialAgent[]>
 
-  public abstract get description(): string
-
   public init(game: GameState): void {
     this.bearer = game.getBearer()
     this.opponent = game.getOpponent()
