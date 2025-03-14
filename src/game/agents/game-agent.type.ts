@@ -6,7 +6,7 @@ import Skill from '../skills/skill.js'
 
 export interface ISkillState {
   id: number;
-  targets: Position[];
+  targetOffsets: Position[];
 }
 
 export interface IAgentState {

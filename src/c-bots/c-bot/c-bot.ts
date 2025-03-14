@@ -139,9 +139,14 @@ class CBot extends EventEmitter {
 
   public async play() {
     await this.gameClient.check()
+
     const targets = this.moveStrategy.targets
     const path = this.moveStrategy.getPath(targets)
+
     await this.castSkills(path)
+
+    // For now, pathfinding is run once per turn, if there is issues with this
+    // We should run it again after casting skills
     await this.performMove(path)
   }
 

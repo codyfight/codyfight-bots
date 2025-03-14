@@ -10,6 +10,10 @@ class Position {
     return new Position(this.x + other.x, this.y + other.y)
   }
 
+  public subtract(other: Position): Position {
+    return new Position(this.x - other.x, this.y - other.y)
+  }
+
   public equals(other: Position) : boolean{
     return this.x == other.x && this.y == other.y
   }

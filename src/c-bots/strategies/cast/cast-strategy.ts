@@ -68,7 +68,7 @@ abstract class CastStrategy {
     const skill = this.bearer.availableSkills.find(s => s.id === node.action.id)
     if (!skill) return null
 
-    return [skill, node.state.position]
+    return [skill, node.position]
   }
 
   protected getRandomSkill(): Skill | null {

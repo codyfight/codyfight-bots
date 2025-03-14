@@ -81,35 +81,45 @@ class GameNode {
    * Generates child nodes based on using each skill’s targets for movement.
    */
   private getSkillNodes(map: GameMap): GameNode[] {
-    // TODO - Skills available targets are only from agents position
-    // For this to work correctly with pathfinding we need the targets from the nodes position
-    return this.state.skills.flatMap(skill => this.createNodesForSkill(skill, map))
+    return this.state.skills.flatMap((skill: ISkillState) =>
+      this.createNodesForSkill(skill, map)
+    );
   }
 
   /**
    * Create new node(s) for every target associated with the given skill.
    */
   private createNodesForSkill(skill: ISkillState, map: GameMap): GameNode[] {
-    return skill.targets.map(target => this.createNodeForSkillTarget(skill, target, map));
+    return skill.targetOffsets.map((offset: Position) => {
+      const absoluteTarget: Position = this.position.add(offset);
+      return this.createNodeForSkillTarget(skill, absoluteTarget, map);
+    }).filter((node): node is GameNode => node !== null);
   }
+
+
 
   /**
    * Creates a new node after "using" a skill to move to the given target.
    * In this example, we remove the used skill from the agent’s skill list.
    */
-  private createNodeForSkillTarget(skill: ISkillState, target: Position, map: GameMap): GameNode {
-    // Remove or mark as used the skill that was just utilized
-    const updatedSkills = this.state.skills.filter(s => s.id !== skill.id);
+  private createNodeForSkillTarget(skill: ISkillState, target: Position, map: GameMap): GameNode | null {
+    const updatedSkills: ISkillState[] = this.state.skills.filter(s => s.id !== skill.id);
 
     const state: IAgentState = {
       ...this.state,
       position: target,
-      skills: updatedSkills // updated skill set
+      skills: updatedSkills
     };
 
-    const finalState = resolveTileEffect(state, map);
+    const tile = map.getTile(target)
 
-    // "action" can store the used skill to help track how we reached this node
+    if (!tile || !tile.walkable) {
+      return null // not a valid tile or not walkable
+    }
+
+    // Apply tile effects (e.g. damage, movement, etc.)
+    const finalState: IAgentState = resolveTileEffect(state, map);
+
     return new GameNode(this, target, finalState, skill);
   }
 

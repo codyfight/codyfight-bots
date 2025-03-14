@@ -37,14 +37,26 @@ class PlayerAgent extends GameAgent {
   }
 
   public createSkillsState(): ISkillState[] {
-    const moveSkills = this.availableSkills.filter(skill => skill.category === SkillCategory.MovementPlayer)
 
-    return moveSkills.map(skill => ({
-      id: skill.id,
-      targets: skill.possibleTargets
-    }))
+    const movementSkills = this.availableSkills.filter(skill =>
+      skill.category === SkillCategory.MovementPlayer
+    );
+
+    // Convert each skill’s absolute targets to offsets relative to the agent’s position
+    return movementSkills.map(skill => {
+
+      const targetOffsets = skill.possibleTargets.map(absoluteTarget =>
+        absoluteTarget.subtract(this.position)
+      );
+
+      return {
+        id: skill.id,
+        targetOffsets
+      };
+    });
   }
 
+  
   private mapToPositions(data: { x: number; y: number }[]): Position[] {
     return data.map((move) => new Position(move.x, move.y))
   }
