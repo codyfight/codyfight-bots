@@ -17,8 +17,13 @@ class AggressiveCastStrategy extends CastStrategy{
   }
 
   protected determineTarget(skill: Skill): Position | null {
-    const canTargetOpponent = skill.canTarget(this.opponent.position);
-    return canTargetOpponent ? this.opponent.position : null;
+    if (skill.canTarget(this.opponent.position)) {
+      return this.opponent.position;
+    }
+
+    return skill.possibleTargets.find(target =>
+      target.adjacent(this.opponent.position)
+    ) || null;
   }
 
   private getSkillWithHighestDamage(skills: Skill[]): Skill {

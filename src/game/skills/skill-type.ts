@@ -12,6 +12,7 @@ export enum SkillCategory {
   Healing = 'Healing',
   MovementEnemy = 'MovementEnemy',
   MovementPlayer = 'MovementPlayer',
+  Utility = 'Utility'
 }
 
 export interface SkillMetadata {
@@ -129,7 +130,87 @@ export const SkillRegistry: Record<number, SkillMetadata> = {
     id: 78,
     name: 'Jump',
     category: SkillCategory.MovementPlayer
+  },
+
+  // Utility Skills
+  74: {
+    id: 74,
+    name: 'LayBomb',
+    category: SkillCategory.Utility
+  },
+  80: {
+    id: 80,
+    name: 'TileToggler',
+    category: SkillCategory.Utility
+  },
+  0: {
+    id: 0,
+    name: 'Demolish',
+    category: SkillCategory.Utility
+  },
+  35: {
+    id: 35,
+    name: 'Demolish',
+    category: SkillCategory.Utility
+  },
+  40: {
+    id: 40,
+    name: 'Workn\'t',
+    category: SkillCategory.Utility
+  },
+  46: {
+    id: 46,
+    name: 'Anti-Armor Charge',
+    category: SkillCategory.Utility
+  },
+  68: {
+    id: 68,
+    name: 'B.F.B',
+    category: SkillCategory.Utility
+  },
+  10: {
+    id: 10,
+    name: 'Bombs Away',
+    category: SkillCategory.Utility
+  },
+  11: {
+    id: 11,
+    name: 'Plant Mine',
+    category: SkillCategory.Utility
+  },
+  55: {
+    id: 55,
+    name: 'Unmake',
+    category: SkillCategory.Utility
+  },
+  1: {
+    id: 1,
+    name: 'Build',
+    category: SkillCategory.Utility
+  },
+  36: {
+    id: 36,
+    name: 'Build',
+    category: SkillCategory.Utility
+  },
+  41: {
+    id: 41,
+    name: 'Booby Trap',
+    category: SkillCategory.Utility
+  },
+  69: {
+    id: 69,
+    name: 'W.A.L.L',
+    category: SkillCategory.Utility
+  },
+  14: {
+    id: 14,
+    name: 'Build Craze',
+    category: SkillCategory.Utility
+  },
+  56: {
+    id: 56,
+    name: 'Construction',
+    category: SkillCategory.Utility
   }
-
-
 }
